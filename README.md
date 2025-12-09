@@ -2,6 +2,8 @@
 {
   "title": "DevfolioX",
   "summary": "A minimal, config-driven developer portfolio template built with Next.js and Tailwind CSS.",
+  featured: true,
+  "image_url": "https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_1.png"
   "description": [
     "DevfolioX is a one-page portfolio focused on simplicity, speed, and practical integrations for students and developers.",
     "It centralizes projects, experience, writing, and contact into a single minimal layout while remaining easy to configure and deploy on free hosting."
