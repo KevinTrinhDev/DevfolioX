@@ -17,8 +17,11 @@ import {
   GraduationCap,
   AtSign,
 } from "lucide-react";
-import { useModalRoute } from "@/components/hooks/useModalRoute";
-import { ContributionGraphCard } from "@/components/ContributionGraphCard";
+
+// ⬇⬇⬇ change these two lines to relative paths
+import { useModalRoute } from "../hooks/useModalRoute";
+import { ContributionGraphCard } from "../ContributionGraphCard";
+// ⬆⬆⬆
 
 type SocialItem = {
   key: string; // key to look up in siteConfig.socials if present

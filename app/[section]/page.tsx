@@ -1,7 +1,7 @@
 // app/[section]/page.tsx
 "use client";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { notFound } from "next/navigation";
 import { siteConfig } from "../../config/siteConfig";
 
@@ -35,9 +35,10 @@ const VALID_SECTIONS = [
 export default function SectionPage({
   params,
 }: {
-  params: { section: string };
+  params: Promise<{ section: string }>;
 }) {
-  const section = params.section;
+  // Unwrap the promise using React.use (required in Next 16 for client components)
+  const { section } = use(params);
 
   if (!VALID_SECTIONS.includes(section)) {
     notFound();

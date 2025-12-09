@@ -3,7 +3,7 @@
 
 import { FormEvent, useEffect, useRef, useState, ReactNode } from "react";
 import { siteConfig } from "../../config/siteConfig";
-import contactCfg from "../../config/contact.json";
+import rawContactCfg from "../../config/contact.json";
 import {
   Mail,
   MessageCircle,
@@ -15,6 +15,41 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+// ─── Types for contact.json ──────────────────────────────────────────────────
+type ContactLimits = {
+  nameMax?: number;
+  emailMax?: number;
+  subjectMax?: number;
+  messageMax?: number;
+};
+
+type ContactUI = {
+  labels?: Record<string, string>;
+  placeholders?: Record<string, string>;
+  subjectOptions?: string[];
+  customSubjectOptionLabel?: string;
+  heading?: string;
+  title?: string;
+  intro?: string;
+  successText?: string;
+  errorText?: string;
+};
+
+type ContactSocialsBlock = {
+  title?: string;
+  description?: string;
+};
+
+type ContactConfig = {
+  limits?: ContactLimits;
+  ui?: ContactUI;
+  socialsBlock?: ContactSocialsBlock;
+};
+
+// Cast the imported JSON once with a useful shape
+const contactCfg = (rawContactCfg ?? {}) as ContactConfig;
+
+// ─── Limits / config derived from JSON ───────────────────────────────────────
 const NAME_MAX = contactCfg?.limits?.nameMax ?? 80;
 const EMAIL_MAX = contactCfg?.limits?.emailMax ?? 254;
 const MSG_MAX = contactCfg?.limits?.messageMax ?? 2000;
@@ -34,6 +69,7 @@ const customSubjectLabel = ui.customSubjectOptionLabel ?? "Custom…";
 
 const socialsBlockCfg = contactCfg?.socialsBlock ?? null;
 
+// ─── Local types ─────────────────────────────────────────────────────────────
 type SocialLink = {
   icon?: string;
   label: string;
@@ -65,7 +101,7 @@ export function ContactSection() {
     detail: s.detail,
   }));
 
-  // Fallback links only if you *also* want contact.json extras or when no config present
+  // Fallback links if no socialsFor.contact configured
   const hasConfiguredLinks = contactLinks.length > 0;
   const fallbackLinks: SocialLink[] = hasConfiguredLinks
     ? []

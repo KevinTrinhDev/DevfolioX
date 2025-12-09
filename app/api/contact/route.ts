@@ -14,17 +14,42 @@ const CONTACT_FROM_EMAIL =
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "";
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "";
 
+// Resend client (optional)
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+
 // New: configurable daily cap (per IP). Default 1 per 24h.
 const CONTACT_DAILY_LIMIT = Math.max(
   1,
   Number.parseInt(process.env.CONTACT_DAILY_LIMIT || "1", 10)
 );
 
-// ─── CLIENTS ─────────────────────────────────────────────────────────────────
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
-
 // ─── LIMITS / CONFIG (keeps parity with frontend) ────────────────────────────
-const limits = contactCfg?.limits ?? {};
+type ContactLimits = {
+  nameMax?: number;
+  emailMax?: number;
+  subjectMax?: number;
+  messageMax?: number;
+  discordMax?: number;
+  telegramMax?: number;
+  emailContentMax?: number;
+};
+
+type ContactTemplates = {
+  discord?: {
+    content?: string;
+  };
+  telegram?: {
+    text?: string;
+  };
+  email?: {
+    subject?: string;
+    text?: string;
+    html?: string;
+  };
+};
+
+const limits: ContactLimits = (contactCfg?.limits ?? {}) as ContactLimits;
+
 const NAME_MAX = limits.nameMax ?? 50;
 const EMAIL_MAX = limits.emailMax ?? 50;
 const SUBJECT_MAX = limits.subjectMax ?? 50;
@@ -51,10 +76,7 @@ function fill(tpl: string, vars: Record<string, string>) {
 }
 
 function escapeHtml(s: string) {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;/g,")
-    .replace(/>/g, "&gt;");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 // Avoid Discord pings like @everyone
@@ -276,20 +298,24 @@ export async function POST(req: NextRequest) {
   };
 
   // Templates/fallbacks
-  const tpl = contactCfg?.templates ?? {};
+  const tpl: ContactTemplates = (contactCfg?.templates ??
+    {}) as ContactTemplates;
+
   const discordContentRaw =
-    tpl?.discord?.content ??
+    tpl.discord?.content ??
     "📩 **New contact form submission**\n\n**Name:** {{name}}\n**Email:** {{email}}\n**Subject:** {{subject}}\n\n**Message:**\n{{message}}\n\n🕒 **Received:** {{timestamp_fmt}}\n🧭 **IP:** {{ip}}";
+
   const telegramTextTpl =
-    tpl?.telegram?.text ??
+    tpl.telegram?.text ??
     "📩 New contact form submission\nName: {{name}}\nEmail: {{email}}\nSubject: {{subject}}\n\nMessage:\n{{message}}\n\nReceived: {{timestamp_fmt}}\nIP: {{ip}}";
+
   const emailSubjectTpl =
-    tpl?.email?.subject ?? "New contact: {{name}} ({{subject}})";
+    tpl.email?.subject ?? "New contact: {{name}} ({{subject}})";
   const emailTextTpl =
-    tpl?.email?.text ??
+    tpl.email?.text ??
     "New contact form submission\nName: {{name}}\nEmail: {{email}}\nSubject: {{subject}}\n\nMessage:\n{{message}}\n\nReceived: {{timestamp_fmt}}\nIP: {{ip}}";
   const emailHtmlTpl =
-    tpl?.email?.html ??
+    tpl.email?.html ??
     "<div style='font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#0b1220'><h2 style='margin:0 0 8px'>New contact form submission</h2><p style='margin:4px 0'><strong>Name:</strong> {{name}}</p><p style='margin:4px 0'><strong>Email:</strong> {{email}}</p><p style='margin:4px 0'><strong>Subject:</strong> {{subject}}</p><pre style='white-space:pre-wrap;background:#f6f8fa;padding:12px;border-radius:8px;border:1px solid #e5e7eb'>{{message}}</pre><p style='margin-top:10px;color:#64748b'>Received: {{timestamp_fmt}} • IP: {{ip}}</p></div>";
 
   // Rendered
@@ -297,13 +323,15 @@ export async function POST(req: NextRequest) {
   if (discordContent.length > DISCORD_MAX) {
     discordContent = clip(discordContent, DISCORD_MAX - 3) + "...";
   }
+
   let telegramText = fill(telegramTextTpl, varsRaw);
   if (telegramText.length > TELEGRAM_MAX) {
     telegramText = clip(telegramText, TELEGRAM_MAX - 3) + "...";
   }
-  const emailSubject = fill(emailSubjectTpl, varsRaw);
-  const emailText = fill(emailTextTpl, varsRaw);
-  const emailHtml = fill(emailHtmlTpl, varsHtml);
+
+  const emailSubject = clip(fill(emailSubjectTpl, varsRaw), EMAIL_CONTENT_MAX);
+  const emailText = clip(fill(emailTextTpl, varsRaw), EMAIL_CONTENT_MAX);
+  const emailHtml = fill(emailHtmlTpl, varsHtml); // HTML length is less critical, but you could clip if you want
 
   // ─── Deliver ────────────────────────────────────────────────────────────────
   const warnings: string[] = [];
