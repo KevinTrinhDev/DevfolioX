@@ -73,7 +73,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
 
       {/* Modal content with fade + slight scale/translate animation */}
       <div
-        className={`relative mx-auto flex w-full max-w-5xl flex-col rounded-2xl border border-white/15 bg-background/95 p-4 text-sm text-muted-foreground shadow-2xl sm:p-6 transform transition-all duration-200 ease-out ${
+        className={`relative mx-auto flex w-full max-w-6xl flex-col rounded-2xl border border-white/15 bg-background/95 p-4 text-sm text-muted-foreground shadow-2xl sm:p-6 transform transition-all duration-200 ease-out ${
           isVisible
             ? "opacity-100 scale-100 translate-y-0"
             : "opacity-0 scale-95 translate-y-1"

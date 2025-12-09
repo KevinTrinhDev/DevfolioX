@@ -15,7 +15,7 @@ export function HeroSection() {
 
   return (
     <section id="top" className="pt-16 pb-20">
-      <div className="mx-auto w-full max-w-5xl px-4">
+      <div className="mx-auto w-full max-w-6xl px-4">
         <p className="text-base text-muted-foreground sm:text-lg">
           Hi, my name is
         </p>

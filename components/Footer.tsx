@@ -125,6 +125,10 @@ export async function Footer() {
   const formattedUpdated = formatUpdatedDate(finalDateISO || undefined);
   const shortSha = finalSha ? finalSha.slice(0, 7) : null;
 
+  // Fallback: use "now" as a placeholder timestamp if nothing else
+  const fallbackUpdated =
+    formattedUpdated || formatUpdatedDate(new Date().toISOString()) || "";
+
   const repoUrl: string | undefined = repoCfg.url;
   const cleanRepoUrl = repoUrl ? repoUrl.replace(/\/+$/, "") : undefined;
   const finalCommitUrl =
@@ -214,12 +218,12 @@ export async function Footer() {
 
   return (
     <footer className="mt-16 border-t border-white/15 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-6 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-start sm:justify-between sm:text-base">
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-start sm:justify-between sm:text-base">
         {/* Left: site + repo info */}
         <div className="space-y-3 text-center sm:text-left">
           <Link
             href="/"
-            className="flex items-center justify-center gap-2 sm:justify-start"
+            className="group flex items-center justify-center gap-2 transform-gpu transition sm:justify-start hover:scale-[0.97] active:scale-95"
           >
             <Image
               src="/images/favicon.png"
@@ -247,16 +251,12 @@ export async function Footer() {
                         href={finalCommitUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="font-mono text-accent transition-colors hover:text-accent/80"
-                        title={finalSha ?? undefined}
+                        className="font-mono text-accent transform-gpu transition hover:scale-95 hover:underline"
                       >
                         {shortSha}
                       </a>
                     ) : (
-                      <span
-                        className="font-mono text-accent"
-                        title={finalSha ?? undefined}
-                      >
+                      <span className="font-mono text-accent transform-gpu transition hover:scale-95 hover:underline">
                         {shortSha}
                       </span>
                     )}
@@ -267,7 +267,7 @@ export async function Footer() {
             )}
 
             <p className="text-muted-foreground">
-              Use the quick links below to access my socials.
+              Content last updated {fallbackUpdated} via caching
             </p>
 
             {footerSocials.length > 0 && (
@@ -311,13 +311,13 @@ export async function Footer() {
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-3 py-1.5 text-xs font-medium text-foreground transition hover:border-accent hover:bg-white/5 hover:text-foreground sm:text-sm"
               >
                 <Heart className="h-4 w-4" />
-                <span>Sponsor me</span>
+                <span>Support Me</span>
               </a>
             )}
           </div>
 
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            Portfolio built using{" "}
+            Powered by{" "}
             <a
               href={(repoCfg.url as string) ?? "#"}
               target="_blank"
@@ -326,14 +326,14 @@ export async function Footer() {
             >
               DevfolioX
             </a>
-            , powered by{" "}
+            , built &amp; designed by{" "}
             <a
-              href="https://vercel.com"
+              href="https://kevintrinh.dev"
               target="_blank"
               rel="noreferrer"
               className="font-semibold text-muted-foreground transition-colors hover:text-foreground"
             >
-              Vercel
+              Kevin Trinh
             </a>
             .
           </p>

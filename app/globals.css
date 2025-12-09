@@ -136,3 +136,26 @@ textarea {
     scroll-behavior: smooth;
   }
 }
+
+@layer utilities {
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Default marquee speed (desktop / larger screens) */
+  .marquee-row {
+    animation: marquee 36s linear infinite;
+  }
+
+  /* Faster marquee on small screens (phones) */
+  @media (max-width: 640px) {
+    .marquee-row {
+      animation-duration: 12s; /* lower = faster, tweak if you want */
+    }
+  }
+}

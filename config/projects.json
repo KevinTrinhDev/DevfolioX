@@ -34,6 +34,8 @@
       "end": "Present",
       "technologies": ["Python", "Flask", "Pandas", "scikit-learn"],
       "priority": 6,
+      "featured": true,
+      "imageUrl": "/images/demo_6.png",
       "links": [
         {
           "label": "Source",
@@ -41,7 +43,7 @@
           "type": "github"
         }
       ],
-      "githubRepoUrl": "https://github.com/KevinTrinh1227/Prize-Pick-Predictions",
+      "githubRepoUrl": "https://github.com/KevinTrinh1227/Prize-Picks-Predictions",
       "stats": {
         "stars": true,
         "forks": true,
@@ -60,6 +62,8 @@
       "end": "Present",
       "technologies": ["React", "TypeScript", "Chart.js"],
       "priority": 7,
+      "featured": true,
+      "imageUrl": "/images/demo_6.png",
       "links": [
         {
           "label": "Live Demo",
@@ -85,6 +89,8 @@
       "end": "Nov 2023",
       "technologies": ["Next.js", "Tailwind CSS"],
       "priority": 8,
+      "featured": true,
+      "imageUrl": "/images/demo_6.png",
       "links": [
         {
           "label": "Live Demo",
@@ -110,6 +116,8 @@
       "end": "Mar 2023",
       "technologies": ["Node.js", "Express", "PostgreSQL"],
       "priority": 9,
+      "featured": true,
+      "imageUrl": "/images/demo_6.png",
       "links": [
         {
           "label": "Source",

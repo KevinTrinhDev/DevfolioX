@@ -96,7 +96,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-white/10 bg-background/80 backdrop-blur">
-      <div className="mx-auto w-full max-w-5xl px-4">
+      <div className="mx-auto w-full max-w-6xl px-4">
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center gap-2">
             <Image

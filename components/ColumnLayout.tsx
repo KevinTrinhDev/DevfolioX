@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export function ColumnLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto w-full max-w-5xl px-4">
+    <div className="mx-auto w-full max-w-6xl px-4">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
         {/* left gutter on md+ */}
         <div className="hidden md:block" />

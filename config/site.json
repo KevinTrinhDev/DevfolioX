@@ -110,12 +110,12 @@
         "show": true,
         "isButton": false
       },
-      { "id": "blog", "label": "Blogs", "show": true, "isButton": false },
-      { "id": "youtube", "label": "YouTube", "show": true, "isButton": false },
+      { "id": "blog", "label": "Blogs", "show": false, "isButton": false },
+      { "id": "youtube", "label": "YouTube", "show": false, "isButton": false },
       {
         "id": "certifications",
         "label": "Certifications",
-        "show": true,
+        "show": false,
         "isButton": false
       },
       {
@@ -135,9 +135,9 @@
     "education": true,
     "experience": true,
     "projects": true,
-    "blog": true,
-    "youtube": true,
-    "certifications": true,
+    "blog": false,
+    "youtube": false,
+    "certifications": false,
     "contact": true,
     "resume": true
   },

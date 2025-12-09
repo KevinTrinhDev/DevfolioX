@@ -26,6 +26,8 @@ export type ProjectItem = {
 
   start: string;
   end: string;
+  // NEW: optional image for featured ticker / cards
+  imageUrl?: string;
 
   technologies?: string[];
   links?: ProjectLink[];
@@ -171,7 +173,9 @@ function extractMetaFromReadme(readme: string) {
       stats_downloads?: boolean;
       badges?: string[];
       auto_inactive_threshold_days?: number;
+      image_url?: string; // NEW
     };
+
     return meta;
   } catch {
     return null;
@@ -462,6 +466,7 @@ export async function loadProjects(): Promise<ProjectItem[]> {
           technologies: meta?.technologies,
           links: meta?.links,
           featured: meta?.featured,
+          imageUrl: meta?.image_url, // NEW
 
           badges: meta?.badges,
           autoInactiveThresholdDays: meta?.auto_inactive_threshold_days,

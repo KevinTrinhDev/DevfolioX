@@ -1,9 +1,10 @@
 // app/page.tsx
 import { Suspense } from "react";
 
-import { Navbar } from "../components/Navbar";
+import { NavbarCentered } from "../components/NavbarCentered";
 import { Footer } from "../components/Footer";
-import { HeroSection } from "../components/sections/Hero";
+
+import { HeroShowcaseSection } from "@/components/sections/HeroShowcaseSection";
 import { AboutSection } from "../components/sections/About";
 import { EducationSection } from "../components/sections/Education";
 import { ExperienceSection } from "../components/sections/Experience";
@@ -16,12 +17,12 @@ import { ContactSection } from "../components/sections/Contact";
 export default function Page() {
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <Navbar />
+      <NavbarCentered />
 
       {/* Any section that (directly or via hooks) uses useSearchParams/usePathname/useRouter
           should live inside a Suspense boundary. */}
       <Suspense fallback={null}>
-        <HeroSection />
+        <HeroShowcaseSection />
         <AboutSection />
         <EducationSection />
         <ExperienceSection />

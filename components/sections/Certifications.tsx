@@ -13,7 +13,7 @@ export function CertificationsSection() {
 
   return (
     <section id="certifications" className="py-16 scroll-mt-24">
-      <div className="mx-auto w-full max-w-5xl px-4">
+      <div className="mx-auto w-full max-w-6xl px-4">
         <div>
           <h2 className="text-lg font-semibold uppercase tracking-[0.2em] text-white/60">
             ~/Certifications
