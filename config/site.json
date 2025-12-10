@@ -91,11 +91,16 @@
 
   "nav": {
     "items": [
-      { "id": "about", "label": "About", "show": true, "isButton": false },
+      {
+        "id": "about",
+        "label": "About",
+        "show": true,
+        "isButton": false
+      },
       {
         "id": "education",
         "label": "Education",
-        "show": true,
+        "show": false,
         "isButton": false
       },
       {
@@ -104,20 +109,155 @@
         "show": true,
         "isButton": false
       },
+
       {
         "id": "projects",
         "label": "Projects",
+        "href": "#projects",
         "show": true,
+        "isButton": false,
+        "children": [
+          {
+            "id": "projects-list",
+            "label": "Projects Directory",
+            "href": "/projects",
+            "description": "Archived & current projects",
+            "icon": "Folder",
+            "column": "left"
+          },
+          {
+            "id": "open-source",
+            "label": "Open Source",
+            "href": "/open-source",
+            "description": "My contributions & collabs",
+            "icon": "GitBranch",
+            "column": "right"
+          },
+          {
+            "id": "projects-wiki",
+            "label": "Wiki & Docs",
+            "href": "/wiki",
+            "description": "Project info & documentation",
+            "icon": "BookOpen",
+            "column": "right"
+          },
+          {
+            "id": "case-studies",
+            "label": "Case Studies",
+            "href": "/case-studies",
+            "description": "The story behind each project",
+            "icon": "FileText",
+            "column": "right"
+          }
+        ]
+      },
+
+      {
+        "id": "blog",
+        "label": "Articles",
+        "show": true,
+        "isButton": false,
+        "children": [
+          {
+            "id": "blogs",
+            "label": "Blogs",
+            "href": "/blogs",
+            "description": "Thoughts & personal stories",
+            "icon": "FileText",
+            "column": "left"
+          },
+          {
+            "id": "guides",
+            "label": "Guides",
+            "href": "/guides",
+            "description": "Deep dives & tutorial articles",
+            "icon": "BookOpen",
+            "column": "right"
+          },
+          {
+            "id": "wiki",
+            "label": "Wiki & Docs",
+            "href": "/wiki",
+            "description": "Project info & documentation",
+            "icon": "BookOpen",
+            "column": "right"
+          }
+        ],
+        "dropdownFooter": {
+          "text": "Want more detail?",
+          "linkLabel": "Browse all articles",
+          "href": "/blogs"
+        }
+      },
+
+      {
+        "id": "youtube",
+        "label": "YouTube",
+        "show": false,
         "isButton": false
       },
-      { "id": "blog", "label": "Blogs", "show": false, "isButton": false },
-      { "id": "youtube", "label": "YouTube", "show": false, "isButton": false },
       {
         "id": "certifications",
         "label": "Certifications",
         "show": false,
         "isButton": false
       },
+
+      {
+        "id": "more",
+        "label": "More",
+        "href": "",
+        "show": true,
+        "isButton": false,
+        "children": [
+          {
+            "id": "who-i-am",
+            "label": "More About Me",
+            "href": "/about",
+            "description": "Who I am, my purpose & goals",
+            "icon": "User",
+            "column": "left"
+          },
+          {
+            "id": "stats",
+            "label": "Coding Stats",
+            "href": "/stats",
+            "description": "Data & statistics of my journey",
+            "icon": "BarChart2",
+            "column": "right"
+          },
+          {
+            "id": "gallery",
+            "label": "Gallery",
+            "href": "/gallery",
+            "description": "Photos & videos of my life",
+            "icon": "Image",
+            "column": "right"
+          },
+          {
+            "id": "socials",
+            "label": "Social Media",
+            "href": "/socials",
+            "description": "View all my social profiles",
+            "icon": "Globe",
+            "column": "right"
+          },
+          {
+            "id": "donate",
+            "label": "Support Me",
+            "href": "/donate",
+            "description": "Help fuel my projects & hobby",
+            "icon": "Heart",
+            "column": "right"
+          }
+        ],
+        "dropdownFooter": {
+          "text": "Looking for something else?",
+          "linkLabel": "Go to overview",
+          "href": "/about"
+        }
+      },
+
       {
         "id": "resume",
         "label": "My Resume",
@@ -132,10 +272,10 @@
   "sections": {
     "hero": true,
     "about": true,
-    "education": true,
+    "education": false,
     "experience": true,
     "projects": true,
-    "blog": false,
+    "blog": true,
     "youtube": false,
     "certifications": false,
     "contact": true,

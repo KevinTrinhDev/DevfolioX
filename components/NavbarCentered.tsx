@@ -4,17 +4,14 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig } from "../config/siteConfig";
+import {
+  siteConfig,
+  type NavItemCfg,
+  type NavDropdownItemCfg,
+  type NavDropdownFooterCfg,
+} from "../config/siteConfig";
 import { Menu, X } from "lucide-react";
-
-type NavItemCfg = {
-  id?: string; // e.g. "about", "projects", "resume", "contact"
-  href?: string; // override link (external or internal)
-  label?: string; // visible text
-  show?: boolean; // toggle visibility
-  isButton?: boolean; // render as button (legacy)
-  external?: boolean; // force new tab
-};
+import * as LucideIcons from "lucide-react";
 
 type NavItem = {
   key: string;
@@ -23,17 +20,19 @@ type NavItem = {
   href: string;
   external: boolean;
   isButton: boolean;
+  children?: NavDropdownItemCfg[];
+  dropdownFooter?: NavDropdownFooterCfg;
 };
 
 export function NavbarCentered() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // mobile menu
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); // desktop dropdown
 
   const navCfg = (siteConfig as any).nav as
     | { items?: NavItemCfg[] }
     | undefined;
 
   const visibleItems: NavItem[] = useMemo(() => {
-    // If nav.items provided, use it exactly (respect show/hide, labels, href, isButton)
     if (Array.isArray(navCfg?.items) && navCfg!.items.length > 0) {
       return navCfg!.items
         .filter((it) => it?.show !== false)
@@ -43,24 +42,26 @@ export function NavbarCentered() {
             it.label ??
             (id ? id.charAt(0).toUpperCase() + id.slice(1) : "Link");
 
-          // default href: anchor by id
-          const href = it.href ?? (id ? `#${id}` : "#");
+          const href =
+            typeof it.href === "string" ? it.href : id ? `#${id}` : "";
 
           const external = it.external ?? href.startsWith("http");
           const isButton = !!it.isButton;
 
           return {
-            key: id || href,
+            key: id || href || label,
             id,
             label,
             href,
             external,
             isButton,
+            children: it.children ?? [],
+            dropdownFooter: it.dropdownFooter,
           };
         });
     }
 
-    // Fallback to sections flags (legacy behavior)
+    // Fallback: legacy sections
     const defaults: { id: keyof typeof siteConfig.sections; label: string }[] =
       [
         { id: "about", label: "About" },
@@ -81,6 +82,8 @@ export function NavbarCentered() {
         href: `#${d.id}`,
         external: false,
         isButton: false,
+        children: [],
+        dropdownFooter: undefined,
       }));
 
     if (siteConfig.sections.resume) {
@@ -91,13 +94,15 @@ export function NavbarCentered() {
         href: "/resume",
         external: true,
         isButton: true,
+        children: [],
+        dropdownFooter: undefined,
       });
     }
 
     return items;
   }, [navCfg]);
 
-  // Try to detect Contact / Resume items from config
+  // Detect Contact / Resume
   const contactItem = visibleItems.find((i) => {
     const label = i.label.toLowerCase();
     return (
@@ -115,25 +120,29 @@ export function NavbarCentered() {
       i.href === "/resume"
   );
 
-  const contactLink = contactItem ?? {
+  const contactLink: NavItem = contactItem ?? {
     key: "contact",
     id: "contact",
     label: "Contact Me",
     href: "#contact",
     external: false,
     isButton: true,
+    children: [],
+    dropdownFooter: undefined,
   };
 
-  const resumeLink = resumeItem ?? {
+  const resumeLink: NavItem = resumeItem ?? {
     key: "resume",
     id: "resume",
     label: "My Resume",
     href: "/resume",
     external: true,
     isButton: true,
+    children: [],
+    dropdownFooter: undefined,
   };
 
-  // Center nav should only show "regular" links (no contact/resume/buttons)
+  // Center nav only shows regular links (no contact/resume/buttons)
   const textLinks = visibleItems.filter((i) => {
     if (i.isButton) return false;
     if (i.id === contactLink.id || i.id === resumeLink.id) return false;
@@ -144,7 +153,7 @@ export function NavbarCentered() {
     <header className="sticky top-0 z-20 border-b border-white/10 bg-background/80 backdrop-blur">
       <div className="mx-auto w-full max-w-6xl px-4">
         <div className="flex items-center gap-4 py-4">
-          {/* Left: logo + title (no subtitle) */}
+          {/* Left: logo + title */}
           <div className="flex flex-1 items-center">
             <Link
               href="/"
@@ -163,36 +172,94 @@ export function NavbarCentered() {
             </Link>
           </div>
 
-          {/* Center: nav items (desktop) with subtle pill background */}
-          <nav className="hidden flex-none items-center justify-center sm:flex">
-            <div className="flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs text-muted-foreground shadow-sm md:gap-2 md:px-3 md:py-1.5 md:text-sm">
-              {textLinks.map((item) =>
-                item.external ? (
-                  <a
-                    key={item.key}
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition hover:bg-white/10 hover:text-foreground md:px-3 md:py-1.5"
-                  >
-                    {item.label}
-                  </a>
-                ) : (
-                  <a
-                    key={item.key}
-                    href={item.href}
-                    className="rounded-md px-2.5 py-1 font-medium text-muted-foreground transition hover:bg-white/10 hover:text-foreground md:px-3 md:py-1.5"
-                  >
-                    {item.label}
-                  </a>
-                )
-              )}
+          {/* Center: desktop nav with mega dropdowns */}
+          <nav
+            className="hidden flex-none items-center justify-center sm:flex"
+            onMouseLeave={() => setOpenDropdownId(null)}
+          >
+            <div className="pointer-events-none relative flex items-center justify-center">
+              <div className="pointer-events-auto flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-1 text-xs text-muted-foreground shadow-sm md:gap-2 md:px-3 md:py-1.5 md:text-sm">
+                {textLinks.map((item) => {
+                  const hasDropdown = item.children && item.children.length > 0;
+                  const isOpen = openDropdownId === item.id;
+
+                  // No dropdown at all → also close any open dropdown on hover
+                  if (!hasDropdown) {
+                    return (
+                      <DesktopNavItemSimple
+                        key={item.key}
+                        item={item}
+                        onHover={() => setOpenDropdownId(null)}
+                      />
+                    );
+                  }
+
+                  // With dropdown + href (e.g. Projects)
+                  if (item.href) {
+                    return (
+                      <div key={item.key}>
+                        <Link
+                          href={item.href}
+                          onMouseEnter={() => setOpenDropdownId(item.id)}
+                          onFocus={() => setOpenDropdownId(item.id)}
+                          className="inline-flex items-center rounded-md px-2.5 py-1 font-medium text-muted-foreground transition hover:bg-white/10 hover:text-foreground md:px-3 md:py-1.5"
+                        >
+                          {item.label}
+                        </Link>
+
+                        {/* Centered dropdown, Solvia-style (anchored to outer relative container) */}
+                        <div
+                          onMouseEnter={() => setOpenDropdownId(item.id)}
+                          className={`absolute left-1/2 top-full z-30 mt-2 w-[min(800px,95vw)] -translate-x-1/2 origin-top rounded-2xl border border-white/15 bg-slate-950 p-4 text-xs shadow-2xl shadow-slate-950/60 transition-all duration-150 ease-out md:text-sm ${
+                            isOpen
+                              ? "pointer-events-auto translate-y-1 opacity-100"
+                              : "pointer-events-none translate-y-0 opacity-0"
+                          }`}
+                        >
+                          {renderMegaMenuFromChildren(
+                            item.children || [],
+                            item.dropdownFooter
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // With dropdown but NO href
+                  return (
+                    <div key={item.key}>
+                      <button
+                        type="button"
+                        onMouseEnter={() => setOpenDropdownId(item.id)}
+                        onFocus={() => setOpenDropdownId(item.id)}
+                        onClick={(e) => e.preventDefault()}
+                        className="inline-flex items-center rounded-md px-2.5 py-1 font-medium text-muted-foreground transition hover:bg-white/10 hover:text-foreground md:px-3 md:py-1.5"
+                      >
+                        {item.label}
+                      </button>
+
+                      <div
+                        onMouseEnter={() => setOpenDropdownId(item.id)}
+                        className={`absolute left-1/2 top-full z-30 mt-2 w-[min(850px,95vw)] -translate-x-1/2 origin-top rounded-2xl border border-white/15 bg-slate-950 p-4 text-xs shadow-2xl shadow-slate-950/60 transition-all duration-150 ease-out md:text-sm ${
+                          isOpen
+                            ? "pointer-events-auto translate-y-1 opacity-100"
+                            : "pointer-events-none translate-y-0 opacity-0"
+                        }`}
+                      >
+                        {renderMegaMenuFromChildren(
+                          item.children || [],
+                          item.dropdownFooter
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </nav>
 
           {/* Right: CTAs (desktop) */}
           <div className="hidden flex-1 items-center justify-end gap-2 sm:flex">
-            {/* Contact Me button - outline style, slightly rounder, same text styling */}
             <a
               href={contactLink.href}
               target={contactLink.external ? "_blank" : undefined}
@@ -202,7 +269,6 @@ export function NavbarCentered() {
               {contactLink.label}
             </a>
 
-            {/* Resume button - filled accent with light text + subtle hover animation, same font */}
             <a
               href={resumeLink.href}
               target={resumeLink.external ? "_blank" : undefined}
@@ -213,7 +279,7 @@ export function NavbarCentered() {
             </a>
           </div>
 
-          {/* Mobile toggle */}
+          {/* Mobile toggle (mobile nav stays simple for now) */}
           <button
             type="button"
             className="ml-auto inline-flex items-center justify-center rounded-md border border-white/15 p-1.5 text-muted-foreground hover:border-accent hover:text-foreground sm:hidden"
@@ -224,43 +290,48 @@ export function NavbarCentered() {
           </button>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu (unchanged, simple list + children) */}
         {isOpen && (
           <div className="pb-4 sm:hidden">
             <nav className="flex flex-col gap-1 text-sm text-muted-foreground">
-              {textLinks.map((item) => {
-                const base =
-                  "rounded-md px-3 py-2 font-medium transition hover:bg-white/5 hover:text-foreground";
-                if (item.external) {
-                  return (
-                    <a
-                      key={item.key}
-                      href={item.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => setIsOpen(false)}
-                      className={base}
-                    >
-                      {item.label}
-                    </a>
-                  );
-                }
-                return (
+              {textLinks.map((item) => (
+                <div key={item.key} className="flex flex-col">
                   <a
-                    key={item.key}
-                    href={item.href}
+                    href={item.href || undefined}
+                    target={item.external ? "_blank" : undefined}
+                    rel={item.external ? "noreferrer" : undefined}
                     onClick={() => setIsOpen(false)}
-                    className={base}
+                    className="rounded-md px-3 py-2 font-medium transition hover:bg:white/5 hover:text-foreground"
                   >
                     {item.label}
                   </a>
-                );
-              })}
 
-              {/* Divider-ish spacing */}
+                  {item.children && item.children.length > 0 && (
+                    <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l border-white/10 pl-3 text-xs text-muted-foreground">
+                      {item.children.map((child) => (
+                        <a
+                          key={child.id || child.href}
+                          href={child.href}
+                          target={child.external ? "_blank" : undefined}
+                          rel={child.external ? "noreferrer" : undefined}
+                          onClick={() => setIsOpen(false)}
+                          className="rounded-md px-2 py-1 font-medium transition hover:bg-white/5 hover:text-foreground"
+                        >
+                          <span className="block">{child.label}</span>
+                          {child.description && (
+                            <span className="block text-[0.7rem] text-muted-foreground/80">
+                              {child.description}
+                            </span>
+                          )}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
               <div className="mt-1 h-px bg-white/5" />
 
-              {/* Contact Me + Resume buttons in mobile menu */}
               <a
                 href={contactLink.href}
                 target={contactLink.external ? "_blank" : undefined}
@@ -285,5 +356,139 @@ export function NavbarCentered() {
         )}
       </div>
     </header>
+  );
+}
+
+function DesktopNavItemSimple({
+  item,
+  onHover,
+}: {
+  item: NavItem;
+  onHover?: () => void;
+}) {
+  const classes =
+    "rounded-md px-2.5 py-1 font-medium text-muted-foreground transition hover:bg-white/10 hover:text-foreground md:px-3 md:py-1.5";
+
+  // no href → do nothing on click (for safety)
+  if (!item.href) {
+    return (
+      <button
+        type="button"
+        className={classes}
+        onMouseEnter={onHover}
+        onClick={(e) => e.preventDefault()}
+      >
+        {item.label}
+      </button>
+    );
+  }
+
+  if (item.external) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noreferrer"
+        className={classes}
+        onMouseEnter={onHover}
+      >
+        {item.label}
+      </a>
+    );
+  }
+
+  return (
+    <a href={item.href} className={classes} onMouseEnter={onHover}>
+      {item.label}
+    </a>
+  );
+}
+
+function DesktopDropdownItem({ item }: { item: NavDropdownItemCfg }) {
+  const IconComponent =
+    item.icon && (LucideIcons as any)[item.icon]
+      ? (LucideIcons as any)[item.icon]
+      : null;
+
+  return (
+    <Link
+      href={item.href}
+      target={item.external ? "_blank" : undefined}
+      rel={item.external ? "noreferrer" : undefined}
+      className="group flex min-h[64px] items-center gap-3 rounded-lg px-2.5 py-2 text-left text-xs transition hover:bg-slate-900 md:text-sm"
+    >
+      {IconComponent && (
+        <div className="flex h-10 w-10 flex-none items-center justify-center rounded-md bg-slate-900 text-slate-100 transition-transform duration-150 group-hover:scale-110">
+          <IconComponent className="h-5 w-5" />
+        </div>
+      )}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-[0.8rem] font-semibold text-foreground md:text-sm">
+          {item.label}
+        </span>
+        {item.description && (
+          <span className="mt-0.5 line-clamp-2 text-[0.7rem] text-muted-foreground">
+            {item.description}
+          </span>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+/**
+ * Build a 3-column mega menu from flat children:
+ * - left column = children with column === "left"
+ * - right area = 2-column grid with the rest
+ * - optional footer (text + link) at bottom
+ */
+function renderMegaMenuFromChildren(
+  children: NavDropdownItemCfg[],
+  footer?: NavDropdownFooterCfg
+) {
+  if (!children || children.length === 0) return null;
+
+  const leftItems = children.filter((c) => c.column === "left");
+  const rightItems = children.filter((c) => c.column !== "left");
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Top: left (1/3) + right (2/3) */}
+      <div className="flex flex-col gap-3 md:flex-row">
+        {/* Left column */}
+        <div className="w-full md:w-1/3 md:border-r md:border-white/10 md:pr-4">
+          <div className="flex flex-col gap-2">
+            {leftItems.map((item) => (
+              <DesktopDropdownItem key={item.id || item.href} item={item} />
+            ))}
+          </div>
+        </div>
+
+        {/* Right: 2-column grid */}
+        <div className="w-full md:w-2/3 md:pl-4">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-2.5">
+            {rightItems.map((item) => (
+              <DesktopDropdownItem key={item.id || item.href} item={item} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer row (optional) */}
+      {footer && (
+        <div className="mt-1 flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">{footer.text}</span>
+          <a
+            href={footer.href}
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-indigo-400 hover:text-indigo-300"
+          >
+            {footer.linkLabel}
+          </a>
+        </div>
+      )}
+    </div>
   );
 }

@@ -14,7 +14,11 @@ import { YouTubeSection } from "../components/sections/YouTube";
 import { CertificationsSection } from "../components/sections/Certifications";
 import { ContactSection } from "../components/sections/Contact";
 
+import { siteConfig } from "@/config/siteConfig";
+
 export default function Page() {
+  const { sections } = siteConfig;
+
   return (
     <main className="min-h-screen bg-background text-foreground">
       <NavbarCentered />
@@ -22,18 +26,18 @@ export default function Page() {
       {/* Any section that (directly or via hooks) uses useSearchParams/usePathname/useRouter
           should live inside a Suspense boundary. */}
       <Suspense fallback={null}>
-        <HeroShowcaseSection />
-        <AboutSection />
-        <EducationSection />
-        <ExperienceSection />
-        <ProjectsSection />
+        {sections.hero && <HeroShowcaseSection />}
+        {sections.about && <AboutSection />}
+        {sections.education && <EducationSection />}
+        {sections.experience && <ExperienceSection />}
+        {sections.projects && <ProjectsSection />}
       </Suspense>
 
       {/* These sections don't use URL hooks, so they can render normally */}
-      <BlogSection />
-      <YouTubeSection />
-      <CertificationsSection />
-      <ContactSection />
+      {sections.blog && <BlogSection />}
+      {sections.youtube && <YouTubeSection />}
+      {sections.certifications && <CertificationsSection />}
+      {sections.contact && <ContactSection />}
 
       <Footer />
     </main>

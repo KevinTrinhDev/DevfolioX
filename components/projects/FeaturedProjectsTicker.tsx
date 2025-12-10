@@ -120,7 +120,7 @@ export function FeaturedProjectsTicker({
               <article
                 key={`${project.id}-${idx}`}
                 onClick={handleCardClick}
-                className="group relative flex h-[210px] w-[340px] flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 text-xs text-muted-foreground transition-colors duration-300 hover:border-accent/70 hover:bg-white/10 sm:h-[220px] sm:w-[420px] lg:h-[230px] lg:w-[460px]"
+                className="group relative flex h-[210px] w-[340px] flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-white/5 text-xs text-muted-foreground transition-colors duration-300 hover:border-accent/70 hover:bg-white/10 sm:h-[220px] sm:w-[420px] lg:h-[280px] lg:w-[460px]"
               >
                 {/* Background image (full card, no gaps, keeps aspect ratio) */}
                 {image ? (

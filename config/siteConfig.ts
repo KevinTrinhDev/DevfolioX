@@ -37,14 +37,33 @@ type ResumeDelivery = {
   cacheSeconds?: number;
 };
 
-// ----- NEW: nav types -----
+// ----- NEW: nav + dropdown types -----
+export type NavDropdownItemCfg = {
+  id?: string;
+  label: string;
+  href: string;
+  description?: string;
+  icon?: string; // lucide-react icon name, e.g. "User", "BookOpen"
+  external?: boolean;
+  // "left" = goes in first column; anything else (or undefined) = right side (columns 2–3)
+  column?: "left" | "right";
+};
+
+export type NavDropdownFooterCfg = {
+  text: string; // left bold text
+  linkLabel: string; // right clickable label
+  href: string; // link (opens in new tab)
+};
+
 export type NavItemCfg = {
   id?: string; // e.g., "about", "projects", "resume"
-  href?: string; // override link (external or internal)
+  href?: string; // override link (external or internal) — can be "" to disable click
   label?: string; // visible text
   show?: boolean; // toggle visibility
   isButton?: boolean; // render as button (e.g., Resume)
   external?: boolean; // force new tab
+  children?: NavDropdownItemCfg[]; // dropdown items
+  dropdownFooter?: NavDropdownFooterCfg; // optional footer for this dropdown
 };
 
 type NavConfig = {
