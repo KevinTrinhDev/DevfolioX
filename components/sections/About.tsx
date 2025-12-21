@@ -151,7 +151,7 @@ export function AboutSection() {
                 {a.displayName || siteConfig.name}
               </div>
 
-              <div className="mt-2 text-base font-medium text-slate-200 sm:text-[17px]">
+              <div className="mt-2 text-base font-normal text-slate-200 sm:text-[17px]">
                 {a.roleLine}
               </div>
             </div>
@@ -160,7 +160,7 @@ export function AboutSection() {
             <div className="grid grid-cols-1 gap-2">
               <Link
                 href={a.cta.primary.href}
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-indigo-500/90 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-transparent bg-accent px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-transform transition-colors duration-200 hover:border-accent hover:bg-accent/90 hover:shadow-md hover:-translate-y-0.5"
               >
                 {a.cta.primary.label}
                 <ExternalLink className="h-4 w-4" />

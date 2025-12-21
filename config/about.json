@@ -23,7 +23,6 @@
 
   "profileLinks": [
     { "type": "school", "label": "University of Houston" },
-    { "type": "location", "label": "Houston, TX" },
     {
       "type": "email",
       "label": "kevintrinh1227@gmail.com",

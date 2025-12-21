@@ -68,7 +68,7 @@ export function NavbarCentered() {
         { id: "education", label: "Education" },
         { id: "experience", label: "Experience" },
         { id: "projects", label: "Projects" },
-        { id: "blog", label: "Blogs" },
+        { id: "blog", label: "Articles" },
         { id: "youtube", label: "YouTube" },
         { id: "certifications", label: "Certifications" },
       ];

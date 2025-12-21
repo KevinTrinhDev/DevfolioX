@@ -16,7 +16,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ProjectItem } from "../../config/projects";
 import { Modal } from "../ui/Modal";
 import { ProjectCard } from "../projects/ProjectCard";
-import { FeaturedProjectsTicker } from "../projects/FeaturedProjectsTicker";
+import { FeaturedProjectsCarousel } from "../projects/FeaturedProjectsTicker";
 import { ProjectDetails } from "../projects/ProjectDetails";
 
 interface ProjectsSectionClientProps {
@@ -47,11 +47,12 @@ export function ProjectsSectionClient({
   const visibleProjects = showAll ? projects : projects.slice(0, 6);
   const showToggle = projects.length > 6;
 
-  // Use only featured projects for the ticker
-  const featuredTickerProjects = useMemo(
-    () => projects.filter((p) => p.featured),
-    [projects]
-  );
+  // Use featured projects for the carousel; fallback to first projects if none marked featured.
+  // Also cap to 8 to keep the carousel clean.
+  const featuredCarouselProjects = useMemo(() => {
+    const featured = projects.filter((p) => p.featured);
+    return (featured.length ? featured : projects).slice(0, 8);
+  }, [projects]);
 
   const openProject = (project: ProjectItem) => {
     const sp = new URLSearchParams(searchParams.toString());
@@ -99,11 +100,10 @@ export function ProjectsSectionClient({
         </h3>
       </div>
 
-      {/* Full-width featured projects ticker (sits outside the max-width container) */}
-      {/* Full-width featured projects ticker (breaks out of container padding) */}
-      {featuredTickerProjects.length > 0 && (
-        <div className="mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
-          <FeaturedProjectsTicker projects={featuredTickerProjects} />
+      {/* Featured projects carousel (kept aligned to section container like your other sections) */}
+      {featuredCarouselProjects.length > 0 && (
+        <div className="mx-auto mt-8 w-full max-w-6xl px-4">
+          <FeaturedProjectsCarousel projects={featuredCarouselProjects} />
         </div>
       )}
 
