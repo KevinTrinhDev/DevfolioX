@@ -152,16 +152,34 @@ function buildYearGrid(
   });
 
   const monthLabelByWeek: Record<number, string> = {};
+
+  const MIN_LABEL_GAP_WEEKS = 4; // same idea as rolling grid
+  let lastLabeledWeek = -9999;
+
   for (let m = 0; m < 12; m++) {
     const span = monthSpans[m];
     if (!span) continue;
 
     // "Second column" logic: shift one week to the right if possible.
     const second = span.minWeek + 1;
-    const labelWeek = second <= span.maxWeek ? second : span.maxWeek;
+    let labelWeek = second <= span.maxWeek ? second : span.maxWeek;
+
+    // Avoid overlap with prior label by shifting right within this month's span.
+    if (labelWeek - lastLabeledWeek < MIN_LABEL_GAP_WEEKS) {
+      let shifted = labelWeek;
+      while (
+        shifted - lastLabeledWeek < MIN_LABEL_GAP_WEEKS &&
+        shifted < span.maxWeek
+      ) {
+        shifted += 1;
+      }
+      if (shifted - lastLabeledWeek < MIN_LABEL_GAP_WEEKS) continue;
+      labelWeek = shifted;
+    }
 
     if (monthLabelByWeek[labelWeek] == null) {
       monthLabelByWeek[labelWeek] = MONTH_LABELS[m];
+      lastLabeledWeek = labelWeek;
     }
   }
 
@@ -297,6 +315,11 @@ function buildRollingGrid(
   }
   presentMonths.sort((a, b) => a.span.minWeek - b.span.minWeek);
 
+  // Prevent visual overlap: ensure month labels aren't placed too close together.
+  // (Each week column is only 12px wide, so "Dec" + "Jan" can collide if adjacent.)
+  const MIN_LABEL_GAP_WEEKS = 4; // tweak: 3 = more labels, 5 = fewer labels
+  let lastLabeledWeek = -9999;
+
   for (const { monthIndex: m, span } of presentMonths) {
     const isTrailing = m === trailingMonth;
     let labelWeek: number;
@@ -310,9 +333,26 @@ function buildRollingGrid(
       labelWeek = second <= span.maxWeek ? second : span.maxWeek;
     }
 
+    // If it's too close to the previous label, try shifting right within the same month span.
+    if (labelWeek - lastLabeledWeek < MIN_LABEL_GAP_WEEKS) {
+      let shifted = labelWeek;
+      while (
+        shifted - lastLabeledWeek < MIN_LABEL_GAP_WEEKS &&
+        shifted < span.maxWeek
+      ) {
+        shifted += 1;
+      }
+
+      // If we still can't get enough spacing, skip this label (prevents overlap).
+      if (shifted - lastLabeledWeek < MIN_LABEL_GAP_WEEKS) continue;
+
+      labelWeek = shifted;
+    }
+
     // If that week already has a label, keep the first one (do not overwrite).
     if (monthLabelByWeek[labelWeek] == null) {
       monthLabelByWeek[labelWeek] = MONTH_LABELS[m];
+      lastLabeledWeek = labelWeek;
     }
   }
 
@@ -404,7 +444,7 @@ export function ContributionGraphCard({
     }, [year, currentYear, rollingCurrentYear, now, dataByYear]);
 
   const cardClass =
-    "rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.6)] sm:px-6 sm:py-5";
+    "rounded-2xl border border-white/10 bg-white/5 px-2 py-2 text-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.6)] sm:px-4 sm:py-3";
 
   return (
     <section className={`mt-10 ${className ?? ""}`}>
@@ -419,7 +459,7 @@ export function ContributionGraphCard({
       <div className="mt-4 flex flex-col gap-4 md:flex-row md:items-stretch">
         {/* Graph card */}
         <div className={cardClass}>
-          <div className="rounded-xl p-3">
+          <div className="rounded-xl p-1.5 sm:p-2">
             {/* Scrollable graph on small screens */}
             <div className="overflow-x-auto pb-2">
               <div className="inline-block pt-1">
