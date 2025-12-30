@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileText, Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, History } from "lucide-react";
 import { experience } from "../../config/experience";
 import { Modal } from "@/components/ui/Modal";
 import PdfEmbed from "@/components/ui/PdfEmbed";
@@ -15,6 +15,9 @@ export function ExperienceSection() {
   const [activeId, setActiveId] = useState<string>(defaultActiveId);
   const activeItem =
     experience.find((item) => item.id === activeId) ?? experience[0];
+
+  // ✅ subtle "Apple-like" fade when switching roles
+  const [detailsKey, setDetailsKey] = useState(0);
 
   // Short flag-style URL: /current-path?resume
   const resumeModal = useModalRoute({
@@ -86,6 +89,29 @@ export function ExperienceSection() {
     ? `My Resume (Updated ${lastUpdatedText})`
     : "My Resume";
 
+  // ✅ Left menu typography (increased)
+  // ✅ Left menu typography (slightly reduced)
+  const roleCompanyClass = "text-lg font-semibold";
+
+  const roleMetaClass = "text-[15px]"; // was text-[14px]
+
+  // ✅ Details typography (slightly reduced)
+  const detailsTitleClass = "text-xl font-semibold sm:text-2xl";
+
+  const detailsMetaClass = "mt-1 text-[15px] sm:text-[16px]";
+
+  // ✅ Bullets/paragraphs: decreased slightly
+  const bulletClass = "mt-5 space-y-2 text-[15px] sm:text-[16px]";
+
+  // ✅ light-weight fade for details panel using key + CSS animation
+  const detailsFadeClass =
+    "animate-in fade-in-0 duration-200 ease-out motion-reduce:animate-none";
+
+  const handleSelect = (id: string) => {
+    setActiveId(id);
+    setDetailsKey((k) => k + 1);
+  };
+
   return (
     <section id="experience" className="py-16 scroll-mt-12">
       <div className="mx-auto w-full max-w-6xl px-4">
@@ -95,34 +121,22 @@ export function ExperienceSection() {
 
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="text-2xl font-semibold sm:text-3xl">
-            My current/past relevant experience.
+            Relevant work experience.
           </h3>
 
           {/* stacked on mobile, inline on sm+ */}
           <div className="grid grid-cols-1 gap-2 text-xs sm:flex sm:flex-wrap sm:gap-3 sm:text-sm">
-            <a
-              href={resumeModal.href}
-              onClick={(e) => {
-                e.preventDefault();
-                resumeModal.open();
-              }}
-              className={btnAccent}
-              title={`Open ${resumeModal.href}`}
-            >
-              <FileText className="h-4 w-4" />
-              <span>View Resume</span>
-            </a>
-
-            <a href={resumeDownloadHref} className={btnBase}>
-              <Download className="h-4 w-4" />
-              <span>Download PDF</span>
+            {/* All Experience (dedicated page) */}
+            <a href="/experience" className={btnBase}>
+              <History className="h-4 w-4" />
+              <span>All Experience</span>
             </a>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-start">
-          {/* Left: roles list */}
-          <div className="w-full border-b border-white/10 pb-4 md:w-60 md:border-b-0 md:pb-0 md:pr-4">
+          {/* Left: roles list (wider) */}
+          <div className="w-full border-b border-white/10 pb-4 md:w-72 md:border-b-0 md:pb-0 md:pr-6">
             <ul className="space-y-1">
               {experience.map((item) => {
                 const isActive = item.id === activeItem.id;
@@ -130,30 +144,32 @@ export function ExperienceSection() {
                   <li key={item.id}>
                     <button
                       type="button"
-                      onClick={() => setActiveId(item.id)}
+                      onClick={() => handleSelect(item.id)}
                       className={[
-                        "group w-full rounded-md px-3 py-2.5 text-left transition-colors hover:bg-white/5",
+                        "group w-full rounded-md px-3 py-3 text-left transition-colors hover:bg-white/5",
                         isActive ? "bg-white/5" : "",
                       ].join(" ")}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <div className="flex-1">
                           <p
                             className={
                               isActive
-                                ? "text-base font-semibold text-indigo-300"
-                                : "text-base font-semibold text-foreground group-hover:text-accent/60"
+                                ? `${roleCompanyClass} text-indigo-300`
+                                : `${roleCompanyClass} text-foreground group-hover:text-accent/60`
                             }
                           >
                             {item.company}
                           </p>
-                          <p className="text-[13px] text-muted-foreground">
+                          <p
+                            className={`${roleMetaClass} text-muted-foreground`}
+                          >
                             {item.role}
                           </p>
                         </div>
 
                         <div
-                          className={`h-10 w-[2px] rounded-full transition-all duration-200 ${
+                          className={`h-12 w-[2px] rounded-full transition-all duration-200 ${
                             isActive
                               ? "bg-accent"
                               : "bg-transparent group-hover:bg-accent/40"
@@ -177,56 +193,55 @@ export function ExperienceSection() {
               md:border-t-0
               md:border-l
               md:border-white/10
-              md:pl-4
+              md:pl-6
               md:pt-0
             "
           >
-            <div className="flex flex-col justify-between gap-2 sm:flex-row">
-              <div>
-                <h4 className="text-lg font-semibold text-foreground sm:text-xl">
-                  {activeItem.role} @ {activeItem.company}
-                </h4>
+            <div key={detailsKey} className={detailsFadeClass}>
+              <div className="flex flex-col justify-between gap-2 sm:flex-row">
+                <div>
+                  <h4 className={`${detailsTitleClass} text-foreground`}>
+                    {activeItem.role} @ {activeItem.company}
+                  </h4>
 
-                <p className="mt-1 text-[15px] text-muted-foreground">
-                  {/* CHANGE: hyphen "-" instead of en dash "—" */}
-                  {activeItem.start} - {activeItem.end}
-                  {activeItem.location && ` · ${activeItem.location}`}
-                  {activeItem.type && ` · ${capitalize(activeItem.type)}`}
-                </p>
+                  {/* ✅ Removed city/location + removed job type */}
+                  <p className={`${detailsMetaClass} text-muted-foreground`}>
+                    {activeItem.start} - {activeItem.end}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {activeItem.description?.length > 0 && (
-              <ul className="mt-4 space-y-2 text-[15px] text-muted-foreground">
-                {activeItem.description.map((line, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-2 leading-relaxed"
-                  >
-                    {/* CHANGE: triangle bullet uses darker purple (your old vibe) */}
-                    <span
-                      className="
-                        mt-[6px]
-                        inline-block
-                        h-0
-                        w-0
-                        border-y-[4px]
-                        border-y-transparent
-                        border-l-[7px]
-                        border-l-accent
-                      "
-                      aria-hidden="true"
-                    />
-                    <span>{line}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+              {activeItem.description?.length > 0 && (
+                <ul className={bulletClass}>
+                  {activeItem.description.map((line, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-start gap-2 leading-relaxed"
+                    >
+                      <span
+                        className="
+                          mt-[7px]
+                          inline-block
+                          h-0
+                          w-0
+                          border-y-[4px]
+                          border-y-transparent
+                          border-l-[7px]
+                          border-l-accent
+                        "
+                        aria-hidden="true"
+                      />
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </article>
         </div>
       </div>
 
-      {/* Resume Modal */}
+      {/* Resume Modal (still supported via URL flag) */}
       <Modal open={resumeOpen} onClose={resumeModal.close} title={modalTitle}>
         <PdfEmbed src={resumeViewHref} />
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
@@ -237,19 +252,15 @@ export function ExperienceSection() {
             className={btnBase}
           >
             <ExternalLink className="h-4 w-4" />
-            <span>Open in New Tab</span>
+            <span>New Tab</span>
           </a>
+
           <a href={resumeDownloadHref} className={btnAccent}>
             <Download className="h-4 w-4" />
-            <span>Download PDF</span>
+            <span>Download</span>
           </a>
         </div>
       </Modal>
     </section>
   );
-}
-
-function capitalize(s?: string) {
-  if (!s) return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }

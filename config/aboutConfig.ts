@@ -25,7 +25,7 @@ export type AboutSnapshotStat = {
 
 export type AboutSnapshotCard = {
   title: string;
-  // ✅ make optional so your current JSON is valid
+  // ✅ optional (your current JSON cards don't have it)
   value?: string;
   description?: string;
   icon: string;
@@ -61,7 +61,7 @@ export type AboutConfig = {
     cards: AboutSnapshotCard[];
   };
 
-  // ✅ NEW optional dedicated About page content (home AboutSection unaffected)
+  // ✅ NEW optional dedicated About page content (doesn't affect home AboutSection)
   aboutPage?: {
     hero?: {
       headline?: string;

@@ -1,14 +1,12 @@
 // app/page.tsx
 import { Suspense } from "react";
 
-import { Footer } from "../components/Footer";
-
 import { HeroShowcaseSection } from "@/components/sections/HeroShowcaseSection";
 import { AboutSection } from "../components/sections/About";
 import { EducationSection } from "../components/sections/Education";
 import { ExperienceSection } from "../components/sections/Experience";
 import { ProjectsSection } from "../components/sections/Projects";
-import { BlogSection } from "../components/sections/Articles";
+import { ArticleSection } from "../components/sections/Articles";
 import { YouTubeSection } from "../components/sections/YouTube";
 import { CertificationsSection } from "../components/sections/Certifications";
 import { ContactSection } from "../components/sections/Contact";
@@ -31,12 +29,10 @@ export default function Page() {
       </Suspense>
 
       {/* These sections don't use URL hooks, so they can render normally */}
-      {sections.blog && <BlogSection />}
+      {sections.articles && <ArticleSection />}
       {sections.youtube && <YouTubeSection />}
       {sections.certifications && <CertificationsSection />}
       {sections.contact && <ContactSection />}
-
-      <Footer />
     </main>
   );
 }

@@ -1,29 +1,40 @@
-// config/blog.ts
+// config/articles.ts
 import raw from "./articles.json";
 
-export type BlogPlatform = "devto" | "medium";
-
-export type BlogPost = {
+export type Article = {
   id: string;
+  slug: string;
   title: string;
   summary?: string;
-  url: string;
-  platform: BlogPlatform;
+
+  /** Prefer ISO (YYYY-MM-DD) */
   date?: string;
+
+  /** Example: "6 min" or "6 min read" */
   readTime?: string;
+
+  category?: string;
   tags?: string[];
   featured?: boolean;
+
+  /** Optional cover */
+  imageSrc?: string;
+  imageAlt?: string;
+
+  /** Optional override if you ever want custom routes */
+  href?: string;
+
+  /** Optional external URL (if ever needed) */
+  url?: string;
 };
 
-// Optional: light runtime guard to keep platform values honest
-function normalize(items: any[]): BlogPost[] {
-  return (items || []).filter(Boolean).map((it) => {
-    const platform =
-      it.platform === "devto" || it.platform === "medium"
-        ? it.platform
-        : "devto"; // default/fallback
-    return { ...it, platform } as BlogPost;
+function sortByDateDesc(items: Article[]) {
+  return [...items].sort((a, b) => {
+    const ad = a.date ? new Date(a.date).getTime() : 0;
+    const bd = b.date ? new Date(b.date).getTime() : 0;
+    return bd - ad;
   });
 }
 
-export const blogPosts: BlogPost[] = normalize(raw as any[]);
+// Export name kept as `blogPosts` so your existing imports don’t break.
+export const blogPosts: Article[] = sortByDateDesc(raw as Article[]);

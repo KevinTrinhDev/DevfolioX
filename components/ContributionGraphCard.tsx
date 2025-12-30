@@ -153,7 +153,7 @@ function buildYearGrid(
 
   const monthLabelByWeek: Record<number, string> = {};
 
-  const MIN_LABEL_GAP_WEEKS = 4; // same idea as rolling grid
+  const MIN_LABEL_GAP_WEEKS = 4;
   let lastLabeledWeek = -9999;
 
   for (let m = 0; m < 12; m++) {
@@ -195,9 +195,8 @@ function buildYearGrid(
 /**
  * Rolling grid: last ~365 days ending at `endDate`.
  *
- * - Only one label per month name (e.g. only one "Dec").
- * - Labels sit roughly over the "second column" of that month.
- * - Special case: trailing current month with < 14 in-range days → label at earliest week for that month name.
+ * Fix: month labels are computed by year-month (YYYY-MM), not just month name,
+ * so labels remain chronologically ordered (no "Dec" after "Jan").
  */
 function buildRollingGrid(
   endDate: Date,
@@ -265,70 +264,65 @@ function buildRollingGrid(
     }
   }
 
-  // Month spans by *name* (0–11) across the entire rolling window.
-  // This ensures only one label per month name (e.g. only one "Dec").
+  // Month spans by *year-month* across the rolling window.
+  // This fixes out-of-order labels (e.g. "Dec" after "Jan") when the 365-day window
+  // contains two Decembers across a year boundary.
   type MonthSpan = {
+    year: number;
+    month: number; // 0–11
     minWeek: number;
     maxWeek: number;
-    totalInRange: number; // all in-range days for that month name (across years)
-    thisYearCount: number; // in-range days in the trailing year-month (same year as `end`)
+    inRangeDays: number;
   };
 
-  const monthSpans: Array<MonthSpan | undefined> = new Array(12).fill(
-    undefined
-  );
-  const endYear = end.getFullYear();
-  const trailingMonth = end.getMonth();
+  const spans = new Map<number, MonthSpan>(); // key = year * 12 + month
+  const trailingKey = end.getFullYear() * 12 + end.getMonth();
 
   cells.forEach((cell, idx) => {
     if (!cell.inRange) return;
+
+    const y = cell.date.getFullYear();
     const m = cell.date.getMonth();
     const weekIndex = Math.floor(idx / 7);
+    const key = y * 12 + m;
 
-    let span = monthSpans[m];
-    if (!span) {
-      span = {
+    const existing = spans.get(key);
+    if (!existing) {
+      spans.set(key, {
+        year: y,
+        month: m,
         minWeek: weekIndex,
         maxWeek: weekIndex,
-        totalInRange: 0,
-        thisYearCount: 0,
-      };
-      monthSpans[m] = span;
+        inRangeDays: 1,
+      });
     } else {
-      if (weekIndex < span.minWeek) span.minWeek = weekIndex;
-      if (weekIndex > span.maxWeek) span.maxWeek = weekIndex;
-    }
-
-    span.totalInRange += 1;
-    if (cell.date.getFullYear() === endYear) {
-      span.thisYearCount += 1;
+      existing.inRangeDays += 1;
+      if (weekIndex < existing.minWeek) existing.minWeek = weekIndex;
+      if (weekIndex > existing.maxWeek) existing.maxWeek = weekIndex;
     }
   });
 
   const monthLabelByWeek: Record<number, string> = {};
 
-  // Collect present months and sort by minWeek so labels appear left→right.
-  const presentMonths: { monthIndex: number; span: MonthSpan }[] = [];
-  for (let m = 0; m < 12; m++) {
-    const span = monthSpans[m];
-    if (span) presentMonths.push({ monthIndex: m, span });
-  }
-  presentMonths.sort((a, b) => a.span.minWeek - b.span.minWeek);
+  // Sort spans by their left edge so labels always appear left → right correctly.
+  const presentSpans = Array.from(spans.entries())
+    .map(([key, span]) => ({ key, span }))
+    .sort((a, b) => a.span.minWeek - b.span.minWeek);
 
   // Prevent visual overlap: ensure month labels aren't placed too close together.
-  // (Each week column is only 12px wide, so "Dec" + "Jan" can collide if adjacent.)
-  const MIN_LABEL_GAP_WEEKS = 4; // tweak: 3 = more labels, 5 = fewer labels
+  const MIN_LABEL_GAP_WEEKS = 4;
   let lastLabeledWeek = -9999;
 
-  for (const { monthIndex: m, span } of presentMonths) {
-    const isTrailing = m === trailingMonth;
-    let labelWeek: number;
+  for (const { key, span } of presentSpans) {
+    const isTrailing = key === trailingKey;
 
-    if (isTrailing && span.thisYearCount > 0 && span.thisYearCount < 14) {
-      // Special: current month has < 14 in-range days → label at earliest week
+    // Placement rule:
+    // - trailing month with < 14 in-range days → earliest week
+    // - otherwise "second column" if possible
+    let labelWeek: number;
+    if (isTrailing && span.inRangeDays > 0 && span.inRangeDays < 14) {
       labelWeek = span.minWeek;
     } else {
-      // Normal: "second column" for that month (or the only column if it’s just one).
       const second = span.minWeek + 1;
       labelWeek = second <= span.maxWeek ? second : span.maxWeek;
     }
@@ -351,7 +345,7 @@ function buildRollingGrid(
 
     // If that week already has a label, keep the first one (do not overwrite).
     if (monthLabelByWeek[labelWeek] == null) {
-      monthLabelByWeek[labelWeek] = MONTH_LABELS[m];
+      monthLabelByWeek[labelWeek] = MONTH_LABELS[span.month];
       lastLabeledWeek = labelWeek;
     }
   }
@@ -374,7 +368,7 @@ export function ContributionGraphCard({
   const currentYear = now.getFullYear();
 
   const [year, setYear] = useState(currentYear);
-  const [rollingCurrentYear, setRollingCurrentYear] = useState(true); // default: rolling view for current year
+  const [rollingCurrentYear, setRollingCurrentYear] = useState(true);
 
   const years = [
     currentYear,
@@ -412,6 +406,7 @@ export function ContributionGraphCard({
         const json = await res.json();
         const days: ContributionDay[] = json.days ?? [];
         if (!cancelled) {
+          setError(null);
           setDataByYear((prev) => ({ ...prev, [year]: days }));
         }
       } catch (err) {
@@ -432,16 +427,13 @@ export function ContributionGraphCard({
     };
   }, [year, username, dataByYear]);
 
-  const { cells, weekCount, monthLabelByWeek, approxTotal, summaryLabel } =
-    useMemo(() => {
-      const days = dataByYear[year];
-      const useRolling = rollingCurrentYear && year === currentYear;
+  const { cells, weekCount, monthLabelByWeek, summaryLabel } = useMemo(() => {
+    const days = dataByYear[year];
+    const useRolling = rollingCurrentYear && year === currentYear;
 
-      if (useRolling) {
-        return buildRollingGrid(now, days);
-      }
-      return buildYearGrid(year, days);
-    }, [year, currentYear, rollingCurrentYear, now, dataByYear]);
+    if (useRolling) return buildRollingGrid(now, days);
+    return buildYearGrid(year, days);
+  }, [year, currentYear, rollingCurrentYear, now, dataByYear]);
 
   const cardClass =
     "rounded-2xl border border-white/10 bg-white/5 px-2 py-2 text-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.6)] sm:px-4 sm:py-3";
@@ -503,7 +495,7 @@ export function ContributionGraphCard({
 
                         // In-range cells: 0-level still visible (old "less" color)
                         const level = cell.level;
-                        let color = "bg-slate-800"; // no contributions but visible
+                        let color = "bg-slate-800";
                         if (level === 1) color = "bg-indigo-950";
                         if (level === 2) color = "bg-indigo-900";
                         if (level === 3) color = "bg-indigo-700";
@@ -563,11 +555,11 @@ export function ContributionGraphCard({
                       setRollingCurrentYear((prev) => !prev);
                     } else {
                       setYear(currentYear);
-                      setRollingCurrentYear(true); // default to rolling when switching back
+                      setRollingCurrentYear(true);
                     }
                   } else {
                     setYear(y);
-                    setRollingCurrentYear(false); // historical years always Jan–Dec
+                    setRollingCurrentYear(false);
                   }
                 }}
                 className={`flex-1 rounded-md border px-2 py-2 text-center font-medium transition-colors ${

@@ -1,126 +1,368 @@
-// components/sections/Blog.tsx
-import { ExternalLink } from "lucide-react";
-import { blogPosts } from "../../config/articles";
-import { siteConfig } from "../../config/siteConfig";
+// components/sections/Articles.tsx
+"use client";
 
-export function BlogSection() {
-  if (!blogPosts.length) return null;
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo } from "react";
+import {
+  SquareArrowOutUpRight,
+  BookOpenText,
+  PenLine,
+  NotebookPen,
+  FileText,
+  CalendarDays,
+  Clock3,
+} from "lucide-react";
 
-  const featured = blogPosts.find((post) => post.featured) ?? blogPosts[0];
-  const recentList = blogPosts.filter((post) => post.id !== featured.id);
-  const recent = recentList[0] ?? featured;
+// ✅ FIX: your config likely exports blogPosts; alias it to "articles"
+import { blogPosts as articles } from "../../config/articles";
 
-  const devtoUrl = siteConfig.socials?.devto;
-  const mediumUrl = siteConfig.socials?.medium;
+/**
+ * Articles Section (homepage)
+ * - Always shows: 1 featured + 2 latest
+ * - CTA links to /articles
+ */
+export function ArticleSection() {
+  if (!articles?.length) return null;
+
+  // Ensure "latest first" ordering (best-effort by date, fallback to original order)
+  const ordered = useMemo(() => {
+    const list = [...articles];
+    list.sort((a: any, b: any) => {
+      const da = a?.date ? new Date(a.date).getTime() : 0;
+      const db = b?.date ? new Date(b.date).getTime() : 0;
+
+      const aValid = Number.isFinite(da) && da > 0;
+      const bValid = Number.isFinite(db) && db > 0;
+
+      if (aValid && bValid) return db - da; // newest first
+      if (aValid && !bValid) return -1;
+      if (!aValid && bValid) return 1;
+      return 0;
+    });
+    return list;
+  }, []);
+
+  const featured = ordered.find((post: any) => post.featured) ?? ordered[0];
+  const latestTwo = ordered
+    .filter((p: any) => p.id !== featured.id)
+    .slice(0, 2);
 
   return (
-    <section id="blog" className="py-16 scroll-mt-12">
+    <section id="articles" className="py-16 scroll-mt-12">
       <div className="mx-auto w-full max-w-6xl px-4">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          ~/Blogs
-        </h2>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              ~/Articles
+            </h2>
+            <h3 className="mt-3 text-2xl font-semibold sm:text-3xl">
+              Writing, deep dives, and dev notes.
+            </h3>
+          </div>
 
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h3 className="text-2xl font-semibold sm:text-3xl">
-            My blog posts, articles, and dev notes.
-          </h3>
-
-          <div className="flex flex-wrap gap-2 text-xs sm:text-sm">
-            {devtoUrl && (
-              <a
-                href={devtoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-accent/90 sm:text-sm"
+          {/* ✅ Moved CTA here (replaces dropdown entirely) */}
+          <div className="w-full sm:w-auto">
+            <div className="mt-1 flex sm:justify-end">
+              <Link
+                href="/articles"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 transition-colors duration-200 hover:border-white/25 hover:bg-white/10 hover:text-white sm:w-auto"
               >
-                <span>View my writing</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-            {mediumUrl && (
-              <a
-                href={mediumUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-md border border-white/20 px-3 py-1.5 text-xs font-medium text-white/85 transition hover:border-accent hover:bg-white/10 sm:text-sm"
-              >
-                <span>View Medium profile</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
+                View articles
+                <SquareArrowOutUpRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <ArticleCard label="Featured article" post={featured} />
-          <ArticleCard label="Recent article" post={recent} />
+        {/* Default view only: 1 featured + 2 latest */}
+        <div className="mt-8 grid gap-4 lg:grid-cols-2 lg:items-stretch">
+          <ArticleCard
+            post={featured as Article}
+            variant="featured"
+            wrapperClassName="h-full"
+          />
+
+          <div className="flex h-full flex-col gap-4">
+            {latestTwo[0] && (
+              <ArticleCard
+                post={latestTwo[0] as Article}
+                variant="stack"
+                wrapperClassName="flex-1"
+              />
+            )}
+            {latestTwo[1] && (
+              <ArticleCard
+                post={latestTwo[1] as Article}
+                variant="stack"
+                wrapperClassName="flex-1"
+              />
+            )}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-type BlogPost = (typeof blogPosts)[number];
-type Platform = "devto" | "medium";
+// Optional alias (in case you later prefer plural naming in imports)
+export const ArticlesSection = ArticleSection;
 
-function ArticleCard({ label, post }: { label: string; post: BlogPost }) {
+type Article = (typeof articles)[number];
+type Variant = "featured" | "stack";
+
+/* ---------- Cards ---------- */
+
+function ArticleCard({
+  post,
+  variant,
+  wrapperClassName = "",
+}: {
+  post: Article;
+  variant: Variant;
+  wrapperClassName?: string;
+}) {
+  const href = getPostHref(post);
+  const isExternal = /^https?:\/\//i.test(href);
+
+  const CardInner =
+    variant === "featured" ? (
+      <FeaturedCardInner post={post} />
+    ) : (
+      <StackCardInner post={post} />
+    );
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={`block ${wrapperClassName}`}
+      >
+        {CardInner}
+      </a>
+    );
+  }
+
   return (
-    <article className="flex flex-col rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-muted-foreground sm:p-5 sm:text-base">
-      <p className="text-xs font-semibold uppercase tracking-wide text-accent sm:text-sm">
-        {label}
-      </p>
+    <Link href={href} className={`block ${wrapperClassName}`}>
+      {CardInner}
+    </Link>
+  );
+}
 
-      <h4 className="mt-2 text-lg font-semibold text-foreground sm:text-xl">
-        {post.title}
-      </h4>
+function FeaturedCardInner({ post }: { post: Article }) {
+  const summaryMobile = post.summary ? truncateText(post.summary, 170) : "";
+  const summaryDesktop = post.summary ? truncateText(post.summary, 220) : "";
 
-      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground sm:text-xs">
-        <PlatformBadge platform={post.platform} />
-        {post.date && <span>{post.date}</span>}
-        {post.date && post.readTime && <span>·</span>}
-        {post.readTime && <span>{post.readTime}</span>}
+  const date = post.date?.trim() ? formatMonthDayYear(post.date) : "";
+  const readTime = post.readTime?.trim()
+    ? normalizeReadTime(post.readTime)
+    : "";
+
+  return (
+    <article className="group relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5 text-sm text-muted-foreground shadow-sm sm:min-h-[470px] sm:text-base">
+      <div className="relative flex-[3] overflow-hidden px-3 pb-1 pt-3">
+        <div className="relative h-full w-full overflow-hidden rounded-md border border-white/10 bg-white/5">
+          {post.imageSrc ? (
+            <Image
+              src={post.imageSrc}
+              alt={post.imageAlt || post.title}
+              fill
+              priority
+              sizes="(min-width: 1024px) 520px, 100vw"
+              className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.05]"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-white/5">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
+            </div>
+          )}
+        </div>
       </div>
 
-      {post.summary && (
-        <p className="mt-3 text-xs text-muted-foreground sm:text-sm">
-          {post.summary}
-        </p>
-      )}
+      <div className="flex min-h-0 flex-[2] flex-col px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-3">
+        {post.category ? (
+          <div className="mt-2 flex items-center">
+            <CategoryBadge category={post.category} />
+          </div>
+        ) : null}
 
-      {post.tags && post.tags.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-muted-foreground sm:text-xs"
-            >
-              {tag}
+        <h4 className="mt-2 min-w-0 text-[15px] font-semibold leading-snug text-foreground sm:text-base">
+          <span className="block min-w-0 break-words line-clamp-2">
+            <span className="bg-[length:0%_2px] bg-left-bottom bg-no-repeat bg-gradient-to-r from-white/70 to-white/70 transition-[background-size] duration-300 ease-out group-hover:bg-[length:100%_2px]">
+              {post.title}
             </span>
-          ))}
-        </div>
-      )}
+          </span>
+        </h4>
 
-      <div className="mt-4">
-        <a
-          href={post.url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-accent/90 sm:text-sm"
-        >
-          <span>Read article</span>
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
+        {summaryMobile && (
+          <>
+            <p className="mt-3 text-xs text-muted-foreground sm:hidden">
+              {summaryMobile}
+            </p>
+            <p className="mt-3 hidden text-xs text-muted-foreground sm:block sm:text-sm">
+              {summaryDesktop}
+            </p>
+          </>
+        )}
+
+        {(date || readTime) && (
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-[13px] font-medium text-white/90">
+            {date ? (
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarDays
+                  className="h-4 w-4 text-white/70"
+                  aria-hidden="true"
+                />
+                <span>{date}</span>
+              </span>
+            ) : null}
+            {readTime ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Clock3 className="h-4 w-4 text-white/70" aria-hidden="true" />
+                <span>{readTime}</span>
+              </span>
+            ) : null}
+          </div>
+        )}
       </div>
     </article>
   );
 }
 
-function PlatformBadge({ platform }: { platform: Platform }) {
-  const label = platform === "devto" ? "Dev.to" : "Medium";
+function StackCardInner({ post }: { post: Article }) {
+  const summaryMobile = post.summary ? truncateText(post.summary, 140) : "";
+  const summaryDesktop = post.summary ? truncateText(post.summary, 180) : "";
+
+  const date = post.date?.trim() ? formatMonthDayYear(post.date) : "";
+  const readTime = post.readTime?.trim()
+    ? normalizeReadTime(post.readTime)
+    : "";
 
   return (
-    <span className="rounded-full border border-white/15 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/70 sm:text-[11px]">
-      {label}
+    <article
+      className={[
+        "group relative flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-muted-foreground shadow-sm",
+        "sm:justify-center sm:p-5 sm:text-base",
+        // ✅ subtle hover bg/border/shadow like ProjectCard (very light)
+        "transition-colors transition-shadow duration-200 ease-out",
+        "hover:bg-white/[0.07] hover:border-white/15 hover:shadow-sm",
+      ].join(" ")}
+    >
+      <div className="sm:hidden">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md border border-white/10 bg-white/5">
+          {post.imageSrc ? (
+            <Image
+              src={post.imageSrc}
+              alt={post.imageAlt || post.title}
+              fill
+              sizes="100vw"
+              className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-white/5" />
+          )}
+        </div>
+      </div>
+
+      {post.category ? (
+        <div className="mt-3 flex items-center sm:mt-0">
+          <CategoryBadge category={post.category} />
+        </div>
+      ) : null}
+
+      <h4 className="mt-2 min-w-0 text-[15px] font-semibold leading-snug text-foreground sm:text-base">
+        <span className="block min-w-0 break-words line-clamp-2">
+          <span className="bg-[length:0%_2px] bg-left-bottom bg-no-repeat bg-gradient-to-r from-white/70 to-white/70 transition-[background-size] duration-300 ease-out group-hover:bg-[length:100%_2px]">
+            {post.title}
+          </span>
+        </span>
+      </h4>
+
+      {summaryMobile && (
+        <>
+          <p className="mt-3 text-xs text-muted-foreground sm:hidden">
+            {summaryMobile}
+          </p>
+          <p className="mt-3 hidden text-xs text-muted-foreground sm:block sm:text-sm">
+            {summaryDesktop}
+          </p>
+        </>
+      )}
+
+      {(date || readTime) && (
+        <div className="mt-2 flex flex-wrap items-center gap-3 text-[13px] font-medium text-white/90">
+          {date ? (
+            <span className="inline-flex items-center gap-1.5">
+              <CalendarDays
+                className="h-4 w-4 text-white/70"
+                aria-hidden="true"
+              />
+              <span>{date}</span>
+            </span>
+          ) : null}
+          {readTime ? (
+            <span className="inline-flex items-center gap-1.5">
+              <Clock3 className="h-4 w-4 text-white/70" aria-hidden="true" />
+              <span>{readTime}</span>
+            </span>
+          ) : null}
+        </div>
+      )}
+    </article>
+  );
+}
+
+/* ---------- Helpers ---------- */
+
+function CategoryBadge({ category }: { category: string }) {
+  const key = category.toLowerCase().trim();
+
+  const Icon = key.includes("deep")
+    ? BookOpenText
+    : key.includes("guide")
+    ? PenLine
+    : key.includes("wiki")
+    ? NotebookPen
+    : FileText;
+
+  return (
+    <span className="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-white/75">
+      <Icon className="h-4 w-4 text-white/65" aria-hidden="true" />
+      <span className="leading-none">{category}</span>
     </span>
   );
+}
+
+function getPostHref(post: Article): string {
+  const p = post as any;
+  if (p.href && String(p.href).length > 0) return String(p.href);
+  if (p.slug && String(p.slug).length > 0) return `/articles/${String(p.slug)}`;
+  if (p.url && String(p.url).length > 0) return String(p.url);
+  return "/articles";
+}
+
+function formatMonthDayYear(input: string): string {
+  const d = new Date(input);
+  if (Number.isNaN(d.getTime())) return input;
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(d);
+}
+
+function normalizeReadTime(input: string): string {
+  const trimmed = input.trim();
+  if (/read$/i.test(trimmed)) return trimmed;
+  return `${trimmed} read`;
+}
+
+function truncateText(text: string, maxChars: number): string {
+  const clean = text.trim();
+  if (clean.length <= maxChars) return clean;
+  return clean.slice(0, Math.max(0, maxChars - 1)).trimEnd() + "…";
 }

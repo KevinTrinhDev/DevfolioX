@@ -9,7 +9,7 @@ import {
   FileText,
   Download,
   PlayCircle,
-  Pin,
+  Star,
   ChevronDown,
   ChevronUp,
   ChevronLeft,
@@ -110,16 +110,6 @@ function getDateRange(project: ProjectItem): string | null {
 
 type ContentStage = "in" | "out";
 
-/**
- * Crossfade carousel:
- * - Desktop: CONTENT LEFT (40%), Image RIGHT (60%) crossfade stack
- * - Indicators live at the BOTTOM of the LEFT column
- * - Controls:
- *    - Bottom-right of IMAGE (prev/next)
- * - Pinned label:
- *    - Top-right of IMAGE
- * - Auto-advance every 4s; dots are clickable
- */
 export function FeaturedProjectsCarousel({
   projects,
 }: FeaturedProjectsTickerProps) {
@@ -283,11 +273,9 @@ export function FeaturedProjectsCarousel({
 
   if (!total) return null;
 
-  // Content-driven slide (can lag slightly during content transition)
   const current = slides[contentIndex] ?? null;
   if (!current) return null;
 
-  // Image-driven slide (always matches the visible image)
   const activeSlide = slides[activeIndex] ?? current;
 
   const blurb = getBlurb(current);
@@ -308,7 +296,6 @@ export function FeaturedProjectsCarousel({
     openHref(primaryHref);
   };
 
-  // Indicators reflect ACTIVE (image) slide
   const indicatorIndex = activeIndex;
 
   // Tiny counter bump animation
@@ -320,12 +307,18 @@ export function FeaturedProjectsCarousel({
     return () => window.clearTimeout(t);
   }, [indicatorIndex, total]);
 
-  // Button styling to match content section (bg-white/5 + outline)
   const navBtnClass =
     "inline-flex items-center justify-center rounded-md border border-white/15 bg-white/5 p-2 text-slate-50/90 shadow-sm backdrop-blur-md transition-all duration-200 hover:bg-white/10 hover:border-white/25 hover:scale-[1.06] active:scale-[0.99]";
 
+  // ✅ Smaller action buttons (text + padding + icons)
+  const actionBtnClass =
+    "inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-transparent px-2 py-1 text-[11px] font-medium text-slate-200/80 transition-all duration-200 hover:border-accent/45 hover:bg-white/5 hover:text-slate-50 sm:px-2.5 sm:py-1.5 sm:text-[12px]";
+
+  // ✅ Smaller description text
+  const descTextClass =
+    "text-[13px] leading-6 text-slate-200/80 sm:text-[14px] sm:leading-6";
+
   return (
-    // ✅ Hide entire section on mobile; show only on md+
     <div
       className="hidden md:block w-full"
       onMouseEnter={() => setPaused(true)}
@@ -333,7 +326,6 @@ export function FeaturedProjectsCarousel({
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      {/* FRAME */}
       <div
         className="group relative overflow-hidden rounded-2xl border border-white/10 bg-transparent"
         onTouchStart={onTouchStart}
@@ -341,8 +333,8 @@ export function FeaturedProjectsCarousel({
         onTouchEnd={onTouchEnd}
         aria-label="Featured projects carousel"
       >
-        <article className="grid w-full grid-cols-1 md:grid-cols-[2fr_3fr] md:h-[420px]">
-          {/* IMAGE (desktop: right) */}
+        <article className="grid w-full grid-cols-1 md:grid-cols-[2fr_3fr] md:h-[370px]">
+          {/* IMAGE */}
           <div
             className={[
               "relative overflow-hidden md:order-2 group/image",
@@ -360,14 +352,15 @@ export function FeaturedProjectsCarousel({
             }}
           >
             <div className="relative h-[260px] w-full sm:h-[320px] md:h-full">
-              {/* TOP-RIGHT: pinned label + fraction */}
+              {/* TOP-RIGHT: Featured label + fraction */}
               <div className="pointer-events-none absolute right-5 top-5 z-30 hidden items-center gap-1 text-xs font-semibold text-slate-200/85 md:inline-flex">
-                <Pin
+                <Star
                   className="h-[18px] w-[18px] opacity-90"
                   strokeWidth={2.2}
+                  fill="currentColor"
                 />
                 <span className="uppercase tracking-[0.18em]">
-                  Pinned Project
+                  Featured Project
                 </span>
 
                 <span
@@ -437,7 +430,6 @@ export function FeaturedProjectsCarousel({
                           alt={project.name}
                           className={[
                             "absolute inset-0 h-full w-full object-cover object-center",
-                            // ✅ hover: subtle dark + blur so label pops more
                             "transition-all duration-300 ease-out",
                             "group-hover/image:brightness-[0.82] group-hover/image:blur-[1.5px]",
                           ].join(" ")}
@@ -457,7 +449,6 @@ export function FeaturedProjectsCarousel({
                 })}
               </div>
 
-              {/* Hover dark overlay to boost contrast (also only on hover) */}
               <div
                 className={[
                   "pointer-events-none absolute inset-0",
@@ -467,9 +458,7 @@ export function FeaturedProjectsCarousel({
                 ].join(" ")}
               />
 
-              {/* STABLE overlays ABOVE the stack */}
               <div className="pointer-events-none absolute inset-0">
-                {/* Desktop hover label (only image hover) */}
                 <div className="absolute inset-0 hidden items-center justify-center md:flex">
                   <div
                     className={[
@@ -487,7 +476,6 @@ export function FeaturedProjectsCarousel({
                   </div>
                 </div>
 
-                {/* Desktop bottom-right date (for ACTIVE slide only) */}
                 {(() => {
                   const dateRange = getDateRange(activeSlide);
                   if (!dateRange) return null;
@@ -503,11 +491,9 @@ export function FeaturedProjectsCarousel({
             </div>
           </div>
 
-          {/* CONTENT (desktop: left) */}
+          {/* CONTENT */}
           <div className="relative bg-white/5 md:order-1 md:h-full">
-            {/* Grid keeps content perfectly centered, indicators pinned to bottom */}
             <div className="grid h-full grid-rows-[1fr_auto]">
-              {/* Centered content (x + y) */}
               <div className="flex items-center justify-center px-5 py-10 sm:px-7 md:px-8">
                 <div
                   className={[
@@ -522,14 +508,16 @@ export function FeaturedProjectsCarousel({
                     {current.name}
                   </h4>
 
-                  {/* DESCRIPTION */}
                   <div className="mt-3">
-                    {/* Desktop */}
-                    <p className="hidden text-[15px] leading-7 text-slate-200/90 sm:text-base md:block line-clamp-5">
+                    <p
+                      className={[
+                        "hidden md:block line-clamp-5",
+                        descTextClass,
+                      ].join(" ")}
+                    >
                       {blurb}
                     </p>
 
-                    {/* Mobile (toggle only) */}
                     <div className="md:hidden">
                       {!mobileDescOpen ? (
                         <button
@@ -543,7 +531,7 @@ export function FeaturedProjectsCarousel({
                         </button>
                       ) : (
                         <>
-                          <p className="mt-2 text-[15px] leading-7 text-slate-200/90">
+                          <p className={["mt-2", descTextClass].join(" ")}>
                             {blurb}
                           </p>
                           <button
@@ -560,23 +548,21 @@ export function FeaturedProjectsCarousel({
                     </div>
                   </div>
 
-                  {/* Tools (bold) */}
+                  {/* Tools: comma-separated, not bold, light purple */}
                   {tools.length ? (
-                    <p className="mt-4 text-center text-xs font-bold text-muted-foreground">
-                      {tools.join(" • ")}
+                    <p className="mt-4 text-center text-xs font-medium text-indigo-200/80">
+                      {tools.join(", ")}
                     </p>
                   ) : null}
 
-                  {/* Quick buttons */}
                   <div className="mt-5 flex flex-wrap justify-center gap-2">
-                    {/* View Project ALWAYS FIRST (based on content slide) */}
                     {primaryForContent?.href ? (
                       <button
                         type="button"
                         onClick={() => openHref(primaryForContent.href)}
-                        className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-transparent px-2.5 py-1.5 text-[13px] font-medium text-slate-50/90 transition-all duration-200 hover:border-accent/45 hover:bg-white/5 hover:text-slate-50 sm:px-3 sm:py-2 sm:text-sm"
+                        className={actionBtnClass}
                       >
-                        <FolderGit2 className="h-4 w-4 opacity-90" />
+                        <FolderGit2 className="h-3.5 w-3.5 opacity-90" />
                         <span className="truncate">View Project</span>
                       </button>
                     ) : null}
@@ -588,9 +574,9 @@ export function FeaturedProjectsCarousel({
                           key={`${current.id}-${l.type}-${l.href}`}
                           type="button"
                           onClick={() => openHref(l.href)}
-                          className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-transparent px-2.5 py-1.5 text-[13px] font-medium text-slate-50/90 transition-all duration-200 hover:border-accent/45 hover:bg-white/5 hover:text-slate-50 sm:px-3 sm:py-2 sm:text-sm"
+                          className={actionBtnClass}
                         >
-                          <Ico className="h-4 w-4 opacity-90" />
+                          <Ico className="h-3.5 w-3.5 opacity-90" />
                           <span className="truncate">
                             {l.label ||
                               (l.type === "live"
@@ -612,7 +598,7 @@ export function FeaturedProjectsCarousel({
                 </div>
               </div>
 
-              {/* INDICATORS: bottom of LEFT column (same place, less rounded) */}
+              {/* INDICATORS: reduced corner radius */}
               {total > 1 ? (
                 <div className="pointer-events-auto pb-4">
                   <div className="flex w-full items-center justify-center">
@@ -630,8 +616,10 @@ export function FeaturedProjectsCarousel({
                           >
                             <span
                               className={[
-                                "h-[5px] rounded-sm transition-all duration-300",
-                                isActive ? "w-9 bg-accent" : "w-6 bg-white/20",
+                                "h-[5px] rounded-[1px] transition-all duration-300",
+                                isActive
+                                  ? "w-14 bg-accent"
+                                  : "w-10 bg-white/20",
                                 isActive
                                   ? "group-hover:bg-accent"
                                   : "group-hover:bg-white/30",
@@ -654,5 +642,4 @@ export function FeaturedProjectsCarousel({
   );
 }
 
-// Back-compat export so existing imports won’t break
 export const FeaturedProjectsTicker = FeaturedProjectsCarousel;

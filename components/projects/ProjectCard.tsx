@@ -1,125 +1,151 @@
 // components/projects/ProjectCard.tsx
+"use client";
+
 import type { ReactNode } from "react";
-import { Info, Star, GitFork, Download } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { FolderGit2, Star, GitFork, Download } from "lucide-react";
 import type { ProjectItem, ProjectLink } from "../../config/projects";
-import { getDisplayDates } from "./projectHelpers";
 
 interface ProjectCardProps {
   project: ProjectItem;
-  onOpenDetails: (project: ProjectItem) => void;
+  onOpenDetails: (project: ProjectItem) => void; // kept for back-compat with existing callers
   iconFor: (type?: string) => ReactNode;
 }
 
-export function ProjectCard({
-  project,
-  onOpenDetails,
-  iconFor,
-}: ProjectCardProps) {
+export function ProjectCard({ project, iconFor }: ProjectCardProps) {
+  const router = useRouter();
+
   const hasStats =
     project.githubStars !== undefined ||
     project.githubForks !== undefined ||
     project.downloads !== undefined;
 
-  const { startLabel, endLabel } = getDisplayDates(project);
+  // Dedicated project page route (best-effort)
+  const projectHref =
+    (project as any).href ||
+    ((project as any).slug
+      ? `/projects/${String((project as any).slug)}`
+      : "") ||
+    `/projects/${project.id}`;
+
+  const goToProject = () => router.push(projectHref);
+
+  const onCardKeyDown: React.KeyboardEventHandler<HTMLElement> = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      goToProject();
+    }
+  };
+
+  // Only show the first description item (or fallback to summary)
+  const firstDesc = project.description?.length
+    ? project.description[0]
+    : project.summary ?? "";
+
+  // slightly smaller action buttons
+  const actionBtnClass =
+    "inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-transparent px-2.5 py-1 text-[11px] text-muted-foreground transition-colors hover:border-accent hover:text-foreground";
 
   return (
-    <article className="group flex h-full flex-col rounded-lg border border-white/10 bg-white/5 p-4 text-sm transition-transform transition-colors transition-shadow hover:-translate-y-[2px] hover:border-accent/70 hover:bg-white/10 hover:shadow-md">
-      <div className="flex items-start justify-between gap-2">
-        <h4 className="text-lg font-semibold text-foreground">
-          {project.name}
-        </h4>
-
-        <button
-          type="button"
-          onClick={() => onOpenDetails(project)}
-          className="inline-flex h-7 w-7 items-center justify-center text-slate-400 transition group-hover:text-slate-50/90 hover:scale-105 hover:text-accent"
-          aria-label={`Open details for ${project.name}`}
-          title={`View details for ${project.name}`}
+    <article
+      role="link"
+      tabIndex={0}
+      onClick={goToProject}
+      onKeyDown={onCardKeyDown}
+      className={[
+        "group flex h-full flex-col rounded-lg border border-white/10 bg-white/5 p-4",
+        "cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+        "transition-colors transition-shadow transition-transform duration-200 ease-out",
+        "hover:bg-white/[0.07] hover:border-white/15 hover:shadow-sm hover:-translate-y-[1px]",
+      ].join(" ")}
+      aria-label={`Open ${project.name} project page`}
+    >
+      {/* TOP ROW: icon left, stats right (if any) */}
+      <div className="flex items-center justify-between gap-3">
+        <span
+          className="inline-flex items-center justify-center text-indigo-300/95"
+          aria-hidden="true"
+          title="Project"
         >
-          <Info className="h-4 w-4" />
-        </button>
-      </div>
+          {/* ✅ slightly bigger icon */}
+          <FolderGit2 className="h-8 w-8" />
+        </span>
 
-      <div className="mt-2 h-px w-full bg-white/10" />
-
-      <div className="mt-3 flex-1 space-y-2">
-        {(startLabel || endLabel) && (
-          <p className="text-[11px] text-muted-foreground">
-            {startLabel} {endLabel ? `- ${endLabel}` : ""}
-          </p>
-        )}
-
-        <div className="space-y-2 text-sm text-muted-foreground">
-          {project.description?.length ? (
-            project.description.map((para, idx) => <p key={idx}>{para}</p>)
-          ) : project.summary ? (
-            <p>{project.summary}</p>
-          ) : null}
-        </div>
-
-        {project.technologies?.length ? (
-          <div className="mt-2 flex flex-wrap items-center justify-start text-[13px]">
-            {project.technologies.map((tech, idx) => (
-              <span key={tech} className="inline-flex items-center">
-                <span className="font-semibold text-muted-foreground underline-offset-4 decoration-white/15 hover:underline hover:decoration-accent/70">
-                  {tech}
-                </span>
-
-                {idx !== project.technologies.length - 1 ? (
-                  <span className="mx-2 text-slate-500/80">•</span>
-                ) : null}
+        {hasStats ? (
+          <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
+            {project.githubStars !== undefined && (
+              <span className="inline-flex items-center gap-1">
+                <Star className="h-4 w-4" />
+                <span>{project.githubStars}</span>
               </span>
-            ))}
+            )}
+            {project.githubForks !== undefined && (
+              <span className="inline-flex items-center gap-1">
+                <GitFork className="h-4 w-4" />
+                <span>{project.githubForks}</span>
+              </span>
+            )}
+            {project.downloads !== undefined && (
+              <span className="inline-flex items-center gap-1">
+                <Download className="h-4 w-4" />
+                <span>{project.downloads}</span>
+              </span>
+            )}
           </div>
         ) : null}
       </div>
 
-      {(project.links?.length || hasStats) && (
-        <div className="mt-2 h-px w-full bg-white/10" />
-      )}
+      {/* Title + underline on hover */}
+      <h4 className="mt-4 text-lg font-semibold text-foreground">
+        <span
+          className={[
+            "bg-[length:0%_2px] bg-left-bottom bg-no-repeat",
+            "bg-gradient-to-r from-white/70 to-white/70",
+            "transition-[background-size] duration-300 ease-out",
+            "group-hover:bg-[length:100%_2px]",
+          ].join(" ")}
+        >
+          {project.name}
+        </span>
+      </h4>
 
+      {/* Body */}
+      <div className="mt-3 flex-1">
+        {firstDesc ? (
+          <p className="text-[15px] leading-7 text-muted-foreground">
+            {firstDesc}
+          </p>
+        ) : null}
+
+        <div className="mt-6" />
+
+        {project.technologies?.length ? (
+          <p className="text-[14px] text-muted-foreground">
+            {project.technologies.join(", ")}
+          </p>
+        ) : null}
+      </div>
+
+      {/* FOOTER: action buttons forced to bottom */}
       {project.links?.length ? (
-        <div className="mt-2 flex flex-wrap justify-center gap-2 text-xs sm:text-sm">
-          {project.links.map((link: ProjectLink) => (
-            <a
-              key={`${project.id}-${link.label}`}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-transparent px-3 py-1.5 text-[11px] text-muted-foreground transition-colors hover:border-accent hover:text-foreground sm:text-xs"
-            >
-              {iconFor(link.type)}
-              <span>{link.label}</span>
-            </a>
-          ))}
+        <div className="mt-auto pt-4">
+          <div className="flex flex-wrap justify-start gap-2">
+            {project.links.map((link: ProjectLink) => (
+              <a
+                key={`${project.id}-${link.label}-${link.href}`}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className={actionBtnClass}
+              >
+                {iconFor(link.type)}
+                <span>{link.label}</span>
+              </a>
+            ))}
+          </div>
         </div>
       ) : null}
-
-      {hasStats && (
-        <div className="mt-3 flex flex-wrap justify-center gap-3 text-[11px] text-muted-foreground transition-colors duration-500 ease-out group-hover:text-white/90">
-          {project.githubStars !== undefined && (
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5" />
-              <span>{project.githubStars}</span>
-              <span>Stars</span>
-            </span>
-          )}
-          {project.githubForks !== undefined && (
-            <span className="inline-flex items-center gap-1">
-              <GitFork className="h-3.5 w-3.5" />
-              <span>{project.githubForks}</span>
-              <span>Forks</span>
-            </span>
-          )}
-          {project.downloads !== undefined && (
-            <span className="inline-flex items-center gap-1">
-              <Download className="h-3.5 w-3.5" />
-              <span>{project.downloads}</span>
-              <span>Downloads</span>
-            </span>
-          )}
-        </div>
-      )}
     </article>
   );
 }

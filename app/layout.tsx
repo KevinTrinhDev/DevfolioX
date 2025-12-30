@@ -1,10 +1,13 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
+
 import { siteConfig } from "../config/siteConfig";
 import { Analytics } from "@vercel/analytics/next";
 
 import { NavbarCentered } from "../components/NavbarCenteredDesktop";
 import NavbarCenteredMobile from "../components/NavbarCenteredMobile";
+import { Footer } from "../components/Footer";
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} – ${siteConfig.title}`,
@@ -33,9 +36,15 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Analytics />
+
+        {/* Global nav */}
         <NavbarCenteredMobile />
         <NavbarCentered />
+
         {children}
+
+        {/* Global footer */}
+        <Footer />
       </body>
     </html>
   );

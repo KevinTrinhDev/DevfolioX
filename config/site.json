@@ -146,7 +146,7 @@
         "children": [
           {
             "id": "who-i-am",
-            "label": "About Me",
+            "label": "About",
             "href": "/about",
             "description": "Who I am, my purpose & goals",
             "icon": "User",
@@ -217,10 +217,10 @@
     "education": false,
     "experience": true,
     "projects": true,
-    "blog": false,
+    "articles": true,
     "youtube": false,
     "certifications": false,
-    "contact": true,
+    "contact": false,
     "resume": true
   },
 

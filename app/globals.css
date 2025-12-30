@@ -12,7 +12,8 @@
 }
 
 html {
-  scroll-padding-top: 84px; /* desktop-ish navbar height */
+  /* Keep this so hash targets don’t hide under sticky nav */
+  scroll-padding-top: 84px;
 }
 
 /* Mobile navbar is usually a bit taller */
@@ -97,18 +98,6 @@ textarea {
   animation: tooltip-in 0.15s ease-out forwards;
 }
 
-/* Smooth fade-in for loaded content */
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
@@ -139,12 +128,6 @@ textarea {
   }
   100% {
     transform: translateX(100%);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
   }
 }
 
