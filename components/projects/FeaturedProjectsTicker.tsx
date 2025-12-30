@@ -430,8 +430,9 @@ export function FeaturedProjectsCarousel({
                           alt={project.name}
                           className={[
                             "absolute inset-0 h-full w-full object-cover object-center",
-                            "transition-all duration-300 ease-out",
-                            "group-hover/image:brightness-[0.82] group-hover/image:blur-[1.5px]",
+                            // ✅ zoom only
+                            "transition-transform duration-500 ease-out will-change-transform",
+                            "group-hover/image:scale-[1.04]",
                           ].join(" ")}
                           loading={isActive ? "eager" : "lazy"}
                         />
@@ -439,8 +440,9 @@ export function FeaturedProjectsCarousel({
                         <div
                           className={[
                             "absolute inset-0 bg-gradient-to-br from-indigo-500/35 via-violet-500/20 to-sky-500/20",
-                            "transition-all duration-300 ease-out",
-                            "group-hover/image:brightness-[0.82] group-hover/image:blur-[1.5px]",
+                            // ✅ zoom only (simulate)
+                            "transition-transform duration-500 ease-out will-change-transform",
+                            "group-hover/image:scale-[1.04]",
                           ].join(" ")}
                         />
                       )}
@@ -449,33 +451,10 @@ export function FeaturedProjectsCarousel({
                 })}
               </div>
 
-              <div
-                className={[
-                  "pointer-events-none absolute inset-0",
-                  "opacity-0 transition-opacity duration-300 ease-out",
-                  "group-hover/image:opacity-100",
-                  "bg-slate-950/20",
-                ].join(" ")}
-              />
+              {/* ✅ removed hover overlay + removed hover “View Project” reveal */}
 
+              {/* Keep dateRange label (no hover dependency) */}
               <div className="pointer-events-none absolute inset-0">
-                <div className="absolute inset-0 hidden items-center justify-center md:flex">
-                  <div
-                    className={[
-                      "inline-flex items-center gap-2",
-                      "px-3 py-2 rounded-lg",
-                      "bg-slate-950/24 backdrop-blur-[2px]",
-                      "opacity-0 translate-y-1 transition-all duration-300 ease-out",
-                      "group-hover/image:opacity-100 group-hover/image:translate-y-0",
-                    ].join(" ")}
-                  >
-                    <span className="text-lg font-semibold text-slate-50 drop-shadow-[0_12px_26px_rgba(0,0,0,0.92)] group-hover/image:underline">
-                      View Project
-                    </span>
-                    <ExternalLink className="h-5 w-5 text-slate-50/95 drop-shadow-[0_12px_26px_rgba(0,0,0,0.92)]" />
-                  </div>
-                </div>
-
                 {(() => {
                   const dateRange = getDateRange(activeSlide);
                   if (!dateRange) return null;

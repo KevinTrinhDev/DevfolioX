@@ -98,6 +98,12 @@ export function NavbarCentered() {
     setOpenDropdownKey(key);
   };
 
+  // ✅ prevent any pending timer from firing after unmount
+  useEffect(() => {
+    return () => cancelCloseDesktop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /**
    * ✅ New behavior (NO smooth scroll):
    * - From NOT-home -> go to HOME at TOP first, then jump to section.
@@ -221,7 +227,8 @@ export function NavbarCentered() {
     return () => window.removeEventListener("mousedown", onDown);
   }, [openDropdownKey]);
 
-  const headerBg = scrolled ? "bg-background/92" : "bg-transparent";
+  // ✅ slightly darker when scrolled
+  const headerBg = scrolled ? "bg-background/96" : "bg-transparent";
   const headerBlur = scrolled
     ? "backdrop-blur supports-[backdrop-filter]:backdrop-blur"
     : "";
@@ -300,7 +307,8 @@ export function NavbarCentered() {
                   "pointer-events-auto flex items-center gap-1 rounded-2xl border px-2 py-1 text-xs md:gap-2 md:px-3 md:py-1.5 md:text-sm",
                   scrolled
                     ? "border-white/15 bg-white/5 text-muted-foreground shadow-sm transition-[background-color,border-color,box-shadow,color] duration-300 ease-out"
-                    : "border-white/20 bg-transparent text-slate-200/90 shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-[background-color,border-color,box-shadow,color] duration-300 ease-out",
+                    : // ✅ not transparent at all (still subtle + minimal)
+                      "border-white/20 bg-slate-950 text-slate-200/90 shadow-[0_0_0_1px_rgba(255,255,255,0.06)] transition-[background-color,border-color,box-shadow,color] duration-300 ease-out",
                 ].join(" ")}
               >
                 {textLinks.map((item) => {
