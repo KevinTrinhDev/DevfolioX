@@ -131,24 +131,6 @@ All integrations degrade gracefully: if you don’t configure something, the rel
 
 ---
 
-## 📚 Core Sections
-
-- **Hero** – Quick intro with your name, role, short value statement, and primary call-to-action buttons (e.g. “View Projects”, “Contact”, “Resume”) plus key social icons.
-- **About** – Short bio, what you work on, and a compact skills/tech stack snapshot.
-- **Education** – Schools, degrees, dates, locations, and optional coursework/activities.
-- **Experience** – Internships and jobs with role, company, dates, and impact-focused bullets.
-- **Achievements & Certifications** – Certifications, awards, scholarships, and competitions with tags and optional proof links.
-- **Research & Publications** – Optional section for research projects, posters, talks, and papers with links to PDFs, slides, or code.
-- **Open Source Contributions** – Highlights external repos you’ve contributed to, with links to PRs/issues.
-- **Projects** – Your own repos, configured via hidden README metadata (or config), with titles, descriptions, tools, buttons, GitHub stats, and an optional detailed modal using the README content.
-- **Blog / Writing** – Recent posts from platforms like Dev.to / Medium so your writing stays in sync without manual copying.
-- **YouTube** – Featured video and/or recent uploads to surface tutorials, devlogs, or project walkthroughs.
-- **Coding Stats** – Optional lightweight metrics (e.g. GitHub activity or problem-solving stats) for a quick activity snapshot.
-- **Contact** – Focused contact form with multi-channel notifications, plus direct profile/contact links.
-- **Resume & CV Viewer** – Inline PDF viewer for your resume/CV with “last updated” metadata and a download button.
-
----
-
 ## 🧩 Configuration & Setup
 
 DevfolioX is **config-driven**. Most customization is done by editing small config files instead of React components.
