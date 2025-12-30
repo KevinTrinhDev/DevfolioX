@@ -53,44 +53,6 @@
         "label": "Articles",
         "href": "/articles",
         "show": true
-      },
-
-      {
-        "id": "more",
-        "label": "More",
-        "href": "",
-        "show": true,
-        "children": [
-          {
-            "id": "who-i-am",
-            "label": "About",
-            "href": "/about",
-            "description": "Who I am, my purpose & goals",
-            "icon": "User",
-            "column": "left"
-          },
-          {
-            "id": "contact",
-            "label": "Contact",
-            "href": "/contact",
-            "description": "Connect with me directly",
-            "icon": "BarChart2",
-            "column": "right"
-          },
-          {
-            "id": "stats",
-            "label": "Live Statistics",
-            "href": "/stats",
-            "description": "Developer data metrics & insights",
-            "icon": "BarChart2",
-            "column": "right"
-          }
-        ],
-        "dropdownFooter": {
-          "text": "Want to help support my work?",
-          "linkLabel": "Donate to my Sponsor page",
-          "href": "/support"
-        }
       }
     ]
   },
