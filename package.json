@@ -6,11 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup": "node scripts/setup.js",
+    "validate-env": "node scripts/validate-env.js",
+    "prebuild": "node scripts/validate-env.js"
   },
   "dependencies": {
     "@notionhq/client": "^5.4.0",
     "@vercel/analytics": "^1.5.0",
+    "fuse.js": "^7.0.0",
+    "gray-matter": "^4.0.3",
     "lucide-react": "^0.552.0",
     "marked": "^17.0.0",
     "next": "16.0.7",
@@ -24,8 +29,10 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "resend": "^6.4.2",
+    "rss-parser": "^3.13.0",
     "sanitize-html": "^2.17.0",
-    "unified": "^11.0.5"
+    "unified": "^11.0.5",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",

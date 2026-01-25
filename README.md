@@ -47,102 +47,349 @@
 -->
 <div align="center">
 
-# 👨‍💻 DevfolioX
+# DevfolioX
 
-A minimal, user-friendly, responsive dev/personal portfolio template that integrates with numerous platforms and offers tons of useful functionality. Minimal, powerful, and professional, all on a single page. Built with **Next.js** and **Tailwind CSS**.
+A minimal, config-driven developer portfolio template built with **Next.js 16**, **React 19**, and **Tailwind CSS**.
 
-<!--
-[![Downloads](https://img.shields.io/github/downloads/KevinTrinh1227/devfoliox/total?style=for-the-badge&logo=github)](#)
-[![Stars](https://img.shields.io/github/stars/KevinTrinh1227/devfoliox?style=for-the-badge&logo=github)](#)
-[![Forks](https://img.shields.io/github/forks/KevinTrinh1227/devfoliox?style=for-the-badge&logo=github)](#)
-[![Latest Release](https://img.shields.io/github/v/release/KevinTrinh1227/devfoliox?style=for-the-badge&logo=github)](#) -->
+**Live Demo: [devfoliox.vercel.app](https://devfoliox.vercel.app)**
 
-<strong>Live Demo: <a target="_blank" href="https://devfoliox.vercel.app">devfoliox.vercel.app</a></strong>
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/KevinTrinh1227/DevfolioX)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/KevinTrinh1227/DevfolioX)
 
-<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_1.png" alt="DevfolioX screenshot 1" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_1.png" alt="DevfolioX screenshot" />
 
 <details>
-  <summary><strong>VIEW MORE SCREEN SHOTS HERE</strong></summary>
-  <p align="center">
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_2.png" alt="DevfolioX screenshot 2" />
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_3.png" alt="DevfolioX screenshot 3" />
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_4.png" alt="DevfolioX screenshot 4" />
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_5.png" alt="DevfolioX screenshot 5" />
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_6.png" alt="DevfolioX screenshot 6" />
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_7.png" alt="DevfolioX screenshot 7" />
-  <img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_8.png" alt="DevfolioX screenshot 8" />
-  </p>
+<summary><strong>More Screenshots</strong></summary>
+<p align="center">
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_2.png" alt="DevfolioX screenshot 2" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_3.png" alt="DevfolioX screenshot 3" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_4.png" alt="DevfolioX screenshot 4" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_5.png" alt="DevfolioX screenshot 5" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_6.png" alt="DevfolioX screenshot 6" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_7.png" alt="DevfolioX screenshot 7" />
+<img src="https://raw.githubusercontent.com/KevinTrinh1227/devfoliox/main/public/images/demo_8.png" alt="DevfolioX screenshot 8" />
+</p>
 </details>
+
 </div>
 
 ---
 
-<p align="center"><strong>Table of Contents</strong></p>
-<p align="center">
-  <a href="#-about-devfoliox">About</a> •
-  <a href="#-features--integrations">Features</a> •
-  <a href="#-core-sections">Core Sections</a> •
-  <a href="#-configuration--setup">Configuration &amp; Setup</a> •
-  <a href="#-deployment">Deployment</a>
-</p>
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Blog System](#blog-system)
+- [Theme Customization](#theme-customization)
+- [SEO](#seo)
+- [Deployment](#deployment)
+- [Environment Variables](#environment-variables)
 
 ---
 
-## 🌐 About DevFolioX
+## Features
 
-**DevfolioX** is a minimal, config-driven portfolio template built for developers and students who want a clean, professional online presence without a lot of overhead. It centralizes your projects, experience, writing, videos, resume/CV, and contact information into a single responsive page.
+### Core Features
+- **Config-driven** - Edit JSON files, not React components
+- **Responsive design** - Optimized for all screen sizes
+- **Dark/Light mode** - System preference detection with manual toggle
+- **Command palette** - Press `Cmd+K` to search everything
+- **PWA ready** - Installable as a Progressive Web App
 
-<details>
-  <summary><strong>Why I designed DevfolioX with a “less is more” mindset</strong></summary>
+### Pages & Sections
+- **Homepage** - Hero, about, skills, experience, projects, articles, contact
+- **Projects page** - `/projects` listing with individual `/projects/[slug]` pages
+- **Articles page** - `/articles` listing with individual `/articles/[slug]` pages
+- **404 page** - Custom not found page
 
-I try to keep both my resume and this site focused and easy to scan. A J.P. Morgan recruiter once told me they often spend around **7 seconds** on a resume before deciding whether to keep reading. That stuck with me.
+### Integrations
+- **GitHub** - Auto-fetch project stats, contribution graph, pinned repos
+- **YouTube** - Display latest videos from your channel
+- **Dev.to** - Sync articles from your Dev.to profile
+- **Google Docs** - Embed your resume directly
+- **Contact form** - Email via Resend API
 
-If you overload a page with text, sections, and visual noise, the most important details (your impact, projects, and skills) become a **needle in a haystack**. By keeping things clean, intentional, and well-structured, I make it easier for recruiters, hiring managers, and collaborators to quickly find what actually matters.
-
-DevfolioX follows that same principle: fewer distractions, clearer hierarchy, and just enough detail to invite a deeper look if someone wants it.
-
-</details>
+### SEO & Performance
+- **Automatic sitemap** - Generated at `/sitemap.xml`
+- **Robots.txt** - Configurable at `/robots.txt`
+- **JSON-LD** - Structured data for rich search results
+- **Dynamic OG images** - Auto-generated social images
+- **Optimized fonts** - Inter + JetBrains Mono with no FOUT
+- **Image optimization** - AVIF/WebP with lazy loading
 
 ---
 
-## 🧩 Configuration & Setup
+## Quick Start
 
-DevfolioX is **config-driven**. Most customization is done by editing small config files instead of React components.
+### Option 1: One-Click Deploy (Recommended)
 
-1. **Download DevFolioX**
+Click the Vercel or Netlify button above to deploy instantly.
 
-   - [Download latest stable release](https://devfoliox.vercel.app/d/kevintrinh1227/devfoliox) (recommended)
-   - [Download latest dev release](https://github.com/KevinTrinh1227/devfoliox/archive/refs/heads/main.zip) (latest untested features)
-   - Or Clone the repository (Same as dev release)
+### Option 2: Manual Setup
 
-     ```bash
-     git clone https://github.com/KevinTrinh1227/DevfolioX
-     ```
+```bash
+# Clone the repository
+git clone https://github.com/KevinTrinh1227/DevfolioX
+cd devfoliox
 
-     ```bash
-     cd devfoliox
-     ```
+# Install dependencies
+npm install
 
-     ```bash
-     npm install
-     ```
+# Run the setup wizard
+npm run setup
 
-2. **Set up core site config**
+# Start development server
+npm run dev
+```
 
-   Update the JSON files inside `./config/*.json` to meet your needs.
+Visit `http://localhost:3000` to see your site.
 
-3. **Configure projects**
+---
 
-   For GitHub-backed projects, you can use a hidden block in each repo’s README.
+## Configuration
 
-   The app will read this at build time, pull GitHub stats (if enabled), and use repo metadata (topics, homepage, created/last push dates) to auto-fill dates and details.
+All configuration is done through JSON files in the `config/` directory:
 
-4. **Environment variables (.env.local)**
+| File | Purpose |
+|------|---------|
+| `site.json` | Personal info, social links, section toggles |
+| `projects.json` | GitHub repos to feature (or manual entries) |
+| `experience.json` | Work history and education |
+| `articles.json` | External article links (or use MDX blog) |
+| `theme.json` | Theme mode and accent color |
 
-   Create a `.env.local` file in dir. Only set the ones you plan to use, visit the [.env.example](https://github.com/KevinTrinh1227/DevfolioX/blob/main/.env.example) for example.
+### Site Configuration (`config/site.json`)
 
-5. **Run locally then visit `http://localhost:3000` or given link**
+```json
+{
+  "name": "Your Name",
+  "title": "Full-Stack Developer",
+  "email": "you@example.com",
+  "github": "yourusername",
+  "sections": {
+    "hero": true,
+    "about": true,
+    "skills": true,
+    "experience": true,
+    "projects": true,
+    "articles": true,
+    "youtube": false,
+    "contact": true
+  }
+}
+```
 
-   ```bash
-   npm run dev
-   ```
+### Projects Configuration
+
+Projects can be auto-populated from GitHub READMEs or defined manually:
+
+```json
+{
+  "githubRepos": [
+    "yourusername/awesome-project",
+    "yourusername/another-project"
+  ],
+  "manualProjects": []
+}
+```
+
+Add a hidden metadata block to your GitHub README for rich project data:
+
+```markdown
+<!-- devfoliox
+{
+  "title": "My Project",
+  "summary": "A brief description",
+  "featured": true,
+  "technologies": ["React", "Node.js"]
+}
+-->
+```
+
+---
+
+## Blog System
+
+DevfolioX includes a full MDX-based blog system.
+
+### Creating Articles
+
+Add `.mdx` files to `content/articles/`:
+
+```markdown
+---
+title: "My First Article"
+slug: "my-first-article"
+summary: "An introduction to my blog"
+date: "2026-01-25"
+category: "Tutorial"
+tags: ["Next.js", "React"]
+featured: true
+---
+
+Your article content here...
+```
+
+### MDX Components
+
+Use custom components in your articles:
+
+```mdx
+<Callout type="info">
+  This is an informational callout.
+</Callout>
+
+<Callout type="warning">
+  This is a warning.
+</Callout>
+```
+
+---
+
+## Theme Customization
+
+### Theme Configuration (`config/theme.json`)
+
+```json
+{
+  "defaultMode": "dark",
+  "allowToggle": true,
+  "accentColor": "indigo"
+}
+```
+
+### Available Accent Colors
+
+- `indigo` (default)
+- `emerald`
+- `rose`
+- `amber`
+- `cyan`
+
+### Custom Colors
+
+Edit `app/globals.css` to add custom CSS variables:
+
+```css
+:root {
+  --accent: #your-color;
+  --accent-hover: #your-hover-color;
+}
+```
+
+---
+
+## SEO
+
+### Automatic Features
+
+- **Sitemap** - Auto-generated at `/sitemap.xml`
+- **Robots.txt** - Configured at `/robots.txt`
+- **JSON-LD** - Structured data for Person, WebSite, SoftwareApplication, Article
+- **Open Graph** - Dynamic OG images via `/api/og`
+- **Canonical URLs** - Automatic canonical tags
+
+### Metadata
+
+Each page has optimized metadata. Customize in `app/layout.tsx` or per-page with `generateMetadata()`.
+
+---
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Import project on [vercel.com](https://vercel.com)
+3. Add environment variables
+4. Deploy
+
+### Netlify
+
+1. Push your code to GitHub
+2. Import project on [netlify.com](https://netlify.com)
+3. Build command: `npm run build`
+4. Publish directory: `.next`
+5. Add environment variables
+6. Deploy
+
+### Cloudflare Pages
+
+1. Push your code to GitHub
+2. Create project on Cloudflare Pages
+3. Framework preset: Next.js
+4. Add environment variables
+5. Deploy
+
+---
+
+## Environment Variables
+
+Create a `.env.local` file:
+
+```env
+# Required for contact form
+RESEND_API_KEY=re_xxxxx
+CONTACT_TO_EMAIL=you@example.com
+
+# Required for GitHub features
+GITHUB_TOKEN=ghp_xxxxx
+
+# Optional: YouTube integration
+YOUTUBE_API_KEY=AIza_xxxxx
+
+# Optional: Analytics
+NEXT_PUBLIC_GA_ID=G-XXXXXX
+```
+
+### Variable Reference
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `RESEND_API_KEY` | For contact | Send emails via Resend |
+| `CONTACT_TO_EMAIL` | For contact | Email recipient |
+| `GITHUB_TOKEN` | For GitHub | API access for stats |
+| `YOUTUBE_API_KEY` | For YouTube | Fetch channel videos |
+| `NEXT_PUBLIC_BASE_URL` | For SEO | Your deployed URL |
+
+Run `npm run validate-env` to check your configuration.
+
+---
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run setup` | Interactive setup wizard |
+| `npm run validate-env` | Validate environment variables |
+| `npm run lint` | Run ESLint |
+
+---
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Blog**: MDX with gray-matter
+- **Search**: Fuse.js
+- **Icons**: Lucide React
+- **Fonts**: Inter, JetBrains Mono
+
+---
+
+## License
+
+MIT License - feel free to use this for your own portfolio.
+
+---
+
+<div align="center">
+
+**[Live Demo](https://devfoliox.vercel.app)** | **[Report Bug](https://github.com/KevinTrinh1227/DevfolioX/issues)** | **[Request Feature](https://github.com/KevinTrinh1227/DevfolioX/issues)**
+
+</div>

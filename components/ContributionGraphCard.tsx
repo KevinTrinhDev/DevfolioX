@@ -14,12 +14,12 @@ interface ContributionGraphCardProps {
 }
 
 type ContributionDay = {
-  date: string; // ISO "YYYY-MM-DD..." from the API
+  date: string; // ISO "YYYY-MM-DD" from the API (UTC-based)
   count: number;
 };
 
 type DayCell = {
-  date: Date;
+  date: Date; // Always represents a UTC midnight date
   inRange: boolean; // true if within the actual period (year or rolling window)
   level: number; // 0–4
 };
@@ -47,11 +47,40 @@ const MONTH_LABELS = [
   "Dec",
 ];
 
+/**
+ * Create a date key in "YYYY-MM-DD" format using UTC methods.
+ * GitHub API returns dates in UTC, so we must use UTC consistently
+ * to avoid timezone-related misalignment of contribution squares.
+ */
 function makeDateKey(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`; // "YYYY-MM-DD"
+}
+
+/**
+ * Create a UTC midnight date for the given year/month/day.
+ * This ensures consistent date handling regardless of local timezone.
+ */
+function makeUTCDate(year: number, month: number, day: number): Date {
+  return new Date(Date.UTC(year, month, day));
+}
+
+/**
+ * Get the day of week (0=Sunday, 6=Saturday) in UTC.
+ */
+function getUTCDayOfWeek(d: Date): number {
+  return d.getUTCDay();
+}
+
+/**
+ * Add days to a date (in UTC).
+ */
+function addDays(d: Date, days: number): Date {
+  const result = new Date(d.getTime());
+  result.setUTCDate(result.getUTCDate() + days);
+  return result;
 }
 
 function buildContributionMap(contributionDays?: ContributionDay[]) {
@@ -70,21 +99,20 @@ function buildContributionMap(contributionDays?: ContributionDay[]) {
 /**
  * Calendar-year grid: Jan 1 → Dec 31 for `year`.
  * Month labels are placed roughly on the "second column" of that month.
+ * All date operations use UTC to match GitHub's date format.
  */
 function buildYearGrid(
   year: number,
   contributionDays?: ContributionDay[]
 ): GridResult {
-  const jan1 = new Date(year, 0, 1);
-  const dec31 = new Date(year, 11, 31);
+  const jan1 = makeUTCDate(year, 0, 1);
+  const dec31 = makeUTCDate(year, 11, 31);
 
-  // Sunday on/before Jan 1
-  const gridStart = new Date(jan1);
-  gridStart.setDate(gridStart.getDate() - gridStart.getDay());
+  // Sunday on/before Jan 1 (using UTC day of week)
+  const gridStart = addDays(jan1, -getUTCDayOfWeek(jan1));
 
-  // Saturday on/after Dec 31
-  const gridEnd = new Date(dec31);
-  gridEnd.setDate(gridEnd.getDate() + (6 - gridEnd.getDay()));
+  // Saturday on/after Dec 31 (using UTC day of week)
+  const gridEnd = addDays(dec31, 6 - getUTCDayOfWeek(dec31));
 
   const {
     map: contribMap,
@@ -112,7 +140,7 @@ function buildYearGrid(
     }
 
     cells.push({ date: d, inRange, level });
-    cursor.setDate(cursor.getDate() + 1);
+    cursor = addDays(cursor, 1);
   }
 
   // Ensure full weeks: pad with out-of-range filler cells so every column has 7 squares
@@ -121,10 +149,8 @@ function buildYearGrid(
   const needed = weekCount * 7 - rawDays;
   if (needed > 0) {
     for (let i = 0; i < needed; i++) {
-      const fillerDate = new Date(gridEnd);
-      fillerDate.setDate(fillerDate.getDate() + i + 1);
       cells.push({
-        date: fillerDate,
+        date: addDays(gridEnd, i + 1),
         inRange: false,
         level: 0,
       });
@@ -138,8 +164,8 @@ function buildYearGrid(
   );
 
   cells.forEach((cell, idx) => {
-    if (!cell.inRange || cell.date.getFullYear() !== year) return;
-    const m = cell.date.getMonth();
+    if (!cell.inRange || cell.date.getUTCFullYear() !== year) return;
+    const m = cell.date.getUTCMonth();
     const weekIndex = Math.floor(idx / 7);
     let span = monthSpans[m];
     if (!span) {
@@ -197,27 +223,25 @@ function buildYearGrid(
  *
  * Fix: month labels are computed by year-month (YYYY-MM), not just month name,
  * so labels remain chronologically ordered (no "Dec" after "Jan").
+ * All date operations use UTC to match GitHub's date format.
  */
 function buildRollingGrid(
   endDate: Date,
   contributionDays?: ContributionDay[]
 ): GridResult {
-  const end = new Date(
-    endDate.getFullYear(),
-    endDate.getMonth(),
-    endDate.getDate()
+  // Normalize endDate to UTC midnight
+  const end = makeUTCDate(
+    endDate.getUTCFullYear(),
+    endDate.getUTCMonth(),
+    endDate.getUTCDate()
   );
 
   // Start of rolling window (365 days including end)
-  const rangeStart = new Date(end);
-  rangeStart.setDate(rangeStart.getDate() - 364);
+  const rangeStart = addDays(end, -364);
 
-  // Align to full weeks (Sunday..Saturday)
-  const gridStart = new Date(rangeStart);
-  gridStart.setDate(gridStart.getDate() - gridStart.getDay());
-
-  const gridEnd = new Date(end);
-  gridEnd.setDate(gridEnd.getDate() + (6 - gridEnd.getDay()));
+  // Align to full weeks (Sunday..Saturday) using UTC day of week
+  const gridStart = addDays(rangeStart, -getUTCDayOfWeek(rangeStart));
+  const gridEnd = addDays(end, 6 - getUTCDayOfWeek(end));
 
   const {
     map: contribMap,
@@ -245,7 +269,7 @@ function buildRollingGrid(
     }
 
     cells.push({ date: d, inRange, level });
-    cursor.setDate(cursor.getDate() + 1);
+    cursor = addDays(cursor, 1);
   }
 
   // Ensure full weeks: pad with out-of-range filler cells so every column has 7 squares
@@ -254,10 +278,8 @@ function buildRollingGrid(
   const needed = weekCount * 7 - rawDays;
   if (needed > 0) {
     for (let i = 0; i < needed; i++) {
-      const fillerDate = new Date(gridEnd);
-      fillerDate.setDate(fillerDate.getDate() + i + 1);
       cells.push({
-        date: fillerDate,
+        date: addDays(gridEnd, i + 1),
         inRange: false,
         level: 0,
       });
@@ -276,13 +298,13 @@ function buildRollingGrid(
   };
 
   const spans = new Map<number, MonthSpan>(); // key = year * 12 + month
-  const trailingKey = end.getFullYear() * 12 + end.getMonth();
+  const trailingKey = end.getUTCFullYear() * 12 + end.getUTCMonth();
 
   cells.forEach((cell, idx) => {
     if (!cell.inRange) return;
 
-    const y = cell.date.getFullYear();
-    const m = cell.date.getMonth();
+    const y = cell.date.getUTCFullYear();
+    const m = cell.date.getUTCMonth();
     const weekIndex = Math.floor(idx / 7);
     const key = y * 12 + m;
 
@@ -364,8 +386,15 @@ export function ContributionGraphCard({
   className,
   username,
 }: ContributionGraphCardProps) {
-  const now = new Date();
-  const currentYear = now.getFullYear();
+  // Memoize "today" as a stable UTC date to prevent unnecessary re-renders.
+  // This is initialized once when the component mounts and represents the
+  // current day in UTC at the time of mount.
+  const [today] = useState(() => {
+    const now = new Date();
+    return makeUTCDate(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  });
+
+  const currentYear = today.getUTCFullYear();
 
   const [year, setYear] = useState(currentYear);
   const [rollingCurrentYear, setRollingCurrentYear] = useState(true);
@@ -431,9 +460,9 @@ export function ContributionGraphCard({
     const days = dataByYear[year];
     const useRolling = rollingCurrentYear && year === currentYear;
 
-    if (useRolling) return buildRollingGrid(now, days);
+    if (useRolling) return buildRollingGrid(today, days);
     return buildYearGrid(year, days);
-  }, [year, currentYear, rollingCurrentYear, now, dataByYear]);
+  }, [year, currentYear, rollingCurrentYear, today, dataByYear]);
 
   const cardClass =
     "rounded-2xl border border-white/10 bg-white/5 px-2 py-2 text-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.6)] sm:px-4 sm:py-3";
