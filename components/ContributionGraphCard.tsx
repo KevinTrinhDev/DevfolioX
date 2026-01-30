@@ -411,6 +411,7 @@ export function ContributionGraphCard({
     Record<number, ContributionDay[] | undefined>
   >({});
   const [error, setError] = useState<string | null>(null);
+  const [loadingYear, setLoadingYear] = useState<number | null>(null);
 
   // Fetch GitHub data whenever `year` changes (only if not cached yet)
   useEffect(() => {
@@ -420,6 +421,8 @@ export function ContributionGraphCard({
       return;
     }
 
+    setLoadingYear(year);
+
     async function load() {
       try {
         const params = new URLSearchParams();
@@ -427,7 +430,13 @@ export function ContributionGraphCard({
         if (username) params.set("username", username);
 
         const res = await fetch(
-          `/api/github-contributions?${params.toString()}`
+          `/api/github-contributions?${params.toString()}`,
+          {
+            // Add cache headers to improve performance
+            headers: {
+              'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+            },
+          }
         );
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
@@ -437,6 +446,7 @@ export function ContributionGraphCard({
         if (!cancelled) {
           setError(null);
           setDataByYear((prev) => ({ ...prev, [year]: days }));
+          setLoadingYear(null);
         }
       } catch (err) {
         console.error("Failed to fetch GitHub contributions:", err);
@@ -445,6 +455,7 @@ export function ContributionGraphCard({
             "Could not load GitHub data. Showing an empty grid for now."
           );
           setDataByYear((prev) => ({ ...prev, [year]: [] }));
+          setLoadingYear(null);
         }
       }
     }
@@ -467,6 +478,44 @@ export function ContributionGraphCard({
   const cardClass =
     "rounded-2xl border border-white/10 bg-white/5 px-2 py-2 text-slate-50 shadow-[0_18px_45px_rgba(15,23,42,0.6)] sm:px-4 sm:py-3";
 
+  // Loading skeleton component
+  const ContributionSkeleton = () => (
+    <div className="inline-block pt-1">
+      {/* Month labels skeleton */}
+      <div className="flex justify-start gap-[3.5px] text-[0.8rem] leading-tight text-slate-300 sm:text-[0.85rem]">
+        {Array.from({ length: 53 }).map((_, weekIndex) => (
+          <div
+            key={`skeleton-month-${weekIndex}`}
+            className="flex min-h-[1.35rem] w-[12px] items-end justify-start pb-0.5"
+          >
+            {weekIndex % 5 === 0 && (
+              <div className="h-3 w-6 skeleton rounded-sm" />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Heatmap skeleton */}
+      <div className="mt-1 flex gap-[3.5px]">
+        {Array.from({ length: 53 }).map((_, weekIndex) => (
+          <div
+            key={`skeleton-week-${weekIndex}`}
+            className="flex flex-col gap-[3.5px]"
+          >
+            {Array.from({ length: 7 }).map((_, dayIndex) => (
+              <div
+                key={`skeleton-cell-${weekIndex}-${dayIndex}`}
+                className="h-[12px] w-[12px] rounded-[3px] skeleton"
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const isLoading = loadingYear === year;
+
   return (
     <section className={`mt-10 ${className ?? ""}`}>
       {/* Title row (outside card) */}
@@ -483,80 +532,103 @@ export function ContributionGraphCard({
           <div className="rounded-xl p-1.5 sm:p-2">
             {/* Scrollable graph on small screens */}
             <div className="overflow-x-auto pb-2">
-              <div className="inline-block pt-1">
-                {/* Month labels row – aligned to the chosen week column */}
-                <div className="flex justify-start gap-[3.5px] text-[0.8rem] leading-tight text-slate-300 sm:text-[0.85rem]">
-                  {Array.from({ length: weekCount }).map((_, weekIndex) => {
-                    const label = monthLabelByWeek[weekIndex] ?? "";
-                    return (
+              {isLoading ? (
+                <ContributionSkeleton />
+              ) : (
+                <div className="inline-block pt-1">
+                  {/* Month labels row – aligned to the chosen week column */}
+                  <div className="flex justify-start gap-[3.5px] text-[0.8rem] leading-tight text-slate-300 sm:text-[0.85rem]">
+                    {Array.from({ length: weekCount }).map((_, weekIndex) => {
+                      const label = monthLabelByWeek[weekIndex] ?? "";
+                      return (
+                        <div
+                          key={`month-${weekIndex}`}
+                          className="flex min-h-[1.35rem] w-[12px] items-end justify-start pb-0.5"
+                        >
+                          {label && (
+                            <span className="translate-x-[1px]">{label}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Heatmap: weeks (columns) × 7 days (rows) */}
+                  <div className="mt-1 flex gap-[3.5px]">
+                    {Array.from({ length: weekCount }).map((_, weekIndex) => (
                       <div
-                        key={`month-${weekIndex}`}
-                        className="flex min-h-[1.35rem] w-[12px] items-end justify-start pb-0.5"
+                        key={`week-${weekIndex}`}
+                        className="flex flex-col gap-[3.5px]"
                       >
-                        {label && (
-                          <span className="translate-x-[1px]">{label}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                        {Array.from({ length: 7 }).map((_, dayIndex) => {
+                          const idx = weekIndex * 7 + dayIndex;
+                          const cell = cells[idx];
 
-                {/* Heatmap: weeks (columns) × 7 days (rows) */}
-                <div className="mt-1 flex gap-[3.5px]">
-                  {Array.from({ length: weekCount }).map((_, weekIndex) => (
-                    <div
-                      key={`week-${weekIndex}`}
-                      className="flex flex-col gap-[3.5px]"
-                    >
-                      {Array.from({ length: 7 }).map((_, dayIndex) => {
-                        const idx = weekIndex * 7 + dayIndex;
-                        const cell = cells[idx];
+                          // Out-of-range filler cells (always light gray blocks)
+                          if (!cell || !cell.inRange) {
+                            return (
+                              <div
+                                key={`cell-${weekIndex}-${dayIndex}`}
+                                className="h-[12px] w-[12px] rounded-[3px] bg-slate-900/20"
+                              />
+                            );
+                          }
 
-                        // Out-of-range filler cells (always light gray blocks)
-                        if (!cell || !cell.inRange) {
+                          // In-range cells: 0-level still visible (old "less" color)
+                          const level = cell.level;
+                          let color = "bg-slate-800";
+                          if (level === 1) color = "bg-indigo-950";
+                          if (level === 2) color = "bg-indigo-900";
+                          if (level === 3) color = "bg-indigo-700";
+                          if (level === 4) color = "bg-indigo-500";
+
                           return (
                             <div
                               key={`cell-${weekIndex}-${dayIndex}`}
-                              className="h-[12px] w-[12px] rounded-[3px] bg-slate-900/20"
+                              className={`h-[12px] w-[12px] rounded-[3px] ${color}`}
                             />
                           );
-                        }
-
-                        // In-range cells: 0-level still visible (old "less" color)
-                        const level = cell.level;
-                        let color = "bg-slate-800";
-                        if (level === 1) color = "bg-indigo-950";
-                        if (level === 2) color = "bg-indigo-900";
-                        if (level === 3) color = "bg-indigo-700";
-                        if (level === 4) color = "bg-indigo-500";
-
-                        return (
-                          <div
-                            key={`cell-${weekIndex}-${dayIndex}`}
-                            className={`h-[12px] w-[12px] rounded-[3px] ${color}`}
-                          />
-                        );
-                      })}
-                    </div>
-                  ))}
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Summary + legend */}
             <div className="mt-2 flex flex-col items-center gap-2 text-[0.85rem] text-slate-50 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
-              <span className="font-medium">{summaryLabel}</span>
-              <div className="flex items-center gap-2">
-                <span>Less</span>
-                <div className="flex items-center gap-[3.5px]">
-                  <span className="h-[12px] w-[12px] rounded-[3px] bg-slate-800" />
-                  <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-950" />
-                  <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-900" />
-                  <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-700" />
-                  <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-500" />
-                </div>
-                <span>More</span>
-              </div>
+              {isLoading ? (
+                <>
+                  <div className="skeleton h-4 w-48 rounded-md" />
+                  <div className="flex items-center gap-2">
+                    <span>Less</span>
+                    <div className="flex items-center gap-[3.5px]">
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-slate-800" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-950" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-900" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-700" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-500" />
+                    </div>
+                    <span>More</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="font-medium">{summaryLabel}</span>
+                  <div className="flex items-center gap-2">
+                    <span>Less</span>
+                    <div className="flex items-center gap-[3.5px]">
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-slate-800" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-950" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-900" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-700" />
+                      <span className="h-[12px] w-[12px] rounded-[3px] bg-indigo-500" />
+                    </div>
+                    <span>More</span>
+                  </div>
+                </>
+              )}
             </div>
 
             {error && (
