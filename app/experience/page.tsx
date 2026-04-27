@@ -96,59 +96,69 @@ export default function ExperiencePage() {
           </p>
         </div>
       ) : (
-        <ol className="relative space-y-6 border-l border-white/10 pl-6 sm:pl-8">
-          {items.map((item) => {
+        <ol className="space-y-10 md:space-y-14">
+          {items.map((item, idx) => {
             const typeLabel = formatType(item.type);
+            const isLast = idx === items.length - 1;
             return (
-              <li key={item.id} className="relative">
-                {/* Timeline dot */}
-                <span
-                  aria-hidden
-                  className="absolute -left-[33px] top-6 inline-flex h-3 w-3 items-center justify-center rounded-full bg-accent ring-4 ring-background sm:-left-[37px]"
-                />
-
-                <article className="rounded-xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-accent/40 hover:bg-white/[0.07]">
-                  {/* Top row: company / location  +  dates */}
-                  <div className="mb-2 flex flex-col-reverse gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                    <div className="min-w-0">
-                      <h2 className="text-lg font-semibold text-foreground sm:text-xl">
-                        {item.company}
-                        {item.location && (
-                          <span className="font-normal text-muted-foreground">
-                            , {item.location}
-                          </span>
-                        )}
-                      </h2>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:justify-end sm:text-sm">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5" aria-hidden />
-                        {item.start} – {item.end}
-                      </span>
-                    </div>
+              <li
+                key={item.id}
+                className="md:grid md:grid-cols-[minmax(220px,240px)_24px_1fr] md:gap-x-3"
+              >
+                {/* LEFT (desktop) / TOP (mobile): meta — date + company/location + role */}
+                <div className="mb-4 md:mb-0 md:pt-1 md:pr-2">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:text-[13px]">
+                    <Calendar className="h-3.5 w-3.5" aria-hidden />
+                    {item.start} – {item.end}
                   </div>
-
-                  {/* Role / program line */}
-                  <p className="mb-4 text-sm font-medium text-indigo-300 sm:text-[15px]">
+                  <h2 className="mt-2 text-lg font-semibold text-foreground sm:text-xl">
+                    {item.company}
+                    {item.location && (
+                      <span className="font-normal text-muted-foreground">
+                        , {item.location}
+                      </span>
+                    )}
+                  </h2>
+                  <p className="mt-1 text-sm font-medium text-indigo-300 sm:text-[15px]">
                     {item.role}
                   </p>
-
-                  {/* Type chip — keep small + understated */}
                   {typeLabel && (
-                    <div className="mb-4 flex flex-wrap items-center gap-2">
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
                       <span className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium text-slate-200/80">
                         {typeLabel}
                       </span>
                       {item.location && (
-                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground sm:hidden">
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground md:hidden">
                           <MapPin className="h-3.5 w-3.5" aria-hidden />
                           {item.location}
                         </span>
                       )}
                     </div>
                   )}
+                </div>
 
+                {/* RAIL column (desktop only) — vertical line + dot */}
+                <div className="relative hidden md:block">
+                  {!isLast && (
+                    <span
+                      aria-hidden
+                      className="absolute left-1/2 top-3 h-[calc(100%+3.5rem)] w-px -translate-x-1/2 bg-white/10"
+                    />
+                  )}
+                  {isLast && (
+                    <span
+                      aria-hidden
+                      className="absolute left-1/2 top-3 h-6 w-px -translate-x-1/2 bg-white/10"
+                    />
+                  )}
+                  <span
+                    aria-hidden
+                    className="absolute left-1/2 top-3 inline-flex h-3 w-3 -translate-x-1/2 items-center justify-center rounded-full bg-accent ring-4 ring-background"
+                  />
+                </div>
+
+                {/* RIGHT (desktop) / BELOW (mobile): the details card */}
+                <article className="rounded-xl border border-white/10 bg-white/5 p-6 transition-colors hover:border-accent/40 hover:bg-white/[0.07]">
                   {/* Description */}
                   {item.description?.length > 0 && (
                     <ul className="space-y-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
