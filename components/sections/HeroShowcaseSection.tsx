@@ -10,6 +10,7 @@ import {
   GraduationCap,
   AtSign,
   Sparkles,
+  Instagram,
 } from "lucide-react";
 
 import { ContributionGraphCard } from "../ContributionGraphCard";
@@ -21,22 +22,18 @@ type SocialItem = {
   type?: "link" | "email" | "resume" | "donate";
 };
 
-// Hard-coded social platforms in the order requested
+// Hard-coded social platforms in the order requested.
+// All point to @KevinTrinhDev on each platform.
 const SOCIALS: SocialItem[] = [
   { key: "github", label: "GitHub" },
   { key: "linkedin", label: "LinkedIn" },
-  { key: "resume", label: "Resume", type: "resume" },
-  { key: "email", label: "Email", type: "email" },
+  { key: "instagram", label: "Instagram" },
   { key: "tiktok", label: "TikTok" },
-  { key: "leetcode", label: "LeetCode" },
   { key: "youtube", label: "YouTube" },
-  { key: "x", label: "X" },
   { key: "handshake", label: "Handshake" },
-  { key: "devto", label: "Dev.to" },
+  { key: "x", label: "X" },
   { key: "medium", label: "Medium" },
-  { key: "discord", label: "Discord Server" },
-  { key: "threads", label: "Threads" },
-  { key: "kofi", label: "Buy me a coffee", type: "donate" }, // Ko-fi / donations
+  { key: "devto", label: "Dev.to" },
 ];
 
 function resolveSocialHref(item: SocialItem, resumeHref: string): string {
@@ -195,6 +192,7 @@ function SocialIcon({ item }: { item: SocialItem }) {
   if (key === "tiktok") return <IconTikTokFilled className={base} />;
   if (key === "leetcode") return <IconLeetCodeFilled className={base} />;
   if (key === "youtube") return <IconYouTubeFilled className={base} />;
+  if (key === "instagram") return <Instagram className={base} />;
   if (key === "devto" || key === "dev.to")
     return <IconDevToFilled className={base} />;
   if (key === "medium") return <IconMediumFilled className={base} />;
@@ -248,7 +246,7 @@ export function HeroShowcaseSection() {
                   }
                   speedMs={45}
                   startDelayMs={250}
-                  accentClassName="text-indigo-300"
+                  accentClassName="text-indigo-400"
                 />
               </span>
 
@@ -304,7 +302,7 @@ export function HeroShowcaseSection() {
                 className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-slate-50 transition-colors duration-150 hover:border-accent hover:bg-white/10"
               >
                 <FileText className="h-4 w-4" />
-                <span>View Résumé</span>
+                <span>View Resume</span>
               </a>
             </div>
           </div>

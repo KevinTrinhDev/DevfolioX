@@ -634,7 +634,7 @@ export function AboutPage() {
                 href={resumeViewHref}
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/20 bg-white/5 px-3.5 py-2 text-sm font-semibold text-slate-50 transition-colors hover:border-indigo-400 hover:bg-white/10"
               >
-                View Résumé
+                View Resume
                 <ExternalLink
                   className="h-4 w-4 opacity-80 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                   aria-hidden

@@ -117,7 +117,7 @@
         "icon": "ArrowRight"
       },
       "secondaryCta": {
-        "label": "View Résumé",
+        "label": "View Resume",
         "href": "/resume",
         "external": false,
         "icon": "ExternalLink"

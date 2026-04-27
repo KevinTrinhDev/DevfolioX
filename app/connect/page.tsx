@@ -1,7 +1,6 @@
 // app/connect/page.tsx
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import * as LucideIcons from "lucide-react";
 import {
   ArrowUpRight,
@@ -9,12 +8,14 @@ import {
   FileText,
   Folder,
   Globe,
+  Home,
   MapPin,
   Newspaper,
 } from "lucide-react";
 
 import { siteConfig } from "@/config/siteConfig";
 import { XIcon } from "@/components/icons/XIcon";
+import { ShareButton } from "@/components/ShareButton";
 
 export const metadata: Metadata = {
   title: `Connect | ${siteConfig.name}`,
@@ -48,7 +49,6 @@ function resolveIconForSocial(
   iconName?: string
 ): (props: { className?: string }) => React.ReactNode {
   if (key === "x") return XIcon;
-  // Fall back to lucide by name
   const fromLucide =
     iconName && (LucideIcons as any)[iconName]
       ? (LucideIcons as any)[iconName]
@@ -57,19 +57,12 @@ function resolveIconForSocial(
     const Comp = fromLucide as (p: { className?: string }) => React.ReactNode;
     return Comp;
   }
-  // Last-ditch fallback
   return ArrowUpRight as unknown as (p: {
     className?: string;
   }) => React.ReactNode;
 }
 
-function isExternal(href: string) {
-  return /^https?:\/\//i.test(href);
-}
-
 export default function ConnectPage() {
-  // Resolve icon-row entries from siteConfig in the requested order, skipping
-  // any social that isn't configured / has no usable href.
   const socialMap = new Map(
     (siteConfig.socialsList ?? []).map((s) => [s.key, s])
   );
@@ -87,45 +80,62 @@ export default function ConnectPage() {
     };
   }).filter(Boolean) as SmallIcon[];
 
-  const description =
-    "Hey, I'm a CS student at the University of Houston building modern apps and free tools. Pick whichever link works for you below.";
+  // Big buttons — open every link in a new tab per spec.
+  const BASE_URL = (
+    process.env.NEXT_PUBLIC_BASE_URL || "https://kevintrinh.dev"
+  ).replace(/\/$/, "");
 
-  // Big buttons — fixed list per spec.
   const bigButtons = [
     {
       key: "portfolio",
       label: "Portfolio website",
-      href: "/",
+      href: `${BASE_URL}/`,
       Icon: Globe,
-      external: false,
     },
     {
       key: "resume",
-      label: "Résumé (PDF)",
-      href: "/resume",
+      label: "Resume (PDF)",
+      href: `${BASE_URL}/resume`,
       Icon: FileText,
-      external: true,
     },
     {
       key: "projects",
       label: "Projects",
-      href: "/projects",
+      href: `${BASE_URL}/projects`,
       Icon: Folder,
-      external: false,
     },
     {
       key: "articles",
       label: "Articles",
-      href: "/articles",
+      href: `${BASE_URL}/articles`,
       Icon: Newspaper,
-      external: false,
     },
   ];
 
   const year = new Date().getFullYear();
 
   return (
-    <main className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center px-5 pb-10 pt-12 sm:pt-16">
+    <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center px-5 pb-10 pt-16 sm:pt-20">
+      {/* Top-left: Home */}
+      <a
+        href="/"
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label="Open homepage"
+        title="Open homepage"
+        className="absolute left-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/5 text-slate-200 transition-colors hover:border-accent hover:bg-white/10 hover:text-white sm:left-5 sm:top-5"
+      >
+        <Home className="h-4 w-4" aria-hidden />
+      </a>
+
+      {/* Top-right: Share */}
+      <div className="absolute right-4 top-4 sm:right-5 sm:top-5">
+        <ShareButton
+          label="Share"
+          className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2.5 py-2 text-xs font-medium text-slate-200 transition-colors hover:border-accent hover:bg-white/10 hover:text-white"
+        />
+      </div>
+
       {/* Avatar */}
       <div className="relative mb-5 h-28 w-28 overflow-hidden rounded-full ring-2 ring-white/10 sm:h-32 sm:w-32">
         <Image
@@ -150,9 +160,7 @@ export default function ConnectPage() {
       </div>
 
       {/* Description */}
-      <p className="mt-4 max-w-[26rem] text-center text-sm leading-relaxed text-muted-foreground">
-        {description}
-      </p>
+      <p className="mt-3 text-center text-sm text-muted-foreground">CS @ UH</p>
 
       {/* Small icon row */}
       {smallIcons.length > 0 && (
@@ -173,57 +181,34 @@ export default function ConnectPage() {
         </div>
       )}
 
-      {/* Big buttons */}
+      {/* Big buttons — all open in new tab */}
       <div className="mt-7 flex w-full flex-col gap-3">
-        {bigButtons.map(({ key, label, href, Icon, external }) => {
-          const className =
-            "group inline-flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm font-semibold text-slate-50 transition-all duration-150 hover:-translate-y-0.5 hover:border-accent/60 hover:bg-white/[0.08] hover:shadow-[0_4px_24px_-12px_rgba(99,102,241,0.5)]";
-          const inner = (
-            <>
-              <span className="inline-flex items-center gap-3">
-                <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-white/[0.06] text-slate-100 transition-colors group-hover:bg-accent/15">
-                  <Icon className="h-4 w-4" aria-hidden />
-                </span>
-                <span>{label}</span>
+        {bigButtons.map(({ key, label, href, Icon }) => (
+          <a
+            key={key}
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group inline-flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm font-semibold text-slate-50 transition-all duration-150 hover:-translate-y-0.5 hover:border-accent/60 hover:bg-white/[0.08] hover:shadow-[0_4px_24px_-12px_rgba(99,102,241,0.5)]"
+          >
+            <span className="inline-flex items-center gap-3">
+              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-white/[0.06] text-slate-100 transition-colors group-hover:bg-accent/15">
+                <Icon className="h-4 w-4" aria-hidden />
               </span>
-              {external ? (
-                <ExternalLink
-                  className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent"
-                  aria-hidden
-                />
-              ) : (
-                <ArrowUpRight
-                  className="h-4 w-4 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
-                  aria-hidden
-                />
-              )}
-            </>
-          );
-
-          if (external || isExternal(href)) {
-            return (
-              <a
-                key={key}
-                href={href}
-                target="_blank"
-                rel="noreferrer noopener"
-                className={className}
-              >
-                {inner}
-              </a>
-            );
-          }
-          return (
-            <Link key={key} href={href} className={className}>
-              {inner}
-            </Link>
-          );
-        })}
+              <span>{label}</span>
+            </span>
+            <ExternalLink
+              className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-accent"
+              aria-hidden
+            />
+          </a>
+        ))}
       </div>
 
-      {/* Wordmark */}
-      <div className="mt-auto pt-10 text-center text-xs text-muted-foreground/70">
-        kevintrinh.dev · © {year}
+      {/* Copyright */}
+      <div className="mt-auto pt-10 text-center text-xs leading-relaxed text-muted-foreground/70">
+        <div>Built by Kevin Trinh</div>
+        <div>© {year} All rights reserved</div>
       </div>
     </main>
   );
