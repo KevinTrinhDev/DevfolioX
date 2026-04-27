@@ -214,8 +214,10 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
                         {article.readingTime} min read
                       </span>
                     </div>
-                    <h3 className="mb-2 text-xl font-semibold group-hover:text-accent">
-                      {article.title}
+                    <h3 className="mb-2 text-xl font-semibold">
+                      <span className="relative inline-block transition-colors group-hover:text-accent after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                        {article.title}
+                      </span>
                     </h3>
                     {article.summary && (
                       <p className="mb-4 line-clamp-2 text-muted-foreground">
@@ -305,8 +307,10 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
                         </span>
                       )}
                     </div>
-                    <h3 className="mb-1 font-medium group-hover:text-accent">
-                      {article.title}
+                    <h3 className="mb-1 font-medium">
+                      <span className="relative inline-block transition-colors group-hover:text-accent after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                        {article.title}
+                      </span>
                     </h3>
                     {article.summary && (
                       <p className="line-clamp-1 text-sm text-muted-foreground">

@@ -491,92 +491,42 @@ export function AboutPage() {
             ) : null}
           </section>
 
-          {/* Usage */}
+          {/* Socials */}
           <section className="mt-12">
             <h2 className="text-2xl font-semibold text-slate-50">
-              {stackTitle}
+              {socialsTitle}
             </h2>
-
-            {/* UPDATED: same color as other paragraphs */}
             <p className="mt-2 text-sm leading-7 text-slate-200/85 sm:text-base">
-              {stackDescription}
+              {socialsDescription}
             </p>
 
-            <div className="mt-7 space-y-12">
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Technologies
-                </h3>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {socialItems
+                .filter((s) => s?.href && String(s.href).trim().length > 0)
+                .filter((s) => s.type !== "email") // email stays under portrait
+                .map((s, idx) => {
+                  const external = isExternalHref(s.href);
+                  const label =
+                    s.type === "discord"
+                      ? "Discord Community"
+                      : s.label ?? s.type;
 
-                <ul className="mt-4 space-y-3">
-                  {techItems.map((item) => (
-                    <UsageRow key={item.key} item={item} />
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Tools
-                </h3>
-
-                <ul className="mt-4 space-y-3">
-                  {toolItems.map((item) => (
-                    <UsageRow key={item.key} item={item} />
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Platforms
-                </h3>
-
-                <ul className="mt-4 space-y-3">
-                  {platformItems.map((item) => (
-                    <UsageRow key={item.key} item={item} />
-                  ))}
-                </ul>
-              </div>
-
-              {/* Socials (buttons) */}
-              <div>
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {socialsTitle}
-                </h3>
-                <p className="mt-2 text-sm leading-7 text-slate-200/85 sm:text-base">
-                  {socialsDescription}
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {socialItems
-                    .filter((s) => s?.href && String(s.href).trim().length > 0)
-                    .filter((s) => s.type !== "email") // email stays under portrait
-                    .map((s, idx) => {
-                      const external = isExternalHref(s.href);
-                      const label =
-                        s.type === "discord"
-                          ? "Discord Community"
-                          : s.label ?? s.type;
-
-                      return (
-                        <a
-                          key={`${s.type}-${label}-${idx}`}
-                          href={s.href}
-                          target={external ? "_blank" : undefined}
-                          rel={external ? "noreferrer noopener" : undefined}
-                          className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/5 px-3.5 py-2 text-sm font-semibold text-slate-200/85 transition-colors hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
-                        >
-                          <SocialLogo
-                            type={s.type}
-                            className="h-4 w-4 opacity-90"
-                          />
-                          <span className="truncate">{label}</span>
-                        </a>
-                      );
-                    })}
-                </div>
-              </div>
+                  return (
+                    <a
+                      key={`${s.type}-${label}-${idx}`}
+                      href={s.href}
+                      target={external ? "_blank" : undefined}
+                      rel={external ? "noreferrer noopener" : undefined}
+                      className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/5 px-3.5 py-2 text-sm font-semibold text-slate-200/85 transition-colors hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
+                    >
+                      <SocialLogo
+                        type={s.type}
+                        className="h-4 w-4 opacity-90"
+                      />
+                      <span className="truncate">{label}</span>
+                    </a>
+                  );
+                })}
             </div>
           </section>
 

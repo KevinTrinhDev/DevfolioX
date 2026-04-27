@@ -42,7 +42,7 @@ function ProjectCard({ project }: { project: ProjectItem }) {
       href={`/projects/${project.id}`}
       target="_blank"
       rel="noreferrer noopener"
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all hover:-translate-y-0.5 hover:border-accent/50 hover:bg-white/[0.07] hover:shadow-[0_8px_30px_-12px_rgba(99,102,241,0.45)]"
+      className="group relative flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.07]"
     >
       {/* Image */}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-white/5">
@@ -75,8 +75,10 @@ function ProjectCard({ project }: { project: ProjectItem }) {
 
       <div className="flex flex-1 flex-col p-5">
         {/* Title */}
-        <h3 className="mb-2 text-lg font-semibold text-foreground transition-colors group-hover:text-accent">
-          {project.name}
+        <h3 className="mb-2 text-lg font-semibold text-foreground">
+          <span className="relative inline-block transition-colors group-hover:text-accent after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+            {project.name}
+          </span>
         </h3>
 
         {/* Summary */}

@@ -446,10 +446,12 @@ export function NavbarCentered() {
 
           {/* Right CTAs */}
           <div className="flex flex-1 items-center justify-end gap-3">
-            {/* Contact CTA -> home (top) then jump */}
+            {/* Contact CTA — always opens /contact in a new tab */}
             {contactCta.show !== false && (
-              <button
-                type="button"
+              <a
+                href={contactCta.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={[
                   "text-xs md:text-sm",
                   "font-semibold text-muted-foreground underline-offset-4",
@@ -459,13 +461,10 @@ export function NavbarCentered() {
                   cancelCloseDesktop();
                   setOpenDropdownKey(null);
                 }}
-                onClick={() => {
-                  const id = extractHashId(contactCta.href) || "contact";
-                  navigateToSectionOnHome(id);
-                }}
+                onClick={() => setOpenDropdownKey(null)}
               >
                 {contactCta.label}
-              </button>
+              </a>
             )}
 
             {/* Primary CTA */}

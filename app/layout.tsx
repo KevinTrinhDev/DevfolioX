@@ -10,6 +10,7 @@ import { NavbarCentered } from "@/components/NavbarCenteredDesktop";
 import NavbarCenteredMobile from "@/components/NavbarCenteredMobile";
 import { Footer } from "@/components/Footer";
 import { ConditionalChrome } from "@/components/ConditionalChrome";
+import { PageCta } from "@/components/PageCta";
 import { JsonLd } from "@/components/JsonLd";
 import { PageTransition } from "@/components/PageTransition";
 import { ThemeProvider, ThemeScript } from "@/components/ThemeProvider";
@@ -221,8 +222,9 @@ export default function RootLayout({
             <PageTransition>{children}</PageTransition>
           </main>
 
-          {/* Global footer (hidden on bare routes like /connect) */}
+          {/* Global YouTube CTA + footer (hidden on bare routes like /connect) */}
           <ConditionalChrome>
+            <PageCta />
             <Footer />
           </ConditionalChrome>
         </ThemeProvider>

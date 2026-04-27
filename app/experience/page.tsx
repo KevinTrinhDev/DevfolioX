@@ -37,6 +37,42 @@ function iconForExperienceLink(type?: string): typeof FileText {
   }
 }
 
+/** Tailwind classes for the attachment-type badge (corner pill). */
+function badgeStylesForLink(type?: string): string {
+  switch (type) {
+    case "pdf":
+      return "bg-rose-500/85 text-white";
+    case "publication":
+      return "bg-sky-500/85 text-white";
+    case "abstract":
+      return "bg-violet-500/85 text-white";
+    case "live":
+      return "bg-emerald-500/85 text-white";
+    case "github":
+      return "bg-slate-700/90 text-white";
+    case "video":
+      return "bg-red-600/85 text-white";
+    default:
+      return "bg-slate-950/75 text-slate-100";
+  }
+}
+
+/** Tailwind classes for the role-type chip (Internship / Full-time / etc). */
+function chipStylesForType(type?: string): string {
+  switch (type) {
+    case "internship":
+      return "border-sky-400/40 bg-sky-500/15 text-sky-200";
+    case "full-time":
+      return "border-emerald-400/40 bg-emerald-500/15 text-emerald-200";
+    case "part-time":
+      return "border-amber-400/40 bg-amber-500/15 text-amber-200";
+    case "contract":
+      return "border-violet-400/40 bg-violet-500/15 text-violet-200";
+    default:
+      return "border-white/10 bg-white/5 text-slate-200/80";
+  }
+}
+
 function isExternalHref(href: string) {
   return /^https?:\/\//i.test(href);
 }
@@ -124,7 +160,12 @@ export default function ExperiencePage() {
                   </p>
                   {typeLabel && (
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs font-medium text-slate-200/80">
+                      <span
+                        className={[
+                          "rounded-full border px-2.5 py-0.5 text-xs font-semibold",
+                          chipStylesForType(item.type),
+                        ].join(" ")}
+                      >
                         {typeLabel}
                       </span>
                       {item.location && (
@@ -188,17 +229,18 @@ export default function ExperiencePage() {
                     </div>
                   )}
 
-                  {/* Attachments — LinkedIn-style media cards */}
+                  {/* Attachments — compact LinkedIn-style media cards */}
                   {item.links && item.links.length > 0 && (
                     <div className="mt-6">
                       <div className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                         Attachments
                       </div>
-                      <ul className="grid gap-3 sm:grid-cols-2">
+                      <ul className="flex flex-col gap-2">
                         {item.links.map((link: ExperienceLink) => {
                           const Icon = iconForExperienceLink(link.type);
                           const external = isExternalHref(link.href);
                           const showThumb = !!link.image;
+                          const badgeCls = badgeStylesForLink(link.type);
                           return (
                             <li key={link.href}>
                               <a
@@ -207,49 +249,50 @@ export default function ExperiencePage() {
                                 rel={
                                   external ? "noreferrer noopener" : undefined
                                 }
-                                className="group flex h-full overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] transition-all hover:-translate-y-0.5 hover:border-accent/60 hover:bg-white/[0.06] hover:shadow-[0_8px_24px_-12px_rgba(99,102,241,0.4)]"
+                                className="group flex items-center gap-3 overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] p-2 transition-all hover:border-accent/60 hover:bg-white/[0.07]"
                               >
-                                {/* Thumbnail */}
-                                <div className="relative aspect-[3/4] w-24 flex-none overflow-hidden bg-white/5 sm:w-28">
+                                {/* Compact thumbnail */}
+                                <div className="relative h-12 w-12 flex-none overflow-hidden rounded-md bg-white/5 sm:h-14 sm:w-14">
                                   {showThumb ? (
                                     <Image
                                       src={link.image as string}
                                       alt=""
                                       fill
-                                      sizes="112px"
-                                      className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+                                      sizes="56px"
+                                      className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.06]"
                                     />
                                   ) : (
                                     <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/60">
-                                      <Icon className="h-7 w-7" aria-hidden />
+                                      <Icon className="h-5 w-5" aria-hidden />
                                     </div>
                                   )}
-                                  {/* Type badge in corner */}
-                                  <span className="absolute left-1.5 top-1.5 inline-flex h-6 w-6 items-center justify-center rounded-md bg-slate-950/75 text-slate-100 backdrop-blur-sm">
-                                    <Icon className="h-3.5 w-3.5" aria-hidden />
+                                  {/* Type-colored badge in corner */}
+                                  <span
+                                    className={[
+                                      "absolute -bottom-1 -right-1 inline-flex h-5 w-5 items-center justify-center rounded-md ring-2 ring-background",
+                                      badgeCls,
+                                    ].join(" ")}
+                                  >
+                                    <Icon className="h-3 w-3" aria-hidden />
                                   </span>
                                 </div>
 
                                 {/* Body */}
-                                <div className="flex min-w-0 flex-1 flex-col justify-between p-3.5">
-                                  <div>
-                                    <div className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-accent">
-                                      {link.label}
+                                <div className="flex min-w-0 flex-1 flex-col">
+                                  <div className="line-clamp-1 text-sm font-semibold text-foreground transition-colors group-hover:text-accent">
+                                    {link.label}
+                                  </div>
+                                  {link.subtitle && (
+                                    <div className="line-clamp-1 text-xs text-muted-foreground">
+                                      {link.subtitle}
                                     </div>
-                                    {link.subtitle && (
-                                      <div className="mt-1 line-clamp-1 text-xs text-muted-foreground">
-                                        {link.subtitle}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground/80">
-                                    <ExternalLink
-                                      className="h-3 w-3 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
-                                      aria-hidden
-                                    />
-                                    Open
-                                  </div>
+                                  )}
                                 </div>
+
+                                <ExternalLink
+                                  className="h-4 w-4 flex-none text-muted-foreground/70 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+                                  aria-hidden
+                                />
                               </a>
                             </li>
                           );

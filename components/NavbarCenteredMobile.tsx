@@ -410,8 +410,8 @@ export default function NavbarCenteredMobile() {
                 {navbarConfig.cta.contact.show !== false && (
                   <a
                     href={contactLink.href}
-                    target={contactLink.external ? "_blank" : undefined}
-                    rel={contactLink.external ? "noreferrer" : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onClick={() => setIsOpen(false)}
                     className="inline-flex items-center justify-center gap-1.5 rounded-md border border-white/25 px-3 py-2 text-center text-sm font-semibold text-slate-50 transition hover:border-accent hover:bg-white/10"
                   >
