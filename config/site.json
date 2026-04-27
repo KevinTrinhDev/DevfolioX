@@ -30,6 +30,14 @@
       "showIn": { "footer": true, "about": true, "contact": true }
     },
     {
+      "key": "instagram",
+      "label": "Instagram",
+      "href": "https://www.instagram.com/KevinTrinhDev/",
+      "icon": "Instagram",
+      "detail": "@KevinTrinhDev",
+      "showIn": { "footer": true, "about": true, "contact": true }
+    },
+    {
       "key": "leetcode",
       "label": "LeetCode",
       "href": "https://leetcode.com/KevinTrinhDev/",

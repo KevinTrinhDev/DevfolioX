@@ -11,7 +11,7 @@ import {
 import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { generateArticleSchema } from "@/lib/structured-data";
-import { marked } from "marked";
+import { MdxRenderer } from "@/components/mdx/MdxRenderer";
 import {
   Calendar,
   Clock,
@@ -101,9 +101,6 @@ export default async function ArticlePage({
     { name: "Articles", url: "/articles" },
     { name: article.title, url: `/articles/${article.slug}` },
   ];
-
-  // Convert markdown to HTML
-  const contentHtml = marked.parse(article.content) as string;
 
   return (
     <>
@@ -197,22 +194,7 @@ export default async function ArticlePage({
         )}
 
         {/* Article content */}
-        <div
-          className="prose prose-invert prose-lg max-w-none
-            prose-headings:font-semibold prose-headings:tracking-tight
-            prose-h2:mt-10 prose-h2:text-2xl
-            prose-h3:mt-8 prose-h3:text-xl
-            prose-p:text-muted-foreground prose-p:leading-relaxed
-            prose-a:text-accent prose-a:no-underline hover:prose-a:underline
-            prose-code:rounded prose-code:bg-white/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
-            prose-pre:rounded-xl prose-pre:border prose-pre:border-white/10 prose-pre:bg-[#0d1117]
-            prose-img:rounded-xl prose-img:border prose-img:border-white/10
-            prose-blockquote:border-l-accent prose-blockquote:text-muted-foreground
-            prose-strong:text-foreground
-            prose-ul:text-muted-foreground prose-ol:text-muted-foreground
-            prose-li:marker:text-muted-foreground"
-          dangerouslySetInnerHTML={{ __html: contentHtml }}
-        />
+        <MdxRenderer source={article.content} />
 
         {/* Share */}
         <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-8">

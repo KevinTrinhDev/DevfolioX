@@ -9,6 +9,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { NavbarCentered } from "@/components/NavbarCenteredDesktop";
 import NavbarCenteredMobile from "@/components/NavbarCenteredMobile";
 import { Footer } from "@/components/Footer";
+import { ConditionalChrome } from "@/components/ConditionalChrome";
 import { JsonLd } from "@/components/JsonLd";
 import { PageTransition } from "@/components/PageTransition";
 import { ThemeProvider, ThemeScript } from "@/components/ThemeProvider";
@@ -130,13 +131,18 @@ export const metadata: Metadata = {
   //   yandex: 'your-yandex-verification-code',
   // },
 
-  // Alternate languages (if you have translations)
-  // alternates: {
-  //   canonical: BASE_URL,
-  //   languages: {
-  //     'en-US': BASE_URL,
-  //   },
-  // },
+  // Alternates: feeds + canonical
+  alternates: {
+    canonical: BASE_URL,
+    types: {
+      "application/rss+xml": [
+        { url: `${BASE_URL}/feed.xml`, title: `${siteConfig.name} — Articles` },
+      ],
+      "application/feed+json": [
+        { url: `${BASE_URL}/feed.json`, title: `${siteConfig.name} — Articles` },
+      ],
+    },
+  },
 
   // Category
   category: "technology",
@@ -191,16 +197,20 @@ export default function RootLayout({
             Skip to content
           </a>
 
-          {/* Global nav */}
-          <NavbarCenteredMobile />
-          <NavbarCentered />
+          {/* Global nav (hidden on bare routes like /connect) */}
+          <ConditionalChrome>
+            <NavbarCenteredMobile />
+            <NavbarCentered />
+          </ConditionalChrome>
 
           <main id="main-content">
             <PageTransition>{children}</PageTransition>
           </main>
 
-          {/* Global footer */}
-          <Footer />
+          {/* Global footer (hidden on bare routes like /connect) */}
+          <ConditionalChrome>
+            <Footer />
+          </ConditionalChrome>
         </ThemeProvider>
       </body>
     </html>

@@ -248,6 +248,7 @@ export function HeroShowcaseSection() {
                   }
                   speedMs={45}
                   startDelayMs={250}
+                  accentClassName="text-indigo-300"
                 />
               </span>
 
