@@ -183,7 +183,8 @@ export default function NavbarCenteredMobile() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen]);
 
-  const headerBg = scrolled ? "bg-background/92" : "bg-background/80";
+  // 100% opaque always — no see-through.
+  const headerBg = "bg-background";
 
   return (
     <header
@@ -191,7 +192,6 @@ export default function NavbarCenteredMobile() {
         "sm:hidden",
         "sticky top-0 z-[9999] isolate border-b border-white/10",
         headerBg,
-        "backdrop-blur supports-[backdrop-filter]:backdrop-blur",
         "transition-colors",
       ].join(" ")}
     >

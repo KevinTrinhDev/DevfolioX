@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 import { ShareLinks } from "./ShareLinks";
-import { ArticleCard } from "./ArticleCard";
 import { FeaturedArticlesCarousel } from "./FeaturedArticlesCarousel";
 
 export type ArticleListItem = {
@@ -165,16 +164,15 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-8 lg:flex-row lg:gap-8">
+    <div className="flex flex-col gap-10">
+      {/* Featured carousel — full width, sits ABOVE the sidebar + list */}
+      {featured.length > 0 && !hasFilter && (
+        <FeaturedArticlesCarousel articles={featured} />
+      )}
+
+      <div className="flex flex-col gap-8 lg:flex-row lg:gap-8">
       {/* Main content */}
       <div className="min-w-0 flex-1">
-        {/* Featured carousel — sits above search per request */}
-        {featured.length > 0 && !hasFilter && (
-          <div className="mb-8">
-            <FeaturedArticlesCarousel articles={featured} />
-          </div>
-        )}
-
         {/* Search */}
         <div className="relative mb-6">
           <Search
@@ -266,11 +264,27 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
               )}
             </div>
           ) : (
-            <div className="space-y-5">
-              {pageItems.map((article) => (
-                <ArticleCard key={article.slug} article={article} />
+            // Comma-separated title list — no boxes, titles never wrap
+            <p className="text-base leading-loose text-muted-foreground">
+              {pageItems.map((article, idx) => (
+                <span key={article.slug}>
+                  <Link
+                    href={`/articles/${article.slug}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    title={article.summary}
+                    className="group inline-block whitespace-nowrap font-medium text-foreground"
+                  >
+                    <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                      {article.title}
+                    </span>
+                  </Link>
+                  {idx < pageItems.length - 1 && (
+                    <span className="text-muted-foreground/70">, </span>
+                  )}
+                </span>
               ))}
-            </div>
+            </p>
           )}
 
           {/* Pagination */}
@@ -461,6 +475,7 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
           />
         </div>
       </aside>
+      </div>
     </div>
   );
 }

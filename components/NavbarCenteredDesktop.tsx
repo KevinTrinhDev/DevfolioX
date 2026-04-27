@@ -227,12 +227,10 @@ export function NavbarCentered() {
     return () => window.removeEventListener("mousedown", onDown);
   }, [openDropdownKey]);
 
-  // ✅ slightly darker when scrolled
-  const headerBg = scrolled ? "bg-background/96" : "bg-transparent";
-  const headerBlur = scrolled
-    ? "backdrop-blur supports-[backdrop-filter]:backdrop-blur"
-    : "";
-  const headerBorder = scrolled ? "border-white/10" : "border-transparent";
+  // 100% opaque always — no see-through.
+  const headerBg = "bg-background";
+  const headerBlur = "";
+  const headerBorder = scrolled ? "border-white/10" : "border-white/5";
 
   return (
     <header

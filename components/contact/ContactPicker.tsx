@@ -1,37 +1,20 @@
 "use client";
 
-import { ArrowUpRight, Mail, Linkedin, MessageCircle } from "lucide-react";
-
-import { siteConfig } from "@/config/siteConfig";
-import { XIcon } from "@/components/icons/XIcon";
-
-type Action = {
-  key: string;
-  label: string;
-  href: string;
-  Icon: (p: { className?: string }) => React.ReactNode;
-  /** True when the link target lives outside this domain. */
-  external: boolean;
-};
+import { ArrowUpRight, Mail } from "lucide-react";
 
 type Inquiry = {
   key: string;
   emoji: string;
   label: string;
   caption: string;
-  actions: Action[];
+  email: string;
+  subject: string;
+  body: string;
 };
 
 function buildMailto(to: string, subject: string, body: string) {
   const params = new URLSearchParams({ subject, body });
   return `mailto:${to}?${params.toString().replace(/\+/g, "%20")}`;
-}
-
-function urlForKey(key: string): string | null {
-  const item = (siteConfig.socialsList ?? []).find((s) => s.key === key);
-  const href = (item?.href || "").trim();
-  if (!href || href === "null" || href.startsWith("copy:")) return null;
-  return href;
 }
 
 const PROJECT_BODY = [
@@ -73,113 +56,49 @@ const BUSINESS_BODY = [
   "Thanks!",
 ].join("\n");
 
+const HI_BODY = [
+  "Hi Kevin,",
+  "",
+  "",
+].join("\n");
+
 function buildInquiries(): Inquiry[] {
-  const linkedin = urlForKey("linkedin");
-  const x = urlForKey("x");
-  const discord = urlForKey("discord") ?? "/discord";
-
-  const projectMail = buildMailto(
-    "contact@kevintrinh.dev",
-    "Project inquiry — kevintrinh.dev",
-    PROJECT_BODY
-  );
-  const recruitingMail = buildMailto(
-    "kevin@kevintrinh.dev",
-    "Role opportunity — kevintrinh.dev",
-    RECRUITING_BODY
-  );
-  const businessMail = buildMailto(
-    "contact@kevintrinh.dev",
-    "Business / collab — kevintrinh.dev",
-    BUSINESS_BODY
-  );
-
   return [
     {
       key: "project",
       emoji: "🛠️",
       label: "Hire me / project work",
       caption: "Build me a site or app, freelance, studio commissions.",
-      actions: [
-        { key: "email", label: "Email me", href: projectMail, Icon: Mail, external: false },
-        ...(linkedin
-          ? [
-              {
-                key: "linkedin",
-                label: "Message on LinkedIn",
-                href: linkedin,
-                Icon: Linkedin,
-                external: true,
-              } as Action,
-            ]
-          : []),
-      ],
+      email: "contact@kevintrinh.dev",
+      subject: "Project inquiry — kevintrinh.dev",
+      body: PROJECT_BODY,
     },
     {
       key: "opportunity",
       emoji: "💼",
       label: "Recruiting / job opportunity",
       caption: "Full-time, internship, or contract roles.",
-      actions: [
-        { key: "email", label: "Email me", href: recruitingMail, Icon: Mail, external: false },
-        ...(linkedin
-          ? [
-              {
-                key: "linkedin",
-                label: "Reach out on LinkedIn",
-                href: linkedin,
-                Icon: Linkedin,
-                external: true,
-              } as Action,
-            ]
-          : []),
-      ],
+      email: "kevin@kevintrinh.dev",
+      subject: "Role opportunity — kevintrinh.dev",
+      body: RECRUITING_BODY,
     },
     {
       key: "business",
       emoji: "🤝",
       label: "Business / collab / sponsor",
       caption: "Partnerships, sponsorships, or business questions.",
-      actions: [
-        { key: "email", label: "Email me", href: businessMail, Icon: Mail, external: false },
-        ...(linkedin
-          ? [
-              {
-                key: "linkedin",
-                label: "DM on LinkedIn",
-                href: linkedin,
-                Icon: Linkedin,
-                external: true,
-              } as Action,
-            ]
-          : []),
-      ],
+      email: "contact@kevintrinh.dev",
+      subject: "Business / collab — kevintrinh.dev",
+      body: BUSINESS_BODY,
     },
     {
       key: "general",
       emoji: "👋",
       label: "Just saying hi",
       caption: "Anything else — questions, kind words, intros.",
-      actions: [
-        {
-          key: "discord",
-          label: "Join my Discord server",
-          href: discord,
-          Icon: MessageCircle,
-          external: true,
-        },
-        ...(x
-          ? [
-              {
-                key: "x",
-                label: "Find me on X",
-                href: x,
-                Icon: XIcon,
-                external: true,
-              } as Action,
-            ]
-          : []),
-      ],
+      email: "kevin@kevintrinh.dev",
+      subject: "Hello — kevintrinh.dev",
+      body: HI_BODY,
     },
   ];
 }
@@ -212,25 +131,18 @@ export function ContactPicker() {
             </div>
           </header>
 
-          {/* Action buttons */}
-          <div className="mt-auto flex flex-wrap gap-2">
-            {q.actions.map((a) => (
-              <a
-                key={a.key}
-                href={a.href}
-                target={a.external ? "_blank" : undefined}
-                rel={a.external ? "noreferrer noopener" : undefined}
-                className="group inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-accent hover:bg-white/10 sm:text-sm"
-              >
-                <a.Icon className="h-3.5 w-3.5" />
-                {a.label}
-                <ArrowUpRight
-                  className="h-3 w-3 text-muted-foreground/70 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
-                  aria-hidden
-                />
-              </a>
-            ))}
-          </div>
+          {/* Single Email action — opens default mail app with prefilled body */}
+          <a
+            href={buildMailto(q.email, q.subject, q.body)}
+            className="group mt-auto inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/[0.03] px-3 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:bg-white/10"
+          >
+            <Mail className="h-4 w-4" />
+            Email me
+            <ArrowUpRight
+              className="h-3.5 w-3.5 text-muted-foreground/70 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+              aria-hidden
+            />
+          </a>
         </article>
       ))}
     </div>

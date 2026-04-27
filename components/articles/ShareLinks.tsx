@@ -50,6 +50,8 @@ type Btn = {
   icon: React.ReactNode;
   onClick?: () => void;
   newTab?: boolean;
+  /** Tailwind color class applied on hover for the icon (brand color). */
+  hoverColor: string;
 };
 
 export function ShareLinks({ url, title, summary, heading }: Props) {
@@ -101,6 +103,7 @@ export function ShareLinks({ url, title, summary, heading }: Props) {
       href: `https://twitter.com/intent/tweet?text=${t}&url=${u}`,
       icon: <BrandSvg path={TWITTER_SVG_PATH} viewBox="0 0 1200 1227" className="h-3.5 w-3.5" />,
       newTab: true,
+      hoverColor: "group-hover:text-white",
     },
     {
       key: "linkedin",
@@ -108,6 +111,7 @@ export function ShareLinks({ url, title, summary, heading }: Props) {
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
       icon: <Linkedin className="h-4 w-4" />,
       newTab: true,
+      hoverColor: "group-hover:text-[#0a66c2]",
     },
     {
       key: "reddit",
@@ -115,6 +119,7 @@ export function ShareLinks({ url, title, summary, heading }: Props) {
       href: `https://www.reddit.com/submit?url=${u}&title=${t}`,
       icon: <BrandSvg path={REDDIT_SVG_PATH} className="h-4 w-4" />,
       newTab: true,
+      hoverColor: "group-hover:text-[#ff4500]",
     },
     {
       key: "facebook",
@@ -122,18 +127,21 @@ export function ShareLinks({ url, title, summary, heading }: Props) {
       href: `https://www.facebook.com/sharer/sharer.php?u=${u}`,
       icon: <BrandSvg path={FACEBOOK_SVG_PATH} className="h-4 w-4" />,
       newTab: true,
+      hoverColor: "group-hover:text-[#1877f2]",
     },
     {
       key: "email",
       label: "Email",
       href: `mailto:?subject=${t}&body=${body}`,
       icon: <Mail className="h-4 w-4" />,
+      hoverColor: "group-hover:text-accent",
     },
     {
       key: "sms",
       label: "Message",
       href: `sms:?&body=${body}`,
       icon: <MessageCircle className="h-4 w-4" />,
+      hoverColor: "group-hover:text-emerald-400",
     },
   ];
 
@@ -156,7 +164,10 @@ export function ShareLinks({ url, title, summary, heading }: Props) {
             rel={b.newTab ? "noreferrer noopener" : undefined}
             aria-label={`Share on ${b.label}`}
             title={`Share on ${b.label}`}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition-colors hover:border-accent hover:bg-white/10 hover:text-foreground"
+            className={[
+              "group inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition-colors hover:border-white/30 hover:bg-white/10",
+              b.hoverColor,
+            ].join(" ")}
           >
             {b.icon}
           </a>
