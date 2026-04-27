@@ -30,11 +30,13 @@ const SOCIALS: SocialItem[] = [
   { key: "instagram", label: "Instagram" },
   { key: "tiktok", label: "TikTok" },
   { key: "youtube", label: "YouTube" },
+  { key: "threads", label: "Threads" },
+  { key: "bluesky", label: "Bluesky" },
   { key: "handshake", label: "Handshake" },
   { key: "x", label: "X" },
   { key: "medium", label: "Medium" },
   { key: "devto", label: "Dev.to" },
-  { key: "discord", label: "Discord" },
+  { key: "discord", label: "Discord Server" },
 ];
 
 function resolveSocialHref(item: SocialItem, resumeHref: string): string {
@@ -173,6 +175,29 @@ function IconChatBubbleFilled({ className = "" }: { className?: string }) {
   );
 }
 
+function IconBlueskyFilled({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 57" aria-hidden="true" className={className}>
+      <path
+        fill="currentColor"
+        d="M13.873 3.805C21.21 9.332 29.103 20.537 32 26.55v15.882c0-.338-.13.044-.41.867-1.512 4.456-7.418 21.847-20.923 7.944-7.111-7.32-3.819-14.64 9.125-16.85-7.405 1.264-15.73-.825-18.014-9.015C1.12 23.022 0 8.51 0 6.55 0-3.268 8.579-.182 13.873 3.805ZM50.127 3.805C42.79 9.332 34.897 20.537 32 26.55v15.882c0-.338.13.044.41.867 1.512 4.456 7.418 21.847 20.923 7.944 7.111-7.32 3.819-14.64-9.125-16.85 7.405 1.264 15.73-.825 18.014-9.015C62.88 23.022 64 8.51 64 6.55 64-3.268 55.421-.182 50.127 3.805Z"
+      />
+    </svg>
+  );
+}
+
+function IconThreadsFilled({ className = "" }: { className?: string }) {
+  // Simplified Threads (Meta) glyph
+  return (
+    <svg viewBox="0 0 192 192" aria-hidden="true" className={className}>
+      <path
+        fill="currentColor"
+        d="M141.5 86.7c-.7-.4-1.5-.7-2.3-1.1-1.4-25.7-15.4-40.4-39-40.5h-.3c-14.1 0-25.8 6-33.1 17l13 8.9c5.4-8.2 13.9-9.9 20.1-9.9h.2c7.7.1 13.5 2.3 17.3 6.7 2.7 3.2 4.6 7.6 5.5 13.1-7.5-1.3-15.6-1.7-24.3-1.2-24.5 1.4-40.3 15.7-39.2 35.6.5 10.1 5.6 18.7 14.2 24.4 7.4 4.8 16.8 7.2 26.6 6.6 12.9-.7 23-5.6 30.1-14.6 5.4-6.8 8.8-15.7 10.3-26.7 6.1 3.7 10.7 8.5 13.2 14.4 4.3 9.9 4.5 26.2-8.8 39.4-11.6 11.6-25.6 16.6-46.7 16.8-23.4-.2-41.1-7.7-52.7-22.4C30 134.2 24.2 117.5 24 96.4c.2-21.1 6-37.8 17.1-49.7C52.7 32 70.4 24.5 93.8 24.3c23.5.2 41.6 7.7 53.6 22.5 5.9 7.2 10.4 16.3 13.3 27l16.4-4.4c-3.6-13.2-9.2-24.5-16.7-33.7C144.4 16 122.4 7.2 93.9 7H93.7C65.3 7.2 43.7 16 28.4 33c-13.6 15.2-20.6 36.3-20.7 62.6.1 26.3 7 47.4 20.7 62.7 15.2 17 36.9 25.8 65.3 25.9h.2c25.2-.2 43-6.7 57.6-21.1 19.2-19 18.6-42.7 12.3-57.3-4.5-10.4-13.2-18.9-25.1-24.5l-.4.4ZM98 142.4c-10.8.6-21.9-4-22.4-14-.4-7.4 5.3-15.7 23-16.7 2-.1 4-.2 5.9-.2 6.5 0 12.5.6 18 1.8-2 25.7-14.1 28.6-24.5 29.1Z"
+      />
+    </svg>
+  );
+}
+
 /* ------------------------------------------------------------- */
 
 function SocialIcon({ item }: { item: SocialItem }) {
@@ -190,6 +215,9 @@ function SocialIcon({ item }: { item: SocialItem }) {
   if (key === "leetcode") return <IconLeetCodeFilled className={base} />;
   if (key === "youtube") return <IconYouTubeFilled className={base} />;
   if (key === "instagram") return <Instagram className={base} />;
+  if (key === "threads") return <IconThreadsFilled className={base} />;
+  if (key === "bluesky" || key === "bsky")
+    return <IconBlueskyFilled className={base} />;
   if (key === "devto" || key === "dev.to")
     return <IconDevToFilled className={base} />;
   if (key === "medium") return <IconMediumFilled className={base} />;
@@ -199,7 +227,6 @@ function SocialIcon({ item }: { item: SocialItem }) {
   if (key === "email") return <Mail className={base} />;
   if (key === "resume") return <FileText className={base} />;
   if (key === "handshake") return <GraduationCap className={base} />;
-  if (key === "threads") return <AtSign className={base} />;
   if (key === "kofi") return <Coffee className={base} />;
 
   // fallback

@@ -62,6 +62,14 @@
       "showIn": { "footer": true, "about": true, "contact": true }
     },
     {
+      "key": "bluesky",
+      "label": "Bluesky",
+      "href": "https://bsky.app/profile/kevintrinhdev.bsky.social",
+      "icon": "Cloud",
+      "detail": "@kevintrinhdev",
+      "showIn": { "footer": true, "about": true, "contact": true }
+    },
+    {
       "key": "x",
       "label": "X",
       "href": "https://x.com/KevinTrinhDev",
