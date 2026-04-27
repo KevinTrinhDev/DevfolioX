@@ -20,6 +20,8 @@ type SocialItem = {
   key: string; // key to look up in siteConfig.socials if present
   label: string;
   type?: "link" | "email" | "resume" | "donate";
+  /** Hide this item below the sm breakpoint (mobile). */
+  mobileHidden?: boolean;
 };
 
 // Hard-coded social platforms in the order requested.
@@ -31,9 +33,9 @@ const SOCIALS: SocialItem[] = [
   { key: "instagram", label: "Instagram" },
   { key: "tiktok", label: "TikTok" },
   { key: "youtube", label: "YouTube" },
-  { key: "threads", label: "Threads" },
+  { key: "threads", label: "Threads", mobileHidden: true },
   { key: "handshake", label: "Handshake" },
-  { key: "x", label: "X" },
+  { key: "x", label: "X", mobileHidden: true },
   { key: "medium", label: "Medium" },
   { key: "devto", label: "Dev.to" },
   { key: "discord", label: "Discord Server" },
@@ -262,8 +264,8 @@ export function HeroShowcaseSection() {
                 />
               </span>
 
-              {/* ✅ Slightly darker than the main line (still very subtle) */}
-              <span className="mt-1 block text-3xl text-slate-200/90 sm:text-4xl lg:text-[2.6rem]">
+              {/* ✅ Slightly darker than the main line + slightly smaller */}
+              <span className="mt-1 block text-2xl text-slate-200/90 sm:text-3xl lg:text-[2.1rem]">
                 {lineTwo}
               </span>
             </h1>
@@ -284,13 +286,19 @@ export function HeroShowcaseSection() {
                 // Every social link in the hero opens in a new tab — even
                 // /discord (which lives on this domain but immediately
                 // redirects out to discord.gg).
+                const visibilityCls = item.mobileHidden
+                  ? "hidden sm:inline-flex"
+                  : "inline-flex";
                 return (
                   <a
                     key={item.key}
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs sm:text-sm text-slate-50/90 transition-colors duration-150 hover:bg-white/5 hover:text-slate-50"
+                    className={[
+                      "group items-center gap-2 rounded-md px-2.5 py-1.5 text-xs sm:text-sm text-slate-50/90 transition-colors duration-150 hover:bg-white/5 hover:text-slate-50",
+                      visibilityCls,
+                    ].join(" ")}
                   >
                     <SocialIcon item={item} />
                     <span className="text-slate-50">{item.label}</span>

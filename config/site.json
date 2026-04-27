@@ -247,5 +247,9 @@
   "sponsor": {
     "enabled": true,
     "url": "https://github.com/sponsors/KevinTrinhDev"
+  },
+
+  "featuredContent": {
+    "youtubeVideoId": "K1qKbZqBh0w"
   }
 }

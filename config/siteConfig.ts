@@ -279,6 +279,11 @@ export const siteConfig = {
     enabled: true,
     url: "https://github.com/sponsors/KevinTrinhDev",
   },
+
+  // Featured content (landing-page Content section)
+  featuredContent: (data as any).featuredContent || {
+    youtubeVideoId: "",
+  },
 } as const;
 
 export type SiteConfig = typeof siteConfig;

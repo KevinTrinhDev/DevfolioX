@@ -1,5 +1,6 @@
 // app/articles/page.tsx
 import { Metadata } from "next";
+import { Suspense } from "react";
 import { siteConfig } from "@/config/siteConfig";
 import { getArticles, getCategories, getTags } from "@/lib/mdx/mdx";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -58,7 +59,10 @@ export default async function ArticlesPage() {
         </p>
       </div>
 
-      <ArticlesBrowser articles={items} categories={categories} tags={tags} />
+      {/* Suspense required because ArticlesBrowser uses useSearchParams() */}
+      <Suspense fallback={null}>
+        <ArticlesBrowser articles={items} categories={categories} tags={tags} />
+      </Suspense>
     </div>
   );
 }

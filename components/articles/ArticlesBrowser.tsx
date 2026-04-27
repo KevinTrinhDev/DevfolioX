@@ -1,20 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Calendar,
-  Clock,
   Tag,
   Folder,
-  ArrowRight,
   FileText,
   Search,
-  Sparkles,
   X,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import { ShareLinks } from "./ShareLinks";
+import { ArticleCard } from "./ArticleCard";
+import { FeaturedArticlesCarousel } from "./FeaturedArticlesCarousel";
 
 export type ArticleListItem = {
   slug: string;
@@ -35,6 +37,8 @@ type Props = {
   tags: string[];
 };
 
+const PAGE_SIZE = 6;
+
 function formatDate(dateStr: string): string {
   try {
     const d = new Date(dateStr);
@@ -53,12 +57,63 @@ function articleImage(a: { imageSrc?: string }): string {
   return a.imageSrc || "/images/demo_1.png";
 }
 
+/**
+ * Build the visible page-number row with ellipses.
+ *   1 … 4 [5] 6 … 12
+ */
+function pageNumbers(current: number, total: number): (number | "…")[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  const set = new Set<number>([1, total, current, current - 1, current + 1]);
+  const sorted = Array.from(set)
+    .filter((n) => n >= 1 && n <= total)
+    .sort((a, b) => a - b);
+  const out: (number | "…")[] = [];
+  for (let i = 0; i < sorted.length; i++) {
+    out.push(sorted[i]);
+    if (i < sorted.length - 1 && sorted[i + 1] - sorted[i] > 1) out.push("…");
+  }
+  return out;
+}
+
 export function ArticlesBrowser({ articles, categories, tags }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<{
     type: "category" | "tag";
     value: string;
   } | null>(null);
+
+  // Debounce search input — 150ms is fast enough to feel live but cheap.
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedQuery(query), 150);
+    return () => window.clearTimeout(t);
+  }, [query]);
+
+  // Page is URL-driven (?page=N). Defaults to 1.
+  const pageFromUrl = Math.max(
+    1,
+    Number.parseInt(searchParams.get("page") || "1", 10) || 1
+  );
+
+  const setPage = (n: number) => {
+    const sp = new URLSearchParams(searchParams.toString());
+    if (n <= 1) sp.delete("page");
+    else sp.set("page", String(n));
+    router.replace(`?${sp.toString()}`, { scroll: false });
+  };
+
+  // Reset to page 1 when search/filter changes.
+  useEffect(() => {
+    if (pageFromUrl !== 1) setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery, activeFilter]);
+
+  const featured = useMemo(() => articles.filter((a) => a.featured), [articles]);
 
   const recent = useMemo(() => {
     return [...articles]
@@ -68,7 +123,7 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
       .slice(0, 5);
   }, [articles]);
 
-  // Filter pipeline: chip filter first, then text search
+  // Filter pipeline: chip filter first, then text search.
   const filtered = useMemo(() => {
     let list = articles;
     if (activeFilter) {
@@ -81,7 +136,7 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
         );
       }
     }
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     if (!q) return list;
     return list.filter((a) => {
       const haystack = [
@@ -94,11 +149,15 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [articles, query, activeFilter]);
+  }, [articles, debouncedQuery, activeFilter]);
 
-  const featuredFiltered = filtered.filter((a) => a.featured);
-  const regularFiltered = filtered.filter((a) => !a.featured);
-  const hasFilter = !!activeFilter || query.trim().length > 0;
+  const hasFilter = !!activeFilter || debouncedQuery.trim().length > 0;
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(pageFromUrl, totalPages);
+  const pageStart = (safePage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(pageStart, pageStart + PAGE_SIZE);
 
   const clearAll = () => {
     setQuery("");
@@ -109,8 +168,15 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-8">
       {/* Main content */}
       <div className="min-w-0 flex-1">
+        {/* Featured carousel — sits above search per request */}
+        {featured.length > 0 && !hasFilter && (
+          <div className="mb-8">
+            <FeaturedArticlesCarousel articles={featured} />
+          </div>
+        )}
+
         {/* Search */}
-        <div className="relative mb-8">
+        <div className="relative mb-6">
           <Search
             className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             aria-hidden
@@ -160,7 +226,7 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
 
         {/* Result count when filtered */}
         {hasFilter && (
-          <div className="mb-6 flex items-center justify-between text-sm text-muted-foreground">
+          <div className="mb-4 flex items-center justify-between text-sm text-muted-foreground">
             <span>
               {filtered.length} {filtered.length === 1 ? "match" : "matches"}
             </span>
@@ -174,88 +240,10 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
           </div>
         )}
 
-        {/* Featured */}
-        {featuredFiltered.length > 0 && !hasFilter && (
-          <section className="mb-12">
-            <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold">
-              <Sparkles className="h-4 w-4 text-accent" />
-              Featured
-            </h2>
-            <div className="space-y-6">
-              {featuredFiltered.map((article) => (
-                <Link
-                  key={article.slug}
-                  href={`/articles/${article.slug}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.07] sm:flex-row"
-                >
-                  {/* Image — left side on sm+ */}
-                  <div className="relative aspect-[16/10] w-full flex-none overflow-hidden bg-white/5 sm:aspect-auto sm:w-64 md:w-72">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={articleImage(article)}
-                      alt={article.imageAlt || article.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  {/* Content — right side on sm+ */}
-                  <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
-                    <div className="mb-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                      {article.category && (
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-accent px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">
-                          <Folder className="h-3 w-3" />
-                          {article.category}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {formatDate(article.date)}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5" />
-                        {article.readingTime} min read
-                      </span>
-                    </div>
-                    <h3 className="mb-2 text-xl font-semibold">
-                      <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-                        {article.title}
-                      </span>
-                    </h3>
-                    {article.summary && (
-                      <p className="mb-4 line-clamp-2 text-muted-foreground">
-                        {article.summary}
-                      </p>
-                    )}
-                    {article.tags && article.tags.length > 0 && (
-                      <div className="mt-auto flex flex-wrap gap-1.5">
-                        {article.tags.slice(0, 4).map((t) => (
-                          <span
-                            key={t}
-                            className="rounded-md bg-white/5 px-2 py-0.5 text-xs text-muted-foreground"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* All / Filtered list */}
+        {/* All / Filtered list — same card style as the featured carousel */}
         <section>
           <h2 className="mb-6 text-xl font-semibold">
-            {hasFilter
-              ? "Results"
-              : featuredFiltered.length > 0
-                ? "All Articles"
-                : "Articles"}
+            {hasFilter ? "Results" : "All Articles"}
           </h2>
 
           {filtered.length === 0 ? (
@@ -278,60 +266,74 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
               )}
             </div>
           ) : (
-            <div className="space-y-4">
-              {(hasFilter ? filtered : regularFiltered).map((article) => (
-                <Link
-                  key={article.slug}
-                  href={`/articles/${article.slug}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="group flex items-start gap-4 rounded-lg border border-transparent p-4 transition-all hover:border-white/10 hover:bg-white/5"
-                >
-                  <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-white/5 sm:h-24 sm:w-32">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={articleImage(article)}
-                      alt={article.imageAlt || article.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {formatDate(article.date)}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {article.readingTime} min
-                      </span>
-                      {article.category && (
-                        <span className="inline-flex items-center rounded-md bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">
-                          {article.category}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="mb-1 font-medium">
-                      <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-                        {article.title}
-                      </span>
-                    </h3>
-                    {article.summary && (
-                      <p className="line-clamp-1 text-sm text-muted-foreground">
-                        {article.summary}
-                      </p>
-                    )}
-                  </div>
-                  <ArrowRight className="h-5 w-5 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
-                </Link>
+            <div className="space-y-5">
+              {pageItems.map((article) => (
+                <ArticleCard key={article.slug} article={article} />
               ))}
             </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <nav
+              aria-label="Pagination"
+              className="mt-10 flex flex-wrap items-center justify-center gap-1.5"
+            >
+              <button
+                type="button"
+                onClick={() => setPage(safePage - 1)}
+                disabled={safePage === 1}
+                aria-label="Previous page"
+                className="inline-flex h-9 items-center gap-1 rounded-md border border-white/15 bg-white/5 px-3 text-sm font-medium text-foreground transition-colors hover:border-accent hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-white/15 disabled:hover:bg-white/5"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Prev
+              </button>
+
+              {pageNumbers(safePage, totalPages).map((p, i) =>
+                p === "…" ? (
+                  <span
+                    key={`ellipsis-${i}`}
+                    aria-hidden
+                    className="px-2 text-muted-foreground"
+                  >
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPage(p)}
+                    aria-current={p === safePage ? "page" : undefined}
+                    aria-label={`Go to page ${p}`}
+                    className={[
+                      "inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors",
+                      p === safePage
+                        ? "border border-accent bg-accent text-white"
+                        : "border border-white/15 bg-white/5 text-foreground hover:border-accent hover:bg-white/10",
+                    ].join(" ")}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
+
+              <button
+                type="button"
+                onClick={() => setPage(safePage + 1)}
+                disabled={safePage === totalPages}
+                aria-label="Next page"
+                className="inline-flex h-9 items-center gap-1 rounded-md border border-white/15 bg-white/5 px-3 text-sm font-medium text-foreground transition-colors hover:border-accent hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-white/15 disabled:hover:bg-white/5"
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </nav>
           )}
         </section>
       </div>
 
-      {/* Sidebar — order: Categories → Recent → Tags → Share */}
+      {/* Sidebar — Categories → Recent → Tags → Share */}
       <aside className="w-full lg:w-60 lg:flex-shrink-0">
         {/* Categories */}
         {categories.length > 0 && (
@@ -369,7 +371,7 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
           </div>
         )}
 
-        {/* Recent — small square thumb + truncated title */}
+        {/* Recent */}
         {recent.length > 0 && (
           <div className="mb-8">
             <h3 className="mb-3 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-muted-foreground">
@@ -385,7 +387,6 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
                     rel="noreferrer noopener"
                     className="group flex items-start gap-3"
                   >
-                    {/* Square thumb */}
                     <span className="relative h-12 w-12 flex-none overflow-hidden rounded-md bg-white/5">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -447,7 +448,7 @@ export function ArticlesBrowser({ articles, categories, tags }: Props) {
           </div>
         )}
 
-        {/* Share — share the /articles index */}
+        {/* Share */}
         <div>
           <h3 className="mb-3 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-muted-foreground">
             Share

@@ -92,16 +92,6 @@ export function ProjectCard({ project, iconFor }: ProjectCardProps) {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           loading="lazy"
         />
-        {/* Live status glow (issue #5) */}
-        {isLive && (
-          <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-950/70 px-2.5 py-1 text-[11px] font-semibold text-emerald-200 backdrop-blur">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            Live
-          </span>
-        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">

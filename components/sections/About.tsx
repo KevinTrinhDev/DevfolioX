@@ -284,44 +284,30 @@ export function AboutSection() {
         </h3>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-[290px_1fr] lg:gap-6">
-          {/* LEFT */}
+          {/* LEFT — portrait on the left, stats on the right of it */}
           <aside className="space-y-5">
-            <div className="group relative w-full overflow-hidden rounded-xl border border-white/10 shadow-[0_10px_30px_-18px_rgba(99,102,241,0.45)]">
-              <div className="relative aspect-square w-full">
-                {a.avatarUrl ? (
-                  <Image
-                    src={a.avatarUrl}
-                    alt={a.displayName || siteConfig.name}
-                    fill
-                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.06]"
-                    sizes="(min-width: 1024px) 290px, 100vw"
-                    priority={false}
-                  />
-                ) : null}
+            <div className="flex items-start gap-4 sm:gap-5">
+              {/* Smaller portrait — frees up the right side for stats */}
+              <div className="group relative h-32 w-32 flex-none overflow-hidden rounded-xl border border-white/10 sm:h-36 sm:w-36">
+                <div className="relative h-full w-full">
+                  {a.avatarUrl ? (
+                    <Image
+                      src={a.avatarUrl}
+                      alt={a.displayName || siteConfig.name}
+                      fill
+                      className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.06]"
+                      sizes="144px"
+                      priority={false}
+                    />
+                  ) : null}
+                </div>
               </div>
-            </div>
 
-            {/* ✅ tighter spacing to links */}
-            <div className="pt-1 pb-0">
-              <div className="grid grid-cols-1 gap-2">
-                <a
-                  href={a.cta.secondary.href}
-                  target={a.cta.secondary.external ? "_blank" : undefined}
-                  rel={a.cta.secondary.external ? "noreferrer" : undefined}
-                  className="group inline-flex items-center justify-center gap-2 rounded-md border border-white/20 px-3.5 py-2 text-sm font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
-                >
-                  {a.cta.secondary.label ?? "Read more about me"}
-                  <SquareArrowOutUpRight className="h-4 w-4 opacity-80 transition-colors group-hover:opacity-100 group-hover:text-slate-50" />
-                </a>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2 sm:gap-3">
-              <div className="space-y-2 pt-0 text-sm">
+              {/* Stats stack — UH, email, LinkedIn, etc. */}
+              <div className="min-w-0 flex-1 space-y-2 text-sm">
                 {leftLinks.map((item: any) => {
                   const type = String(item.type || "");
                   const Icon = iconForProfileLink(type);
-
                   const isBrightText = type === "school";
 
                   const content = item.href ? (
@@ -337,8 +323,8 @@ export function AboutSection() {
                     <span
                       className={
                         isBrightText
-                          ? "text-slate-200/90"
-                          : "text-muted-foreground"
+                          ? "truncate text-slate-200/90"
+                          : "truncate text-muted-foreground"
                       }
                     >
                       {item.label}
@@ -348,14 +334,27 @@ export function AboutSection() {
                   return (
                     <div
                       key={`${type}-${item.label}`}
-                      className="flex items-center gap-2"
+                      className="flex min-w-0 items-center gap-2"
                     >
-                      <Icon className="h-4 w-4 text-slate-200/90 opacity-80" />
+                      <Icon className="h-4 w-4 flex-none text-slate-200/90 opacity-80" />
                       {content}
                     </div>
                   );
                 })}
               </div>
+            </div>
+
+            {/* Read more CTA — full width below the portrait/stats row */}
+            <div className="pt-0">
+              <a
+                href={a.cta.secondary.href}
+                target={a.cta.secondary.external ? "_blank" : undefined}
+                rel={a.cta.secondary.external ? "noreferrer" : undefined}
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/20 px-3.5 py-2 text-sm font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
+              >
+                {a.cta.secondary.label ?? "Read more about me"}
+                <SquareArrowOutUpRight className="h-4 w-4 opacity-80 transition-colors group-hover:opacity-100 group-hover:text-slate-50" />
+              </a>
             </div>
           </aside>
 

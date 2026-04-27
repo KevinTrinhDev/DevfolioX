@@ -12,6 +12,10 @@
     {
       "binding": "NEXT_INC_CACHE_KV",
       "id": "2f7020207b49487d844c6376d2ceae90"
+    },
+    {
+      "binding": "ARTICLE_VIEWS",
+      "id": "a3309691eaa34e70a9c4f417222bac8e"
     }
   ],
   "observability": {

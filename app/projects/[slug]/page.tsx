@@ -127,6 +127,21 @@ export default async function ProjectPage({
   const nextProject =
     projectIndex < projects.length - 1 ? projects[projectIndex + 1] : null;
 
+  // Related projects — share at least one tech tag, exclude the current.
+  const techSet = new Set((project.technologies ?? []).map((t) => t.toLowerCase()));
+  const related = projects
+    .filter((p) => p.id !== project.id)
+    .map((p) => {
+      const overlap = (p.technologies ?? []).filter((t) =>
+        techSet.has(t.toLowerCase())
+      ).length;
+      return { p, overlap };
+    })
+    .filter(({ overlap }) => overlap > 0)
+    .sort((a, b) => b.overlap - a.overlap)
+    .slice(0, 3)
+    .map(({ p }) => p);
+
   const breadcrumbs = [
     { name: "Home", url: "/" },
     { name: "Projects", url: "/projects" },
@@ -286,18 +301,39 @@ export default async function ProjectPage({
           </div>
         )}
 
-        {/* README content */}
-        {project.readmeHtmlFull && (
+        {/* Quick start — only when we know the source URL */}
+        {project.githubRepoUrl && (
           <div className="mb-8">
-            <h2 className="mb-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-muted-foreground">
-              <BookOpen className="h-4 w-4" />
-              Documentation
+            <h2 className="mb-3 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              <PlayCircle className="h-4 w-4" />
+              Quick start
             </h2>
+            <pre className="overflow-x-auto rounded-xl border border-white/10 bg-[#0d1117] p-4 text-xs leading-6 sm:text-sm">
+              <code>{`git clone ${project.githubRepoUrl}.git
+cd ${project.id}
+# follow the README from here for project-specific steps`}</code>
+            </pre>
+          </div>
+        )}
+
+        {/* README content — collapsed by default to keep the page scannable */}
+        {project.readmeHtmlFull && (
+          <details className="group mb-8 rounded-xl border border-white/10 bg-white/[0.02]">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-6 py-4 text-sm font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground">
+              <span className="inline-flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                README
+              </span>
+              <span className="text-xs font-normal normal-case text-muted-foreground/80">
+                <span className="group-open:hidden">Show README ↓</span>
+                <span className="hidden group-open:inline">Hide README ↑</span>
+              </span>
+            </summary>
             <div
-              className="prose prose-invert max-w-none rounded-xl border border-white/10 bg-white/[0.02] p-6"
+              className="prose prose-invert max-w-none border-t border-white/10 px-6 py-6"
               dangerouslySetInnerHTML={{ __html: project.readmeHtmlFull }}
             />
-          </div>
+          </details>
         )}
 
         {/* Repo metadata */}
@@ -370,6 +406,38 @@ export default async function ProjectPage({
               </div>
             )}
           </div>
+        )}
+
+        {/* Related projects */}
+        {related.length > 0 && (
+          <section className="mt-12">
+            <h2 className="mb-4 flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-muted-foreground">
+              <Tag className="h-4 w-4" />
+              Related projects
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((r) => (
+                <a
+                  key={r.id}
+                  href={`/projects/${r.id}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="group rounded-xl border border-white/10 bg-white/5 p-4 transition-colors hover:border-accent/50 hover:bg-white/[0.07]"
+                >
+                  <h3 className="line-clamp-2 text-sm font-semibold">
+                    <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
+                      {r.name}
+                    </span>
+                  </h3>
+                  {r.summary && (
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                      {r.summary}
+                    </p>
+                  )}
+                </a>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Navigation */}

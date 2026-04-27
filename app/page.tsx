@@ -9,6 +9,7 @@ import { ProjectsSection } from "../components/sections/Projects";
 import { ArticleSection } from "../components/sections/Articles";
 import { YouTubeSection } from "../components/sections/YouTube";
 import { CertificationsSection } from "../components/sections/Certifications";
+import { ContentSection } from "../components/sections/Content";
 import { ContactSection } from "../components/sections/Contact";
 
 import { siteConfig } from "@/config/siteConfig";
@@ -30,6 +31,7 @@ export default function Page() {
 
       {/* These sections don't use URL hooks, so they can render normally */}
       {sections.articles && <ArticleSection />}
+      <ContentSection />
       {sections.youtube && <YouTubeSection />}
       {sections.certifications && <CertificationsSection />}
       {sections.contact && <ContactSection />}
