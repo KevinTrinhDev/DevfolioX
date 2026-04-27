@@ -1,6 +1,22 @@
 // config/experience.ts
 import raw from "./experience.json";
 
+export type ExperienceLinkType =
+  | "pdf"
+  | "publication"
+  | "abstract"
+  | "live"
+  | "docs"
+  | "video"
+  | "github"
+  | "external";
+
+export type ExperienceLink = {
+  label: string;
+  href: string;
+  type?: ExperienceLinkType;
+};
+
 export type ExperienceItem = {
   id: string;
   role: string;
@@ -11,9 +27,27 @@ export type ExperienceItem = {
   end: string; // e.g. "Aug 2024" or "Present"
   description: string[];
   technologies?: string[];
+  links?: ExperienceLink[];
 };
 
-// Optionally: light runtime guard (keeps shape predictable)
+function normalizeLinks(input: any): ExperienceLink[] | undefined {
+  if (!Array.isArray(input)) return undefined;
+  const out: ExperienceLink[] = [];
+  for (const raw of input) {
+    if (!raw || typeof raw !== "object") continue;
+    const href = typeof raw.href === "string" ? raw.href.trim() : "";
+    const label = typeof raw.label === "string" ? raw.label.trim() : "";
+    if (!href || !label) continue;
+    out.push({
+      label,
+      href,
+      type: raw.type as ExperienceLinkType | undefined,
+    });
+  }
+  return out.length ? out : undefined;
+}
+
+// Light runtime guard (keeps shape predictable)
 function normalize(items: any[]): ExperienceItem[] {
   return (items || []).map((it) => ({
     id: String(it.id),
@@ -29,6 +63,7 @@ function normalize(items: any[]): ExperienceItem[] {
     technologies: Array.isArray(it.technologies)
       ? it.technologies.map(String)
       : undefined,
+    links: normalizeLinks(it.links),
   }));
 }
 

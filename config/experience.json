@@ -44,6 +44,23 @@
       "Node.js",
       "PostgreSQL",
       "REST APIs"
+    ],
+    "links": [
+      {
+        "label": "Read the paper (PDF)",
+        "href": "/files/mcnair-research-paper.pdf",
+        "type": "pdf"
+      },
+      {
+        "label": "Published in McNair Scholars Research Journal",
+        "href": "https://commons.stmarytx.edu/cgi/viewcontent.cgi?article=1015&context=msrj#page=153",
+        "type": "publication"
+      },
+      {
+        "label": "Abstract on stmarytx.edu",
+        "href": "https://commons.stmarytx.edu/msrjs/7/",
+        "type": "abstract"
+      }
     ]
   }
 ]

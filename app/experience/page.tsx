@@ -1,10 +1,44 @@
 // app/experience/page.tsx
 import type { Metadata } from "next";
-import { Briefcase, Calendar, MapPin } from "lucide-react";
+import {
+  Briefcase,
+  Calendar,
+  MapPin,
+  FileText,
+  BookOpen,
+  Newspaper,
+  Globe,
+  Github,
+  PlayCircle,
+  ExternalLink,
+} from "lucide-react";
 
 import { siteConfig } from "@/config/siteConfig";
-import { experience } from "@/config/experience";
+import { experience, type ExperienceLink } from "@/config/experience";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+
+function iconForExperienceLink(type?: string): typeof FileText {
+  switch (type) {
+    case "pdf":
+      return FileText;
+    case "publication":
+      return Newspaper;
+    case "abstract":
+      return BookOpen;
+    case "live":
+      return Globe;
+    case "github":
+      return Github;
+    case "video":
+      return PlayCircle;
+    default:
+      return ExternalLink;
+  }
+}
+
+function isExternalHref(href: string) {
+  return /^https?:\/\//i.test(href);
+}
 
 export const metadata: Metadata = {
   title: "Experience",
@@ -135,6 +169,37 @@ export default function ExperiencePage() {
                           {t}
                         </span>
                       ))}
+                    </div>
+                  )}
+
+                  {/* Media / publication links */}
+                  {item.links && item.links.length > 0 && (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {item.links.map((link: ExperienceLink) => {
+                        const Icon = iconForExperienceLink(link.type);
+                        const external = isExternalHref(link.href);
+                        return (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel={
+                              external ? "noreferrer noopener" : undefined
+                            }
+                            className="group inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-100 transition-colors hover:border-accent hover:bg-white/10 hover:text-white sm:text-sm"
+                          >
+                            <Icon
+                              className="h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-accent"
+                              aria-hidden
+                            />
+                            <span>{link.label}</span>
+                            <ExternalLink
+                              className="h-3 w-3 text-muted-foreground/60 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+                              aria-hidden
+                            />
+                          </a>
+                        );
+                      })}
                     </div>
                   )}
                 </article>
