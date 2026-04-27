@@ -103,11 +103,11 @@
     },
     {
       "key": "discord",
-      "label": "Discord (Server)",
-      "href": null,
+      "label": "Discord",
+      "href": "/discord",
       "icon": "MessageCircle",
-      "detail": null,
-      "showIn": { "footer": false, "about": false, "contact": false }
+      "detail": "Join my server",
+      "showIn": { "footer": true, "about": true, "contact": true }
     },
     {
       "key": "telegram",

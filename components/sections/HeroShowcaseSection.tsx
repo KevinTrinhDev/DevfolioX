@@ -34,6 +34,7 @@ const SOCIALS: SocialItem[] = [
   { key: "x", label: "X" },
   { key: "medium", label: "Medium" },
   { key: "devto", label: "Dev.to" },
+  { key: "discord", label: "Discord" },
 ];
 
 function resolveSocialHref(item: SocialItem, resumeHref: string): string {
@@ -174,10 +175,6 @@ function IconChatBubbleFilled({ className = "" }: { className?: string }) {
 
 /* ------------------------------------------------------------- */
 
-function resolveIsExternal(href: string) {
-  return href.startsWith("http://") || href.startsWith("https://");
-}
-
 function SocialIcon({ item }: { item: SocialItem }) {
   const key = item.key.toLowerCase();
   const base =
@@ -268,14 +265,16 @@ export function HeroShowcaseSection() {
                 if (!href || href === "#" || href.startsWith("copy:")) {
                   return null;
                 }
-                const external = resolveIsExternal(href);
 
+                // Every social link in the hero opens in a new tab — even
+                // /discord (which lives on this domain but immediately
+                // redirects out to discord.gg).
                 return (
                   <a
                     key={item.key}
                     href={href}
-                    target={external ? "_blank" : undefined}
-                    rel={external ? "noopener noreferrer" : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group inline-flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs sm:text-sm text-slate-50/90 transition-colors duration-150 hover:bg-white/5 hover:text-slate-50"
                   >
                     <SocialIcon item={item} />
