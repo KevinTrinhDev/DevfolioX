@@ -168,6 +168,8 @@ export default function ConnectPage() {
         },
       }),
       sameAs: (siteConfig.socialsList ?? [])
+        // Drop handshake entirely from this page (UI + structured data).
+        .filter((s) => s.key !== "handshake")
         .map((s) => s.href)
         .filter(
           (h): h is string =>

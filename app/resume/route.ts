@@ -29,7 +29,9 @@ export async function HEAD(req: NextRequest) {
 }
 
 async function handleResume(req: NextRequest, method: "GET" | "HEAD") {
-  const cfg = (siteConfig.resume ?? {}) as ResumeCfg;
+  // siteConfig.resume is a placeholder ({ items: [] }); the actual delivery
+  // config (filename / source / cacheSeconds) lives on resumeDelivery.
+  const cfg = (siteConfig.resumeDelivery ?? {}) as ResumeCfg;
 
   const url = new URL(req.url);
   const forceDownload = url.searchParams.get("dl") === "1"; // /api/resume?dl=1
