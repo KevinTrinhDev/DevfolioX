@@ -385,25 +385,24 @@ export default function NavbarCenteredMobile() {
               {/* Push CTAs to the bottom of the drawer */}
               <div className="flex-1" />
 
-              {/* CTAs — at the very bottom */}
+              {/* CTAs — at the very bottom (Email me is mobile-only, hence
+                  always rendered here regardless of contact.show) */}
               <div className="mt-6 flex flex-col gap-2">
-                {navbarConfig.cta.contact.show !== false && (
-                  <a
-                    href={contactLink.href}
-                    target={contactLink.external ? "_blank" : undefined}
-                    rel={contactLink.external ? "noreferrer noopener" : undefined}
-                    onClick={() => setIsOpen(false)}
-                    className="inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-50 transition hover:border-accent hover:bg-white/10"
-                  >
-                    {(() => {
-                      const Icon = (LucideIcons as any).Mail;
-                      return Icon ? (
-                        <Icon className="h-4 w-4 opacity-80" aria-hidden />
-                      ) : null;
-                    })()}
-                    <span>{contactLink.label}</span>
-                  </a>
-                )}
+                <a
+                  href={contactLink.href}
+                  target={contactLink.external ? "_blank" : undefined}
+                  rel={contactLink.external ? "noreferrer noopener" : undefined}
+                  onClick={() => setIsOpen(false)}
+                  className="inline-flex items-center justify-center gap-2 rounded-md border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-50 transition hover:border-accent hover:bg-white/10"
+                >
+                  {(() => {
+                    const Icon = (LucideIcons as any).Mail;
+                    return Icon ? (
+                      <Icon className="h-4 w-4 opacity-80" aria-hidden />
+                    ) : null;
+                  })()}
+                  <span>{contactLink.label}</span>
+                </a>
 
                 {navbarConfig.cta.primary.show !== false && (
                   <a
