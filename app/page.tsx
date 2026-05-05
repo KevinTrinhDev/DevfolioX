@@ -6,6 +6,7 @@ import { AboutSection } from "../components/sections/About";
 import { EducationSection } from "../components/sections/Education";
 import { ExperienceSection } from "../components/sections/Experience";
 import { ProjectsSection } from "../components/sections/Projects";
+import { PublicationsSection } from "../components/sections/Publications";
 import { ArticleSection } from "../components/sections/Articles";
 import { YouTubeSection } from "../components/sections/YouTube";
 import { CertificationsSection } from "../components/sections/Certifications";
@@ -29,6 +30,7 @@ export default function Page() {
       </Suspense>
 
       {/* These sections don't use URL hooks, so they can render normally */}
+      {sections.publications && <PublicationsSection />}
       {sections.articles && <ArticleSection />}
       <ContentSection />
       {sections.youtube && <YouTubeSection />}

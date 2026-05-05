@@ -215,6 +215,7 @@
     "education": false,
     "experience": true,
     "projects": true,
+    "publications": true,
     "articles": true,
     "youtube": false,
     "certifications": false,

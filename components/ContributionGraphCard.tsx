@@ -548,7 +548,7 @@ export function ContributionGraphCard({
         <div className={cardClass}>
           <div className="rounded-xl p-1.5 sm:p-2">
             {/* Scrollable graph on small screens */}
-            <div className="overflow-x-auto pb-2">
+            <div className="overflow-x-auto pb-2 lg:overflow-x-visible lg:pb-0">
               {isLoading ? (
                 <ContributionSkeleton />
               ) : (

@@ -27,22 +27,16 @@
         "label": "Articles",
         "href": "/articles",
         "show": true
-      },
-      {
-        "id": "content",
-        "label": "Content",
-        "href": "/content",
-        "show": true
       }
     ]
   },
 
   "cta": {
-    "contact": { "label": "Contact", "href": "mailto:contact@kevintrinh.dev", "external": true, "show": true },
+    "contact": { "label": "Resume", "href": "/resume", "external": false, "show": true },
     "primary": {
-      "label": "View Resume",
-      "href": "/resume",
-      "external": true,
+      "label": "Connect with me",
+      "href": "/connect",
+      "external": false,
       "show": true
     }
   }

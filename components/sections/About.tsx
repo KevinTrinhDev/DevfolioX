@@ -6,23 +6,10 @@ import Link from "next/link";
 import { useMemo } from "react";
 import {
   ExternalLink,
-  FileText,
-  GraduationCap,
   MapPin,
   Mail,
-  Activity,
-  GitPullRequest,
-  GitCommitHorizontal,
-  MessageSquare,
-  Bug,
-  FolderGit2,
-  PenLine,
-  BookOpenText,
-  Star,
   GitFork,
   Github,
-  NotebookPen,
-  Folder,
   SquareArrowOutUpRight,
   Code2,
   Wind,
@@ -113,8 +100,6 @@ function isExternalHref(href?: string) {
 
 function iconForProfileLink(type: string) {
   switch (type) {
-    case "school":
-      return GraduationCap;
     case "email":
       return Mail;
     case "linkedin":
@@ -123,41 +108,6 @@ function iconForProfileLink(type: string) {
       return Github;
     default:
       return MapPin;
-  }
-}
-
-function iconForName(name?: string) {
-  switch (name) {
-    case "Star":
-      return Star;
-    case "GitFork":
-      return GitFork;
-    case "Activity":
-      return Activity;
-    case "GitPullRequest":
-      return GitPullRequest;
-    case "GitCommitHorizontal":
-      return GitCommitHorizontal;
-    case "MessageSquare":
-      return MessageSquare;
-    case "Bug":
-      return Bug;
-    case "FolderGit2":
-      return FolderGit2;
-    case "PenLine":
-      return PenLine;
-    case "BookOpenText":
-      return BookOpenText;
-    case "Github":
-      return Github;
-    case "NotebookPen":
-      return NotebookPen;
-    case "Folder":
-      return Folder;
-    case "FileText":
-      return FileText;
-    default:
-      return Activity;
   }
 }
 
@@ -203,18 +153,13 @@ export function AboutSection() {
   const leftLinks = useMemo(() => {
     const filtered = (a.profileLinks || []).filter((item: any) => {
       const t = String(item?.type || "");
-      return t !== "location";
+      return t !== "location" && t !== "school";
     });
 
     const byType = new Map<string, any>();
     for (const item of filtered) byType.set(String(item.type || ""), item);
 
     const socials: any = (siteConfig as any)?.socials ?? {};
-
-    const school = byType.get("school") ?? {
-      type: "school",
-      label: a.schoolName || "University",
-    };
 
     const email = byType.get("email") ?? {
       type: "email",
@@ -240,11 +185,11 @@ export function AboutSection() {
 
     const extras = filtered.filter((x: any) => {
       const t = String(x?.type || "");
-      return !["school", "email", "linkedin", "github"].includes(t);
+      return !["email", "linkedin", "github"].includes(t);
     });
 
-    return [school, email, linkedin, github, ...extras];
-  }, [a.profileLinks, a.schoolName]);
+    return [email, linkedin, github, ...extras];
+  }, [a.profileLinks]);
 
   // ✅ exact list/order requested (ignores config)
   const techList = useMemo(
@@ -260,17 +205,6 @@ export function AboutSection() {
     ],
     []
   );
-
-  const metricCards = useMemo(() => {
-    const keep = new Set([
-      "Projects & Repositories",
-      "GitHub activity overview",
-    ]);
-    const cards = (a.snapshot?.cards || []).filter((c: any) =>
-      keep.has(String(c?.title || ""))
-    );
-    return cards.slice(0, 2);
-  }, [a.snapshot?.cards]);
 
   return (
     <section id="about" className="py-16 scroll-mt-12">
@@ -406,70 +340,6 @@ export function AboutSection() {
                 ) : null}
               </div>
             </Link>
-
-            {/* ✅ Metric cards: hidden on mobile (issue #8) */}
-            <div className="hidden sm:grid sm:grid-cols-2 gap-3">
-              {metricCards.map((card: any) => {
-                const CardIcon = iconForName(card.icon);
-                const stats = card.stats as
-                  | { icon: string; label: string; value: string }[]
-                  | undefined;
-
-                return (
-                  <Link
-                    key={card.title}
-                    href="/stats"
-                    className="group/metric block rounded-xl border border-white/10 bg-transparent p-4 transition-colors duration-200 hover:border-white/20 hover:bg-white/5"
-                    aria-label="Open stats"
-                  >
-                    <div className="min-w-0">
-                      <div className="inline-flex items-center gap-2">
-                        <CardIcon className="h-4 w-4 text-slate-200/80" />
-
-                        <span
-                          className="
-                            relative inline-block text-sm font-semibold text-indigo-300
-                            after:absolute after:left-0 after:-bottom-0.5 after:h-px after:w-0 after:bg-indigo-300
-                            after:transition-all after:duration-300
-                            group-hover/metric:after:w-full
-                          "
-                        >
-                          {card.title}
-                        </span>
-                      </div>
-
-                      {card.description ? (
-                        <div className="mt-2 text-[13px] leading-5 text-muted-foreground">
-                          {card.description}
-                        </div>
-                      ) : null}
-                    </div>
-
-                    {stats?.length ? (
-                      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-muted-foreground">
-                        {stats.slice(0, 4).map((st) => {
-                          const StatIcon = iconForName(st.icon);
-                          return (
-                            <span
-                              key={`${card.title}-${st.label}`}
-                              className="group inline-flex items-center gap-1.5"
-                            >
-                              <StatIcon className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-indigo-300" />
-                              <span className="text-slate-200/80 transition-colors group-hover:text-indigo-300">
-                                {st.value}
-                              </span>
-                              <span className="transition-colors group-hover:text-indigo-300">
-                                {st.label}
-                              </span>
-                            </span>
-                          );
-                        })}
-                      </div>
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </div>
           </div>
         </div>
       </div>

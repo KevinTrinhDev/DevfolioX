@@ -228,11 +228,11 @@ export function HeroShowcaseSection() {
   const resumeHref = "/resume";
 
   // Top small text
-  const smallLabel = "Hello there,";
+  const smallLabel = "Hi there,";
 
   // Big heading lines
-  const lineOne = "Kevin Trinh here.";
-  const lineTwo = "I like to build cool stuff often.";
+  const lineOne = "Kevin Trinh here";
+  const lineTwo = "I build full-stack apps, tools, and ML side projects";
 
   const description =
     "I'm currently pursuing a B.S. in Computer Science at the University of Houston. I have a profound interest in machine learning, databases, full-stack apps, and everything in between.";

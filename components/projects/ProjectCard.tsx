@@ -10,6 +10,7 @@ interface ProjectCardProps {
   project: ProjectItem;
   onOpenDetails: (project: ProjectItem) => void;
   iconFor: (type?: string) => ReactNode;
+  hideImage?: boolean;
 }
 
 function formatRelativeDate(iso?: string): string | null {
@@ -31,7 +32,7 @@ function fallbackImage(_project: ProjectItem): string {
   return "/images/demo_1.png";
 }
 
-export function ProjectCard({ project, iconFor }: ProjectCardProps) {
+export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
   const router = useRouter();
 
   const hasStats =
@@ -84,15 +85,17 @@ export function ProjectCard({ project, iconFor }: ProjectCardProps) {
       aria-label={`Open ${project.name} project page`}
     >
       {/* Cover image */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-white/5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={image}
-          alt={project.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          loading="lazy"
-        />
-      </div>
+      {!hideImage && (
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-white/5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image}
+            alt={project.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            loading="lazy"
+          />
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col p-4">
         {/* TOP ROW: icon + stats */}

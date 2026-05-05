@@ -2,7 +2,6 @@
 // Landing-page "Content" section. A small preview of /content (the platform
 // hub): one big featured-video card on the left, and a stack of small
 // platform tiles on the right.
-import Link from "next/link";
 import { ArrowUpRight, Play } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 
@@ -65,7 +64,7 @@ export function ContentSection() {
   const ytChannel = urlForKey("youtube");
   const videoUrl = videoId
     ? `https://www.youtube.com/watch?v=${videoId}`
-    : ytChannel ?? "/content";
+    : ytChannel ?? "#content";
   const videoThumb = videoId
     ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
     : null;
@@ -77,19 +76,10 @@ export function ContentSection() {
           ~/Content
         </h2>
 
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-3">
           <h3 className="text-2xl font-semibold sm:text-3xl">
             Where I post stuff.
           </h3>
-          <Link
-            href="/content"
-            className="group inline-flex items-center gap-1.5 text-sm font-semibold text-foreground"
-          >
-            <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-              See all content
-            </span>
-            <ArrowUpRight className="h-4 w-4 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </Link>
         </div>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-[1.4fr_1fr]">

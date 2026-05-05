@@ -221,6 +221,7 @@ const defaultSections = {
   education: true,
   experience: true,
   projects: true,
+  publications: true,
   articles: true,
   youtube: true,
   certifications: true,

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import {
   Github,
   Globe,
@@ -11,6 +11,7 @@ import {
   PlayCircle,
   ExternalLink,
   FolderGit2,
+  ArrowUpRight,
 } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ProjectItem } from "../../config/projects";
@@ -29,8 +30,6 @@ export function ProjectsSectionClient({
   // If the loader somehow returns an empty list, show nothing
   if (!projects.length) return null;
 
-  // Always show 3 cards by default, then expand when "Show More" is clicked
-  const [showAll, setShowAll] = useState(false);
   const defaultVisibleCount = 3;
 
   const router = useRouter();
@@ -46,11 +45,10 @@ export function ProjectsSectionClient({
     [selectedProjectId, projects]
   );
 
-  // Show 3 cards by default, all if "Show More" is clicked
-  const visibleProjects = useMemo(() => {
-    if (showAll) return projects;
-    return projects.slice(0, Math.min(defaultVisibleCount, projects.length));
-  }, [projects, showAll]);
+  const visibleProjects = useMemo(
+    () => projects.slice(0, Math.min(defaultVisibleCount, projects.length)),
+    [projects]
+  );
 
   // Use featured projects for the carousel; fallback to first projects if none marked featured.
   // Also cap to 8 to keep the carousel clean.
@@ -135,34 +133,23 @@ export function ProjectsSectionClient({
                 project={project}
                 onOpenDetails={openProject}
                 iconFor={iconFor}
+                hideImage
               />
             </div>
           ))}
         </div>
-        
-        {/* Show More button */}
-        {!showAll && projects.length > defaultVisibleCount && (
+
+        {projects.length > defaultVisibleCount && (
           <div className="mt-8 flex justify-center">
-            <button
-              onClick={() => setShowAll(true)}
+            <a
+              href="/projects"
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white/80 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/10 hover:text-white active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
-              <span>Show More Projects</span>
-              <ExternalLink className="h-4 w-4 rotate-90" />
-            </button>
-          </div>
-        )}
-        
-        {/* Show Less button when expanded */}
-        {showAll && projects.length > defaultVisibleCount && (
-          <div className="mt-8 flex justify-center">
-            <button
-              onClick={() => setShowAll(false)}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-6 py-3 text-sm font-medium text-white/80 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-white/10 hover:text-white active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <span>Show Less</span>
-              <ExternalLink className="h-4 w-4 -rotate-90" />
-            </button>
+              <span>View all projects</span>
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
           </div>
         )}
       </div>
