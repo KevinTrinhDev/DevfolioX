@@ -11,6 +11,7 @@ import {
   Coffee,
   GraduationCap,
   AtSign,
+  MoreHorizontal,
 } from "lucide-react";
 
 import { ContributionGraphCard } from "../ContributionGraphCard";
@@ -249,10 +250,11 @@ export function HeroShowcaseSection() {
     "Computer Science student at the University of Houston building full-stack web apps with clean UI, scalable backends, and practical machine learning.";
 
   return (
-    // ✅ Mobile: vertically centered viewport-height hero; desktop unchanged
+    // ✅ Mobile: ~80dvh tall + centered, so the next section peeks below the fold.
+    // Desktop layout unchanged.
     <section
       id="top"
-      className="flex min-h-[calc(100dvh-4rem)] flex-col justify-center pt-12 pb-20 sm:block sm:min-h-0 sm:pt-16 lg:pt-28"
+      className="flex min-h-[80dvh] flex-col justify-center pt-10 pb-12 sm:block sm:min-h-0 sm:pt-16 sm:pb-20 lg:pt-28"
     >
       <div className="mx-auto w-full max-w-6xl px-4">
         {/* Top hero row (right side left blank for now) */}
@@ -322,6 +324,20 @@ export function HeroShowcaseSection() {
                   </a>
                 );
               })}
+
+              {/* Mobile-only "more" affordance — opens the /links hub in a
+                  new tab so users discover the rest of the socials. */}
+              <a
+                href="/links"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="See all my links"
+                title="See all my links"
+                className="inline-flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-slate-50/90 transition-colors duration-150 hover:bg-white/5 hover:text-slate-50 sm:hidden"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span>More</span>
+              </a>
             </div>
 
             {/* CTA — opens the hub page in a new tab */}
