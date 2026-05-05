@@ -12,13 +12,13 @@ export default function LinksLayout({ children }: { children: ReactNode }) {
           and defeats overscroll/horizontal-scrollbar gaps showing the site bg. */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-20 bg-gradient-to-b from-white via-sky-50 to-sky-100"
+        className="pointer-events-none fixed inset-0 -z-20 bg-gradient-to-b from-white via-sky-100 to-sky-200/70"
       />
       {/* Soft accent glow behind the avatar — pure CSS, GPU-friendly, fixed
           so it stays in place as the user scrolls. */}
       <div
         aria-hidden
-        className="pointer-events-none fixed left-1/2 top-0 -z-10 h-72 w-[480px] -translate-x-1/2 rounded-full bg-sky-300/30 blur-3xl"
+        className="pointer-events-none fixed left-1/2 top-0 -z-10 h-80 w-[520px] -translate-x-1/2 rounded-full bg-sky-300/45 blur-3xl"
       />
       {children}
     </div>
