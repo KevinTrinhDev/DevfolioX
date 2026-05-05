@@ -50,7 +50,7 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
     : project.summary ?? "";
 
   const actionBtnClass =
-    "inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-transparent px-2.5 py-1 text-[11px] text-muted-foreground transition-colors hover:border-accent hover:text-foreground";
+    "inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/15 bg-transparent text-muted-foreground transition-colors hover:border-accent hover:text-foreground";
 
   const image = project.imageUrl || fallbackImage(project);
 
@@ -82,7 +82,7 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
       )}
 
       <div className="flex flex-1 flex-col p-4">
-        {/* TOP ROW: icon + stats */}
+        {/* TOP ROW: folder icon + icon-only action buttons */}
         <div className="flex items-center justify-between gap-3">
           <span
             className="inline-flex items-center justify-center text-indigo-300/95"
@@ -92,26 +92,22 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
             <Folder className="h-7 w-7" />
           </span>
 
-          {hasStats ? (
-            <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
-              {project.githubStars !== undefined && (
-                <span className="inline-flex items-center gap-1" title="Stars">
-                  <Star className="h-4 w-4" />
-                  <span>{project.githubStars}</span>
-                </span>
-              )}
-              {project.githubForks !== undefined && (
-                <span className="inline-flex items-center gap-1" title="Forks">
-                  <GitFork className="h-4 w-4" />
-                  <span>{project.githubForks}</span>
-                </span>
-              )}
-              {project.downloads !== undefined && (
-                <span className="inline-flex items-center gap-1" title="Downloads">
-                  <Download className="h-4 w-4" />
-                  <span>{project.downloads}</span>
-                </span>
-              )}
+          {project.links?.length ? (
+            <div className="flex items-center gap-1">
+              {project.links.map((link: ProjectLink) => (
+                <a
+                  key={`${project.id}-${link.label}-${link.href}`}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={link.label}
+                  title={link.label}
+                  className={actionBtnClass}
+                >
+                  {iconFor(link.type)}
+                </a>
+              ))}
             </div>
           ) : null}
         </div>
@@ -139,24 +135,27 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
           ) : null}
         </div>
 
-        {/* FOOTER: action buttons */}
-        {project.links?.length ? (
-          <div className="mt-4 pt-3">
-            <div className="flex flex-wrap justify-start gap-2">
-              {project.links.map((link: ProjectLink) => (
-                <a
-                  key={`${project.id}-${link.label}-${link.href}`}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className={actionBtnClass}
-                >
-                  {iconFor(link.type)}
-                  <span>{link.label}</span>
-                </a>
-              ))}
-            </div>
+        {/* FOOTER: stats line */}
+        {hasStats ? (
+          <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3 text-[12px] text-muted-foreground">
+            {project.githubStars !== undefined && (
+              <span className="inline-flex items-center gap-1" title="Stars">
+                <Star className="h-3.5 w-3.5" />
+                <span>{project.githubStars}</span>
+              </span>
+            )}
+            {project.githubForks !== undefined && (
+              <span className="inline-flex items-center gap-1" title="Forks">
+                <GitFork className="h-3.5 w-3.5" />
+                <span>{project.githubForks}</span>
+              </span>
+            )}
+            {project.downloads !== undefined && (
+              <span className="inline-flex items-center gap-1" title="Downloads">
+                <Download className="h-3.5 w-3.5" />
+                <span>{project.downloads}</span>
+              </span>
+            )}
           </div>
         ) : null}
       </div>

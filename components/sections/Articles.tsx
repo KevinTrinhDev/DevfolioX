@@ -75,24 +75,18 @@ export function ArticleSection() {
 
         {/* Default view only: 1 featured + 2 latest */}
         <div className="mt-8 grid gap-4 lg:grid-cols-2 lg:items-stretch">
-          <ArticleCard
-            post={featured as Article}
-            variant="featured"
-            wrapperClassName="h-full"
-          />
+          <ArticleCard post={featured as Article} wrapperClassName="h-full" />
 
           <div className="flex h-full flex-col gap-4">
             {latestTwo[0] && (
               <ArticleCard
                 post={latestTwo[0] as Article}
-                variant="stack"
                 wrapperClassName="flex-1"
               />
             )}
             {latestTwo[1] && (
               <ArticleCard
                 post={latestTwo[1] as Article}
-                variant="stack"
                 wrapperClassName="flex-1"
               />
             )}
@@ -107,28 +101,20 @@ export function ArticleSection() {
 export const ArticlesSection = ArticleSection;
 
 type Article = (typeof articles)[number];
-type Variant = "featured" | "stack";
 
-/* ---------- Cards ---------- */
+/* ---------- Card ---------- */
 
 function ArticleCard({
   post,
-  variant,
   wrapperClassName = "",
 }: {
   post: Article;
-  variant: Variant;
   wrapperClassName?: string;
 }) {
   const href = getPostHref(post);
   const isExternal = /^https?:\/\//i.test(href);
 
-  const CardInner =
-    variant === "featured" ? (
-      <FeaturedCardInner post={post} />
-    ) : (
-      <StackCardInner post={post} />
-    );
+  const Inner = <ArticleCardInner post={post} />;
 
   if (isExternal) {
     return (
@@ -138,173 +124,68 @@ function ArticleCard({
         rel="noreferrer"
         className={`block ${wrapperClassName}`}
       >
-        {CardInner}
+        {Inner}
       </a>
     );
   }
 
   return (
     <Link href={href} className={`block ${wrapperClassName}`}>
-      {CardInner}
+      {Inner}
     </Link>
   );
 }
 
-function FeaturedCardInner({ post }: { post: Article }) {
-  const summaryMobile = post.summary ? truncateText(post.summary, 170) : "";
-  const summaryDesktop = post.summary ? truncateText(post.summary, 220) : "";
-
+function ArticleCardInner({ post }: { post: Article }) {
   const date = post.date?.trim() ? formatMonthDayYear(post.date) : "";
   const readTime = post.readTime?.trim()
     ? normalizeReadTime(post.readTime)
     : "";
 
   return (
-    <article className="group relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5 text-sm text-muted-foreground shadow-sm sm:min-h-[470px] sm:text-base">
-      <div className="relative flex-[3] overflow-hidden px-3 pb-1 pt-3">
-        <div className="relative h-full w-full overflow-hidden rounded-md border border-white/10 bg-white/5">
-          {post.imageSrc ? (
-            <Image
-              src={post.imageSrc}
-              alt={post.imageAlt || post.title}
-              fill
-              priority
-              sizes="(min-width: 1024px) 520px, 100vw"
-              className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.05]"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-white/5">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent" />
-            </div>
-          )}
-        </div>
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-colors duration-200 ease-out hover:border-white/20 hover:bg-white/[0.07]">
+      {/* Cover image fills available space */}
+      <div className="relative min-h-[140px] w-full flex-1 overflow-hidden bg-white/5">
+        {post.imageSrc ? (
+          <Image
+            src={post.imageSrc}
+            alt={post.imageAlt || post.title}
+            fill
+            sizes="(min-width: 1024px) 520px, 100vw"
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/25 via-violet-500/15 to-sky-500/15" />
+        )}
       </div>
 
-      <div className="flex min-h-0 flex-[2] flex-col px-4 pb-4 pt-2 sm:px-5 sm:pb-5 sm:pt-3">
-        {post.category ? (
-          <div className="mt-2 flex items-center">
-            <CategoryBadge category={post.category} />
-          </div>
-        ) : null}
+      {/* Compact content footer */}
+      <div className="flex flex-none flex-col gap-2 p-4 sm:p-5">
+        {post.category ? <CategoryBadge category={post.category} /> : null}
 
-        <h4 className="mt-2 min-w-0 text-[15px] font-semibold leading-snug text-foreground sm:text-base">
+        <h4 className="min-w-0 text-[15px] font-semibold leading-snug text-foreground sm:text-base">
           <span className="block min-w-0 break-words line-clamp-2">
-            <span>{post.title}</span>
+            {post.title}
           </span>
         </h4>
 
-        {summaryMobile && (
-          <>
-            <p className="mt-3 text-xs text-muted-foreground sm:hidden">
-              {summaryMobile}
-            </p>
-            <p className="mt-3 hidden text-xs text-muted-foreground sm:block sm:text-sm">
-              {summaryDesktop}
-            </p>
-          </>
-        )}
-
         {(date || readTime) && (
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-[13px] font-medium text-white/90">
+          <div className="flex flex-wrap items-center gap-3 text-[12px] font-medium text-muted-foreground sm:text-[13px]">
             {date ? (
               <span className="inline-flex items-center gap-1.5">
-                <CalendarDays
-                  className="h-4 w-4 text-white/70"
-                  aria-hidden="true"
-                />
+                <CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{date}</span>
               </span>
             ) : null}
             {readTime ? (
               <span className="inline-flex items-center gap-1.5">
-                <Clock3 className="h-4 w-4 text-white/70" aria-hidden="true" />
+                <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{readTime}</span>
               </span>
             ) : null}
           </div>
         )}
       </div>
-    </article>
-  );
-}
-
-function StackCardInner({ post }: { post: Article }) {
-  const summaryMobile = post.summary ? truncateText(post.summary, 140) : "";
-  const summaryDesktop = post.summary ? truncateText(post.summary, 180) : "";
-
-  const date = post.date?.trim() ? formatMonthDayYear(post.date) : "";
-  const readTime = post.readTime?.trim()
-    ? normalizeReadTime(post.readTime)
-    : "";
-
-  return (
-    <article
-      className={[
-        "group relative flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-muted-foreground shadow-sm",
-        "sm:justify-center sm:p-5 sm:text-base",
-        // ✅ subtle hover bg/border/shadow like ProjectCard (very light)
-        "transition-colors transition-shadow duration-200 ease-out",
-        "hover:bg-white/[0.07] hover:border-white/15 hover:shadow-sm",
-      ].join(" ")}
-    >
-      <div className="sm:hidden">
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md border border-white/10 bg-white/5">
-          {post.imageSrc ? (
-            <Image
-              src={post.imageSrc}
-              alt={post.imageAlt || post.title}
-              fill
-              sizes="100vw"
-              className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="absolute inset-0 bg-white/5" />
-          )}
-        </div>
-      </div>
-
-      {post.category ? (
-        <div className="mt-3 flex items-center sm:mt-0">
-          <CategoryBadge category={post.category} />
-        </div>
-      ) : null}
-
-      <h4 className="mt-2 min-w-0 text-[15px] font-semibold leading-snug text-foreground sm:text-base">
-        <span className="block min-w-0 break-words line-clamp-2">
-          {post.title}
-        </span>
-      </h4>
-
-      {summaryMobile && (
-        <>
-          <p className="mt-3 text-xs text-muted-foreground sm:hidden">
-            {summaryMobile}
-          </p>
-          <p className="mt-3 hidden text-xs text-muted-foreground sm:block sm:text-sm">
-            {summaryDesktop}
-          </p>
-        </>
-      )}
-
-      {(date || readTime) && (
-        <div className="mt-2 flex flex-wrap items-center gap-3 text-[13px] font-medium text-white/90">
-          {date ? (
-            <span className="inline-flex items-center gap-1.5">
-              <CalendarDays
-                className="h-4 w-4 text-white/70"
-                aria-hidden="true"
-              />
-              <span>{date}</span>
-            </span>
-          ) : null}
-          {readTime ? (
-            <span className="inline-flex items-center gap-1.5">
-              <Clock3 className="h-4 w-4 text-white/70" aria-hidden="true" />
-              <span>{readTime}</span>
-            </span>
-          ) : null}
-        </div>
-      )}
     </article>
   );
 }
@@ -355,8 +236,3 @@ function normalizeReadTime(input: string): string {
   return `${trimmed} read`;
 }
 
-function truncateText(text: string, maxChars: number): string {
-  const clean = text.trim();
-  if (clean.length <= maxChars) return clean;
-  return clean.slice(0, Math.max(0, maxChars - 1)).trimEnd() + "…";
-}

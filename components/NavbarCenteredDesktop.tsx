@@ -262,13 +262,15 @@ export function NavbarCentered() {
                 }}
                 onClick={() => setOpenDropdownKey(null)}
               >
-                <Image
-                  src={logo.imageSrc}
-                  alt={logo.imageAlt}
-                  width={24}
-                  height={24}
-                  className="shrink-0 rounded-sm"
-                />
+                {logo.imageSrc ? (
+                  <Image
+                    src={logo.imageSrc}
+                    alt={logo.imageAlt}
+                    width={24}
+                    height={24}
+                    className="shrink-0 rounded-sm"
+                  />
+                ) : null}
                 <span className="text-base font-semibold leading-none tracking-tight sm:text-lg">
                   {logo.label}
                 </span>
@@ -300,13 +302,15 @@ export function NavbarCentered() {
                   }
                 }}
               >
-                <Image
-                  src={logo.imageSrc}
-                  alt={logo.imageAlt}
-                  width={24}
-                  height={24}
-                  className="shrink-0 rounded-sm"
-                />
+                {logo.imageSrc ? (
+                  <Image
+                    src={logo.imageSrc}
+                    alt={logo.imageAlt}
+                    width={24}
+                    height={24}
+                    className="shrink-0 rounded-sm"
+                  />
+                ) : null}
                 <span className="text-base font-semibold leading-none tracking-tight sm:text-lg">
                   {logo.label}
                 </span>

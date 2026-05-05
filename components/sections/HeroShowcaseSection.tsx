@@ -9,8 +9,6 @@ import {
   Coffee,
   GraduationCap,
   AtSign,
-  Handshake,
-  Instagram,
 } from "lucide-react";
 
 import { ContributionGraphCard } from "../ContributionGraphCard";
@@ -149,6 +147,28 @@ function IconLeetCodeFilled({ className = "" }: { className?: string }) {
   );
 }
 
+function IconInstagramFilled({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      <path
+        fill="currentColor"
+        d="M12 2c-2.717 0-3.056.012-4.122.06-1.064.05-1.79.218-2.428.465a4.9 4.9 0 0 0-1.772 1.153A4.9 4.9 0 0 0 2.525 5.45c-.247.637-.415 1.363-.465 2.427C2.012 8.944 2 9.283 2 12s.012 3.056.06 4.122c.05 1.064.218 1.79.465 2.428a4.9 4.9 0 0 0 1.153 1.772 4.9 4.9 0 0 0 1.772 1.153c.638.247 1.364.415 2.428.465 1.066.048 1.405.06 4.122.06s3.056-.012 4.122-.06c1.064-.05 1.79-.218 2.428-.465a4.9 4.9 0 0 0 1.772-1.153 4.9 4.9 0 0 0 1.153-1.772c.247-.638.415-1.364.465-2.428.048-1.066.06-1.405.06-4.122s-.012-3.056-.06-4.122c-.05-1.064-.218-1.79-.465-2.428a4.9 4.9 0 0 0-1.153-1.772A4.9 4.9 0 0 0 18.55 2.525c-.638-.247-1.364-.415-2.428-.465C15.056 2.012 14.717 2 12 2Zm0 5.838a4.162 4.162 0 1 1 0 8.324 4.162 4.162 0 0 1 0-8.324Zm0 6.862a2.7 2.7 0 1 0 0-5.4 2.7 2.7 0 0 0 0 5.4Zm5.292-7.012a.972.972 0 1 1 0-1.944.972.972 0 0 1 0 1.944Z"
+      />
+    </svg>
+  );
+}
+
+function IconMailFilled({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      <path
+        fill="currentColor"
+        d="M2.5 6.4A2.5 2.5 0 0 1 5 4h14a2.5 2.5 0 0 1 2.5 2.4l-9.5 5.7-9.5-5.7Zm0 1.95v9.15A2.5 2.5 0 0 0 5 20h14a2.5 2.5 0 0 0 2.5-2.5V8.35l-9.05 5.43a1 1 0 0 1-1.05 0L2.5 8.35Z"
+      />
+    </svg>
+  );
+}
+
 function IconTikTokFilled({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
@@ -199,7 +219,7 @@ function SocialIcon({ item }: { item: SocialItem }) {
   if (key === "tiktok") return <IconTikTokFilled className={base} />;
   if (key === "leetcode") return <IconLeetCodeFilled className={base} />;
   if (key === "youtube") return <IconYouTubeFilled className={base} />;
-  if (key === "instagram") return <Instagram className={base} />;
+  if (key === "instagram") return <IconInstagramFilled className={base} />;
   if (key === "threads") return <IconThreadsFilled className={base} />;
   if (key === "devto" || key === "dev.to")
     return <IconDevToFilled className={base} />;
@@ -302,8 +322,8 @@ export function HeroShowcaseSection() {
                     href={emailHref}
                     className="group inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-slate-50 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-accent/95 hover:shadow-lg hover:shadow-accent/30"
                   >
-                    <Handshake className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-6" />
-                    <span>Say hello to me</span>
+                    <IconMailFilled className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
+                    <span>Say hello!</span>
                   </a>
                 );
               })()}

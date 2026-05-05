@@ -219,13 +219,15 @@ export default function NavbarCenteredMobile() {
               }
             }}
           >
-            <Image
-              src={logo.imageSrc}
-              alt={logo.imageAlt}
-              width={24}
-              height={24}
-              className="shrink-0 rounded-sm"
-            />
+            {logo.imageSrc ? (
+              <Image
+                src={logo.imageSrc}
+                alt={logo.imageAlt}
+                width={24}
+                height={24}
+                className="shrink-0 rounded-sm"
+              />
+            ) : null}
             <span className="text-base font-semibold leading-none tracking-tight text-slate-50">
               {logo.label}
             </span>
