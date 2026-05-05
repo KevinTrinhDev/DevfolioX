@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     description: `Read ${siteConfig.name}'s articles about software development, technology, and more.`,
     images: [
       {
-        url: "/images/demo_1.png",
+        url: "/images/og/articles.png",
         width: 1200,
         height: 630,
         alt: `${siteConfig.name} — articles`,
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `Articles | ${siteConfig.name}`,
     description: `Read ${siteConfig.name}'s articles about software development, technology, and more.`,
-    images: ["/images/demo_1.png"],
+    images: ["/images/og/articles.png"],
   },
 };
 

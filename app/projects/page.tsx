@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     description: `Explore ${siteConfig.name}'s portfolio of software projects.`,
     images: [
       {
-        url: "/images/demo_1.png",
+        url: "/images/og/projects.png",
         width: 1200,
         height: 630,
         alt: `${siteConfig.name} — projects`,
@@ -38,14 +38,14 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `Projects | ${siteConfig.name}`,
     description: `Explore ${siteConfig.name}'s portfolio of software projects.`,
-    images: ["/images/demo_1.png"],
+    images: ["/images/og/projects.png"],
   },
 };
 
 // Revalidate every 3 hours
 export const revalidate = 10800; // 3 hours
 
-const FALLBACK_IMG = "/images/demo_1.png";
+const FALLBACK_IMG = "/images/og/projects.png";
 
 function ProjectCard({ project }: { project: ProjectItem }) {
   const hasStats =

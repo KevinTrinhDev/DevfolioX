@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "setup": "node scripts/setup.js",
     "validate-env": "node scripts/validate-env.js",
+    "build-og": "node scripts/build-og.js",
     "prebuild": "node scripts/validate-env.js",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare preview",
