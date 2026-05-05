@@ -222,7 +222,7 @@ function buildYearGrid(
   const approxTotal = hasData ? yearTotal : 0;
   const summaryLabel =
     approxTotal > 0
-      ? `${formatCompact(approxTotal)} contributions in ${year}`
+      ? `${formatCompact(approxTotal)}+ contributions in ${year}`
       : `No contributions recorded in ${year}`;
 
   return { cells, weekCount, monthLabelByWeek, approxTotal, summaryLabel };
@@ -384,7 +384,7 @@ function buildRollingGrid(
   const approxTotal = hasData ? windowTotal : 0;
   const summaryLabel =
     approxTotal > 0
-      ? `${formatCompact(approxTotal)} contributions in the last year`
+      ? `${formatCompact(approxTotal)}+ contributions in the last year`
       : "No contributions recorded in the last year";
 
   return { cells, weekCount, monthLabelByWeek, approxTotal, summaryLabel };

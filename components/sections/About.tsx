@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useMemo } from "react";
 import {
   Mail,
-  Handshake,
   FileText,
   SquareArrowOutUpRight,
 } from "lucide-react";
@@ -90,35 +89,25 @@ export function AboutSection() {
 
             {/* Action buttons */}
             <div className="space-y-2">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {emailHref ? (
-                  <a
-                    href={emailHref}
-                    title={emailLabel}
-                    className="group inline-flex w-full min-w-0 items-center justify-center gap-1.5 rounded-md border border-white/15 px-2.5 py-2 text-[12px] font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
-                  >
-                    <Mail className="h-3.5 w-3.5 flex-none opacity-80" />
-                    <span className="truncate">{emailLabel}</span>
-                  </a>
-                ) : null}
-
+              {emailHref ? (
                 <a
-                  href="/resume"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-white/15 px-2.5 py-2 text-[12px] font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
+                  href={emailHref}
+                  title={emailLabel}
+                  className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
                 >
-                  <FileText className="h-3.5 w-3.5 flex-none opacity-80" />
-                  <span>My Resume</span>
+                  <Mail className="h-4 w-4 flex-none" />
+                  <span className="truncate">{emailLabel}</span>
                 </a>
-              </div>
+              ) : null}
 
               <a
-                href="/connect"
+                href="/resume"
+                target="_blank"
+                rel="noreferrer"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/15 px-3.5 py-2 text-sm font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
               >
-                <Handshake className="h-4 w-4 opacity-80" />
-                My Socials
+                <FileText className="h-4 w-4 opacity-80" />
+                <span>My Resume</span>
               </a>
             </div>
           </aside>
