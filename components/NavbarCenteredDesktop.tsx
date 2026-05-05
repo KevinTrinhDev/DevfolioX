@@ -13,6 +13,24 @@ import type {
   NavDropdownItemCfg,
   NavDropdownFooterCfg,
 } from "@/config/navbarConfig";
+import {
+  GithubGlyph,
+  LinkedInGlyph,
+  YoutubeGlyph,
+} from "@/components/BrandGlyphs";
+
+function PrimaryCtaContent({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span>{label}</span>
+      <span className="inline-flex items-center -space-x-1">
+        <GithubGlyph className="h-3.5 w-3.5 rounded-full ring-1 ring-accent" />
+        <LinkedInGlyph className="h-3.5 w-3.5 rounded-full ring-1 ring-accent" />
+        <YoutubeGlyph className="h-3.5 w-3.5 rounded-full bg-white ring-1 ring-accent" />
+      </span>
+    </span>
+  );
+}
 
 const PENDING_SECTION_KEY = "__nav_pending_section__";
 
@@ -500,7 +518,7 @@ export function NavbarCentered() {
                   }}
                   onClick={() => setOpenDropdownKey(null)}
                 >
-                  {primaryCta.label}
+                  <PrimaryCtaContent label={primaryCta.label} />
                 </a>
               ) : (
                 <Link
@@ -513,7 +531,7 @@ export function NavbarCentered() {
                   }}
                   onClick={() => setOpenDropdownKey(null)}
                 >
-                  {primaryCta.label}
+                  <PrimaryCtaContent label={primaryCta.label} />
                 </Link>
               ))}
           </div>

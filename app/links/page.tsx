@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   Folder,
   Globe,
-  Home,
   Mail,
   MapPin,
   Newspaper,
@@ -21,7 +20,7 @@ const BASE_URL = (
   process.env.NEXT_PUBLIC_BASE_URL || "https://kevintrinh.dev"
 ).replace(/\/$/, "");
 
-const LINKS_DESCRIPTION = `Every place ${siteConfig.name} is active online — socials, portfolio, projects, and articles in one link.`;
+const LINKS_DESCRIPTION = `Where ${siteConfig.name} hangs out online — socials, portfolio, and content in one link.`;
 
 export const metadata: Metadata = {
   title: `Links | ${siteConfig.name}`,
@@ -135,18 +134,6 @@ function TikTokGlyph({ className = "" }: { className?: string }) {
   );
 }
 
-function XGlyph({ className = "" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
-      <rect width="24" height="24" rx="5" fill="#000000" />
-      <path
-        fill="#ffffff"
-        d="M17.4 5.5h2.1l-4.6 5.3 5.4 7.7h-4.2l-3.3-4.7-3.7 4.7H7l4.9-5.7L6.7 5.5h4.3l3 4.3 3.4-4.3Zm-.7 11.7h1.2L8.5 6.7H7.2l9.5 10.5Z"
-      />
-    </svg>
-  );
-}
-
 type SocialGlyph = {
   key: string;
   label: string;
@@ -160,7 +147,6 @@ const SOCIAL_ORDER = [
   "youtube",
   "instagram",
   "tiktok",
-  "x",
 ] as const;
 
 function glyphForKey(key: string) {
@@ -175,8 +161,6 @@ function glyphForKey(key: string) {
       return InstagramGlyph;
     case "tiktok":
       return TikTokGlyph;
-    case "x":
-      return XGlyph;
     default:
       return null;
   }
@@ -287,28 +271,18 @@ export default function LinksPage() {
         className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-indigo-500/15 blur-3xl"
       />
 
-      {/* Top-left: Home */}
+      {/* Top-left: Email */}
       <a
-        href="/"
-        target="_blank"
-        rel="noreferrer noopener"
-        aria-label="Open homepage"
-        title="Open homepage"
-        className="absolute left-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/5 text-slate-200 transition-colors hover:border-accent hover:bg-white/10 hover:text-white sm:left-5 sm:top-5"
+        href={emailHref}
+        aria-label={`Email ${siteConfig.name}`}
+        title={`Email ${siteConfig.name}`}
+        className="absolute left-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-md border border-indigo-400/40 bg-indigo-500/15 text-indigo-200 transition-colors hover:border-indigo-300 hover:bg-indigo-500/25 hover:text-white sm:left-5 sm:top-5"
       >
-        <Home className="h-4 w-4" aria-hidden />
+        <Mail className="h-4 w-4" aria-hidden />
       </a>
 
-      {/* Top-right: Email + Share — icon only */}
+      {/* Top-right: Share */}
       <div className="absolute right-4 top-4 flex items-center gap-2 sm:right-5 sm:top-5">
-        <a
-          href={emailHref}
-          aria-label={`Email ${siteConfig.name}`}
-          title={`Email ${siteConfig.name}`}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-indigo-400/40 bg-indigo-500/15 text-indigo-200 transition-colors hover:border-indigo-300 hover:bg-indigo-500/25 hover:text-white"
-        >
-          <Mail className="h-4 w-4" aria-hidden />
-        </a>
         <ShareButton
           label="Share"
           showLabel={false}
@@ -341,13 +315,12 @@ export default function LinksPage() {
 
       {/* Description */}
       <p className="z-10 mt-3 max-w-xs text-center text-sm leading-relaxed text-slate-200/85">
-        Full-stack developer & Computer Science student at the University of
-        Houston. Always shipping something.
+        Full-stack developer & CS student at UH.
       </p>
 
-      {/* Social glyphs row — branded colors */}
+      {/* Social glyphs row — branded, no outline */}
       {socials.length > 0 && (
-        <div className="z-10 mt-7 flex flex-wrap items-center justify-center gap-3">
+        <div className="z-10 mt-7 flex flex-wrap items-center justify-center gap-5">
           {socials.map(({ key, label, href, Glyph }) => (
             <a
               key={key}
@@ -356,21 +329,47 @@ export default function LinksPage() {
               rel="noreferrer noopener"
               aria-label={label}
               title={label}
-              className="group inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10 bg-white/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/10"
+              className="group inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-0.5"
             >
-              <Glyph className="h-[26px] w-[26px] transition-transform duration-150 group-hover:scale-105" />
+              <Glyph className="h-9 w-9 transition-transform duration-150 group-hover:scale-110" />
             </a>
           ))}
         </div>
       )}
 
-      {/* Featured YouTube video */}
+      {/* Big buttons */}
+      <div className="z-10 mt-7 flex w-full flex-col gap-3">
+        {bigButtons.map(({ key, label, href, Icon, iconBg, iconColor }) => (
+          <a
+            key={key}
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="group inline-flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm font-semibold text-slate-50 transition-all duration-150 hover:-translate-y-0.5 hover:border-accent/60 hover:bg-white/[0.08] hover:shadow-[0_4px_24px_-12px_rgba(99,102,241,0.5)]"
+          >
+            <span className="inline-flex items-center gap-3">
+              <span
+                className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg ${iconBg} ${iconColor} transition-colors`}
+              >
+                <Icon className="h-4 w-4" aria-hidden />
+              </span>
+              <span>{label}</span>
+            </span>
+            <ArrowUpRight
+              className="h-4 w-4 text-muted-foreground transition-all duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+              aria-hidden
+            />
+          </a>
+        ))}
+      </div>
+
+      {/* Featured YouTube video — sits below the big buttons */}
       {featuredVideo ? (
         <a
           href={featuredVideo.url}
           target="_blank"
           rel="noreferrer noopener"
-          className="group z-10 mt-7 block w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-red-500/40 hover:shadow-[0_4px_24px_-12px_rgba(239,68,68,0.45)]"
+          className="group z-10 mt-4 block w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-150 hover:-translate-y-0.5 hover:border-red-500/40 hover:shadow-[0_4px_24px_-12px_rgba(239,68,68,0.45)]"
         >
           <div className="relative aspect-[16/9] w-full overflow-hidden bg-black">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -397,32 +396,6 @@ export default function LinksPage() {
           </div>
         </a>
       ) : null}
-
-      {/* Big buttons */}
-      <div className="z-10 mt-4 flex w-full flex-col gap-3">
-        {bigButtons.map(({ key, label, href, Icon, iconBg, iconColor }) => (
-          <a
-            key={key}
-            href={href}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="group inline-flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 text-sm font-semibold text-slate-50 transition-all duration-150 hover:-translate-y-0.5 hover:border-accent/60 hover:bg-white/[0.08] hover:shadow-[0_4px_24px_-12px_rgba(99,102,241,0.5)]"
-          >
-            <span className="inline-flex items-center gap-3">
-              <span
-                className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg ${iconBg} ${iconColor} transition-colors`}
-              >
-                <Icon className="h-4 w-4" aria-hidden />
-              </span>
-              <span>{label}</span>
-            </span>
-            <ArrowUpRight
-              className="h-4 w-4 text-muted-foreground transition-all duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
-              aria-hidden
-            />
-          </a>
-        ))}
-      </div>
 
       {/* Copyright */}
       <div className="z-10 mt-auto pt-10 text-center text-xs leading-relaxed text-muted-foreground/70">

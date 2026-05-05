@@ -16,7 +16,7 @@ export default function NotFound() {
     Icon: typeof FolderGit2;
     external?: boolean;
   }[] = [
-    { label: "About me", href: "/about", Icon: User },
+    { label: "About me", href: "/#about", Icon: User },
     { label: "Projects", href: "/projects", Icon: FolderGit2 },
     { label: "Articles", href: "/articles", Icon: Newspaper },
     {

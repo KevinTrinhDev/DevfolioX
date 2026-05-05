@@ -316,14 +316,26 @@ export function HeroShowcaseSection() {
                   ? email.startsWith("mailto:")
                     ? email
                     : `mailto:${email}`
-                  : "#";
+                  : "";
                 return (
                   <a
-                    href={emailHref}
+                    href="/links"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    onClick={() => {
+                      // Also fire the mailto so the user's mail client opens —
+                      // /links opens in a new tab via target=_blank, while the
+                      // mailto runs as a side-effect in the current tab.
+                      if (emailHref) {
+                        const link = document.createElement("a");
+                        link.href = emailHref;
+                        link.click();
+                      }
+                    }}
                     className="group inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-slate-50 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-accent/95 hover:shadow-lg hover:shadow-accent/30"
                   >
                     <IconMailFilled className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
-                    <span>Say hello!</span>
+                    <span>Say hello to me!</span>
                   </a>
                 );
               })()}

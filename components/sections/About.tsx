@@ -3,10 +3,7 @@
 
 import Image from "next/image";
 import { useMemo } from "react";
-import {
-  Mail,
-  SquareArrowOutUpRight,
-} from "lucide-react";
+import { Mail } from "lucide-react";
 
 import { siteConfig } from "../../config/siteConfig";
 import { aboutConfig } from "../../config/aboutConfig";
@@ -86,29 +83,17 @@ export function AboutSection() {
 
             </div>
 
-            {/* Action buttons */}
-            <div className="space-y-2">
-              {emailHref ? (
-                <a
-                  href={emailHref}
-                  title={emailLabel}
-                  className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
-                >
-                  <Mail className="h-4 w-4 flex-none" />
-                  <span className="truncate">{emailLabel}</span>
-                </a>
-              ) : null}
-
+            {/* Action button — email only */}
+            {emailHref ? (
               <a
-                href="/about"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/15 px-3.5 py-2 text-sm font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
+                href={emailHref}
+                title={emailLabel}
+                className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
               >
-                <span>More about me</span>
-                <SquareArrowOutUpRight className="h-3.5 w-3.5 opacity-80 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <Mail className="h-4 w-4 flex-none" />
+                <span className="truncate">{emailLabel}</span>
               </a>
-            </div>
+            ) : null}
           </aside>
 
           {/* RIGHT */}
@@ -121,17 +106,6 @@ export function AboutSection() {
                   <span>{fileBase}</span>
                   {fileExt ? <span>{fileExt}</span> : null}
                 </div>
-
-                <a
-                  href="/about"
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Open About page in a new tab"
-                  title="Open About page"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-indigo-300"
-                >
-                  <SquareArrowOutUpRight className="h-4 w-4" />
-                </a>
               </div>
 
               <div className="space-y-4 px-4 py-5 text-sm leading-7 text-slate-200/90 sm:px-6 sm:text-base">

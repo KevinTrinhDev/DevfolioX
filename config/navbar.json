@@ -8,17 +8,18 @@
 
   "center": {
     "items": [
-      { "id": "about", "label": "About", "href": "/about", "show": true },
+      { "id": "about", "label": "About", "href": "/#about", "show": true },
       {
         "id": "experience",
         "label": "Experience",
-        "href": "/experience",
+        "href": "/#experience",
         "show": true
       },
       {
         "id": "projects",
         "label": "Projects",
-        "href": "/projects",
+        "href": "https://github.com/KevinTrinhDev",
+        "external": true,
         "show": true
       },
 
@@ -34,9 +35,9 @@
   "cta": {
     "contact": { "label": "View Resume", "href": "/resume", "external": false, "show": false },
     "primary": {
-      "label": "Connect with me",
+      "label": "Find me",
       "href": "/links",
-      "external": false,
+      "external": true,
       "show": true
     }
   }

@@ -55,7 +55,7 @@ const STATIC_ITEMS: SearchItem[] = [
     title: "About",
     description: "Learn more about me",
     category: "page",
-    href: "/about",
+    href: "/#about",
     icon: <User className="h-4 w-4" />,
   },
   {
