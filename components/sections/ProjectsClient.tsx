@@ -98,7 +98,7 @@ export function ProjectsSectionClient({
             <h2 className="font-mono text-base font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-lg">
               ~/Projects
             </h2>
-            <div className="h-px w-24 bg-white/5 sm:w-32" aria-hidden />
+            <div className="h-px w-24 bg-white/15 sm:w-32" aria-hidden />
           </div>
 
           <div className="grid grid-cols-1 gap-2 sm:flex sm:items-center">

@@ -60,7 +60,7 @@ export function AboutSection() {
           <h2 className="font-mono text-base font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-lg">
             ~/About Me
           </h2>
-          <div className="h-px w-24 bg-white/5 sm:w-32" aria-hidden />
+          <div className="h-px w-24 bg-white/15 sm:w-32" aria-hidden />
         </div>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-[290px_1fr] lg:gap-6">
