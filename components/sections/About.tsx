@@ -130,8 +130,8 @@ function iconForTech(label: string) {
 function TechPill({ label }: { label: string }) {
   const Icon = iconForTech(label);
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold text-slate-50/90">
-      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+    <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-200/85">
+      <Icon className="h-4 w-4 text-indigo-300/85" />
       <span>{label}</span>
     </span>
   );
@@ -299,6 +299,17 @@ export function AboutSection() {
                   <span>{fileBase}</span>
                   {fileExt ? <span>{fileExt}</span> : null}
                 </div>
+
+                <a
+                  href="/about"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Open About page in a new tab"
+                  title="Open About page"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/5 hover:text-indigo-300"
+                >
+                  <SquareArrowOutUpRight className="h-4 w-4" />
+                </a>
               </div>
 
               <div className="px-4 py-5 sm:px-6">
@@ -314,7 +325,7 @@ export function AboutSection() {
                       Recent technologies I&apos;ve worked with
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-x-5 gap-y-2.5">
                       {techList.map((t) => (
                         <TechPill key={t} label={t} />
                       ))}

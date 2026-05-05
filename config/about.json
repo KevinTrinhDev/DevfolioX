@@ -42,8 +42,8 @@
   "readme": {
     "fileLabel": "README.md",
     "paragraphs": [
-      "Hello, my name is Kevin Trinh. I'm currently an undergraduate student at the University of Houston pursuing a B.S. in Computer Science. Recently, I built a full-stack app used by 100+ students that helps UH students understand their degree progress and get schedule recommendations.",
-      "I'm interested in machine learning, operating systems, and full-stack development, and I care a lot about clean UI and maintainable architecture. Outside of tech, I’m really into desk setups and PCs, and I spend my free time playing chess, thrifting, and gaming."
+      "I'm a Computer Science student at the University of Houston building full-stack apps with a focus on clean UI and maintainable architecture. Most recently I shipped a degree-planning tool used by 100+ UH students.",
+      "Outside of code I'm into machine learning, desk setups and PCs, chess, thrifting, and gaming."
     ]
   },
 
