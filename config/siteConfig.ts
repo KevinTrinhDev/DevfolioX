@@ -234,7 +234,7 @@ export const siteConfig = {
   title: data.title || "CS Student @ University of Houston",
   tagline:
     data.tagline ||
-    "I'm currently a student at the University of Houston, pursuing a Bachelor of Science in Computer Science. I have a profound interest in machine learning, operating systems, full-stack development, and everything in between.",
+    "Full-stack developer & CS student at the University of Houston. Building thoughtful, fast software.",
   location: data.location || "Houston, TX",
 
   // Back-compat map used by some components
