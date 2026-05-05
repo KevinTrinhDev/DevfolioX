@@ -57,23 +57,6 @@ function badgeStylesForLink(type?: string): string {
   }
 }
 
-/** Tailwind classes for the role-type chip (Internship / Full-time / etc).
- *  Solid colors, sharp corners. */
-function chipStylesForType(type?: string): string {
-  switch (type) {
-    case "internship":
-      return "bg-sky-600 text-white";
-    case "full-time":
-      return "bg-emerald-600 text-white";
-    case "part-time":
-      return "bg-amber-600 text-white";
-    case "contract":
-      return "bg-violet-600 text-white";
-    default:
-      return "bg-slate-700 text-white";
-  }
-}
-
 function isExternalHref(href: string) {
   return /^https?:\/\//i.test(href);
 }
@@ -87,20 +70,38 @@ export const metadata: Metadata = {
   },
 };
 
-function formatType(type?: string): string | null {
-  if (!type) return null;
-  switch (type) {
-    case "internship":
-      return "Internship";
-    case "full-time":
-      return "Full-time";
-    case "part-time":
-      return "Part-time";
-    case "contract":
-      return "Contract";
-    default:
-      return type[0].toUpperCase() + type.slice(1);
+function companyInitials(name: string): string {
+  const cleaned = name.replace(/[^a-zA-Z\s]/g, "").trim();
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (parts[0]?.slice(0, 2) || "·").toUpperCase();
+}
+
+function CompanyAvatar({
+  logoUrl,
+  company,
+}: {
+  logoUrl?: string;
+  company: string;
+}) {
+  if (logoUrl) {
+    return (
+      <div className="relative h-9 w-9 flex-none overflow-hidden rounded-md border border-white/10 bg-white/5">
+        <Image
+          src={logoUrl}
+          alt={`${company} logo`}
+          fill
+          sizes="36px"
+          className="object-cover"
+        />
+      </div>
+    );
   }
+  return (
+    <div className="flex h-9 w-9 flex-none items-center justify-center rounded-md border border-white/10 bg-indigo-500/15 text-xs font-bold text-indigo-200">
+      {companyInitials(company)}
+    </div>
+  );
 }
 
 export default function ExperiencePage() {
@@ -122,24 +123,6 @@ export default function ExperiencePage() {
         <p className="max-w-2xl text-lg text-muted-foreground">
           Roles I&apos;ve held — internships, research, and applied work.
         </p>
-
-        {/* Document downloads — resume + CV summarize this page */}
-        <div className="mt-5 flex flex-wrap gap-2">
-          <a
-            href="/resume"
-            target="_blank"
-            rel="noreferrer noopener"
-            className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:bg-white/10 hover:text-white"
-          >
-            <FileText className="h-4 w-4" aria-hidden /> View Resume (PDF)
-          </a>
-          <a
-            href="/resume?dl=1"
-            className="inline-flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent hover:bg-white/10 hover:text-white"
-          >
-            <FileText className="h-4 w-4" aria-hidden /> Download Resume
-          </a>
-        </div>
       </div>
 
       {items.length === 0 ? (
@@ -153,48 +136,39 @@ export default function ExperiencePage() {
       ) : (
         <ol className="space-y-10 md:space-y-14">
           {items.map((item, idx) => {
-            const typeLabel = formatType(item.type);
             const isLast = idx === items.length - 1;
             return (
               <li
                 key={item.id}
                 className="md:grid md:grid-cols-[minmax(220px,240px)_24px_1fr] md:gap-x-3"
               >
-                {/* LEFT (desktop) / TOP (mobile): meta — date + company/location + role */}
+                {/* LEFT (desktop) / TOP (mobile): meta — date + company / location / role */}
                 <div className="mb-4 md:mb-0 md:pt-1 md:pr-2">
                   <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:text-[13px]">
                     <Calendar className="h-3.5 w-3.5" aria-hidden />
                     {item.start} – {item.end}
                   </div>
-                  <h2 className="mt-2 text-lg font-semibold text-foreground sm:text-xl">
-                    {item.company}
-                    {item.location && (
-                      <span className="font-normal text-muted-foreground">
-                        , {item.location}
-                      </span>
-                    )}
-                  </h2>
-                  <p className="mt-1 text-sm font-medium text-indigo-300 sm:text-[15px]">
-                    {item.role}
-                  </p>
-                  {typeLabel && (
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span
-                        className={[
-                          "inline-flex items-center px-2 py-1 text-[11px] font-bold uppercase tracking-wider",
-                          chipStylesForType(item.type),
-                        ].join(" ")}
-                      >
-                        {typeLabel}
-                      </span>
+
+                  <div className="mt-3 flex items-start gap-3">
+                    <CompanyAvatar
+                      logoUrl={item.logoUrl}
+                      company={item.company}
+                    />
+                    <div className="min-w-0">
+                      <h2 className="text-lg font-semibold text-foreground sm:text-xl">
+                        {item.company}
+                      </h2>
                       {item.location && (
-                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground md:hidden">
+                        <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground sm:text-[13px]">
                           <MapPin className="h-3.5 w-3.5" aria-hidden />
                           {item.location}
-                        </span>
+                        </p>
                       )}
+                      <p className="mt-1 text-sm font-medium text-indigo-300 sm:text-[15px]">
+                        {item.role}
+                      </p>
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 {/* RAIL column (desktop only) — vertical line + dot */}

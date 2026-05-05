@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useMemo } from "react";
 import {
   Mail,
-  FileText,
   SquareArrowOutUpRight,
 } from "lucide-react";
 
@@ -59,7 +58,7 @@ export function AboutSection() {
           <h2 className="font-mono text-base font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-lg">
             ~/About Me
           </h2>
-          <div className="h-px w-24 bg-white/15 sm:w-32" aria-hidden />
+          <div className="h-px w-40 bg-white/15 sm:w-72" aria-hidden />
         </div>
 
         <div className="mt-8 grid gap-5 lg:grid-cols-[290px_1fr] lg:gap-6">
@@ -88,28 +87,16 @@ export function AboutSection() {
             </div>
 
             {/* Action buttons */}
-            <div className="space-y-2">
-              {emailHref ? (
-                <a
-                  href={emailHref}
-                  title={emailLabel}
-                  className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
-                >
-                  <Mail className="h-4 w-4 flex-none" />
-                  <span className="truncate">{emailLabel}</span>
-                </a>
-              ) : null}
-
+            {emailHref ? (
               <a
-                href="/resume"
-                target="_blank"
-                rel="noreferrer"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-md border border-white/15 px-3.5 py-2 text-sm font-semibold text-slate-200/80 transition-colors duration-150 hover:border-indigo-400 hover:bg-white/10 hover:text-slate-50"
+                href={emailHref}
+                title={emailLabel}
+                className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
               >
-                <FileText className="h-4 w-4 opacity-80" />
-                <span>My Resume</span>
+                <Mail className="h-4 w-4 flex-none" />
+                <span className="truncate">{emailLabel}</span>
               </a>
-            </div>
+            ) : null}
           </aside>
 
           {/* RIGHT */}

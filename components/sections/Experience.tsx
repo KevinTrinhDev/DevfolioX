@@ -87,7 +87,7 @@ export function ExperienceSection() {
           <h2 className="font-mono text-base font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-lg">
             ~/Experience
           </h2>
-          <div className="h-px w-24 bg-white/15 sm:w-32" aria-hidden />
+          <div className="h-px w-40 bg-white/15 sm:w-72" aria-hidden />
         </div>
 
         <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-start">
