@@ -25,6 +25,8 @@ export type ExperienceItem = {
   id: string;
   role: string;
   company: string;
+  /** Optional path to a small company logo (e.g. "/images/visibleseed.png"). */
+  logoUrl?: string;
   location?: string;
   type?: "internship" | "full-time" | "part-time" | "contract";
   start: string; // e.g. "Jun 2024"
@@ -59,6 +61,7 @@ function normalize(items: any[]): ExperienceItem[] {
     id: String(it.id),
     role: String(it.role),
     company: String(it.company),
+    logoUrl: it.logoUrl ? String(it.logoUrl) : undefined,
     location: it.location ? String(it.location) : undefined,
     type: it.type,
     start: String(it.start),
