@@ -90,7 +90,7 @@ export function ProjectsSectionClient({
   const modalTitle: string | undefined = selected?.name ?? "Project";
 
   return (
-    <section id="projects" className="py-16 scroll-mt-12 overflow-x-hidden">
+    <section id="projects" className="py-16 scroll-mt-12 lg:py-24 overflow-x-hidden">
       {/* Heading container */}
       <div className="mx-auto w-full max-w-6xl px-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

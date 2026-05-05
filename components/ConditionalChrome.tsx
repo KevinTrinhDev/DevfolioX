@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-const BARE_ROUTES = ["/connect"];
+const BARE_ROUTES = ["/links"];
 
 function isBare(pathname: string | null) {
   if (!pathname) return false;

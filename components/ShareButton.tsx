@@ -8,6 +8,8 @@ interface ShareButtonProps {
   url?: string;
   label?: string;
   className?: string;
+  /** When false, render the icon only — `label` is still used for aria-label/title. */
+  showLabel?: boolean;
 }
 
 export function ShareButton({
@@ -15,6 +17,7 @@ export function ShareButton({
   url,
   label = "Share",
   className,
+  showLabel = true,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
 
@@ -49,6 +52,7 @@ export function ShareButton({
       type="button"
       onClick={onClick}
       aria-label={copied ? "Link copied" : label}
+      title={copied ? "Link copied" : label}
       className={
         className ??
         "inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent hover:text-foreground"
@@ -57,12 +61,12 @@ export function ShareButton({
       {copied ? (
         <>
           <Check className="h-3.5 w-3.5" />
-          Copied
+          {showLabel && "Copied"}
         </>
       ) : (
         <>
           <Share2 className="h-3.5 w-3.5" />
-          {label}
+          {showLabel && label}
         </>
       )}
     </button>

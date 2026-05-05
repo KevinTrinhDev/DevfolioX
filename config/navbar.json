@@ -35,7 +35,7 @@
     "contact": { "label": "View Resume", "href": "/resume", "external": false, "show": false },
     "primary": {
       "label": "Connect with me",
-      "href": "/connect",
+      "href": "/links",
       "external": false,
       "show": true
     }

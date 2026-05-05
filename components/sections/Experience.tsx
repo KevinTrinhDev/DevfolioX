@@ -81,7 +81,7 @@ export function ExperienceSection() {
   };
 
   return (
-    <section id="experience" className="py-16 scroll-mt-12">
+    <section id="experience" className="py-16 scroll-mt-12 lg:py-24">
       <div className="mx-auto w-full max-w-6xl px-4">
         <div className="flex items-center gap-4">
           <h2 className="font-mono text-base font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-lg">

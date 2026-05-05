@@ -142,7 +142,7 @@ export default async function ArticlePage({
             <span>
               By{" "}
               <a
-                href="/connect"
+                href="/links"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="group inline-block font-medium text-foreground"

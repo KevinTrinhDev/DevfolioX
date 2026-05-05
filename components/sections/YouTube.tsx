@@ -26,7 +26,7 @@ export function YouTubeSection() {
   };
 
   return (
-    <section id="youtube" className="py-16 scroll-mt-12">
+    <section id="youtube" className="py-16 scroll-mt-12 lg:py-24">
       <div className="mx-auto w-full max-w-6xl px-4">
         <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           ~/YouTube
