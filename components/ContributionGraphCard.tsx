@@ -534,8 +534,9 @@ export function ContributionGraphCard({
 
   return (
     <section className={`mt-10 ${className ?? ""}`}>
-      <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-        ~/{title}
+      <h2 className="font-mono text-[13px] font-semibold uppercase tracking-[0.18em] sm:text-sm">
+        <span className="text-indigo-400">~/</span>
+        <span className="text-foreground">{title}</span>
       </h2>
 
       {/* Graph + year buttons */}

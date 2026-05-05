@@ -51,8 +51,9 @@ export function ExperienceSection() {
   return (
     <section id="experience" className="py-16 scroll-mt-12">
       <div className="mx-auto w-full max-w-6xl px-4">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          ~/Experience
+        <h2 className="font-mono text-[13px] font-semibold uppercase tracking-[0.18em] sm:text-sm">
+          <span className="text-indigo-400">~/</span>
+          <span className="text-foreground">Experience</span>
         </h2>
 
         <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">

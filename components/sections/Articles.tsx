@@ -53,8 +53,9 @@ export function ArticleSection() {
       <div className="mx-auto w-full max-w-6xl px-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              ~/Articles
+            <h2 className="font-mono text-[13px] font-semibold uppercase tracking-[0.18em] sm:text-sm">
+              <span className="text-indigo-400">~/</span>
+              <span className="text-foreground">Articles</span>
             </h2>
           </div>
 
