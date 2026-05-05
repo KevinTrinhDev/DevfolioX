@@ -1,11 +1,5 @@
 // components/Footer.tsx
-import {
-  GithubGlyph,
-  LinkedInGlyph,
-  YoutubeGlyph,
-  InstagramGlyph,
-  TikTokGlyph,
-} from "@/components/BrandGlyphs";
+import { Github, Linkedin, Instagram, Youtube, Music2 } from "lucide-react";
 
 import { siteConfig } from "../config/siteConfig";
 
@@ -32,20 +26,20 @@ function getSocials(): SocialEntry[] {
     }));
 }
 
-function glyphFor(key: string) {
+function iconFor(key: string) {
   switch (key) {
     case "github":
-      return GithubGlyph;
+      return Github;
     case "linkedin":
-      return LinkedInGlyph;
+      return Linkedin;
     case "tiktok":
-      return TikTokGlyph;
+      return Music2;
     case "youtube":
-      return YoutubeGlyph;
+      return Youtube;
     case "instagram":
-      return InstagramGlyph;
+      return Instagram;
     default:
-      return GithubGlyph;
+      return Github;
   }
 }
 
@@ -58,9 +52,9 @@ export function Footer() {
     <footer className="mt-12 bg-transparent">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-4 py-8 text-center">
         {socials.length ? (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {socials.map(({ key, label, href }) => {
-              const Glyph = glyphFor(key);
+              const Icon = iconFor(key);
               return (
                 <a
                   key={key}
@@ -69,9 +63,9 @@ export function Footer() {
                   rel="noreferrer"
                   aria-label={label}
                   title={label}
-                  className="group inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-0.5"
+                  className="text-muted-foreground transition-colors duration-150 hover:text-foreground"
                 >
-                  <Glyph className="h-7 w-7 transition-transform duration-150 group-hover:scale-110" />
+                  <Icon className="h-[18px] w-[18px]" />
                 </a>
               );
             })}

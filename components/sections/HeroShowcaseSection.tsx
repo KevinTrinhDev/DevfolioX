@@ -248,7 +248,7 @@ export function HeroShowcaseSection() {
 
   return (
     // ✅ less top padding on mobile, unchanged on desktop
-    <section id="top" className="pt-12 sm:pt-16 pb-20">
+    <section id="top" className="pt-12 pb-20 sm:pt-16 lg:pt-28">
       <div className="mx-auto w-full max-w-6xl px-4">
         {/* Top hero row (right side left blank for now) */}
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
@@ -307,38 +307,17 @@ export function HeroShowcaseSection() {
               })}
             </div>
 
-            {/* CTA */}
+            {/* CTA — opens the hub page in a new tab */}
             <div className="mt-7 flex flex-wrap gap-3">
-              {(() => {
-                const socials: any = (siteConfig as any).socials ?? {};
-                const email = socials.email || socials.mail || "";
-                const emailHref = email
-                  ? email.startsWith("mailto:")
-                    ? email
-                    : `mailto:${email}`
-                  : "";
-                return (
-                  <a
-                    href="/links"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    onClick={() => {
-                      // Also fire the mailto so the user's mail client opens —
-                      // /links opens in a new tab via target=_blank, while the
-                      // mailto runs as a side-effect in the current tab.
-                      if (emailHref) {
-                        const link = document.createElement("a");
-                        link.href = emailHref;
-                        link.click();
-                      }
-                    }}
-                    className="group inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-slate-50 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-accent/95 hover:shadow-lg hover:shadow-accent/30"
-                  >
-                    <IconMailFilled className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
-                    <span>Say hello to me!</span>
-                  </a>
-                );
-              })()}
+              <a
+                href="/links"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="group inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-slate-50 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-accent/95 hover:shadow-lg hover:shadow-accent/30"
+              >
+                <IconMailFilled className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5" />
+                <span>Say hello to me!</span>
+              </a>
             </div>
           </div>
 
