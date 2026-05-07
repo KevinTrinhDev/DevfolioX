@@ -57,10 +57,10 @@ export async function GET(
   }
 
   // Join path segments back into a single string:
-  // - /d/KevinTrinh1227/DevfolioX
-  //      => "KevinTrinh1227/DevfolioX"
-  // - /d/github.com/KevinTrinh1227/DevfolioX
-  //      => "github.com/KevinTrinh1227/DevfolioX"
+  // - /d/KevinTrinhDev/DevfolioX
+  //      => "KevinTrinhDev/DevfolioX"
+  // - /d/github.com/KevinTrinhDev/DevfolioX
+  //      => "github.com/KevinTrinhDev/DevfolioX"
   const repoInput = segments.join("/");
 
   const parsed = parseGithubRepo(repoInput);

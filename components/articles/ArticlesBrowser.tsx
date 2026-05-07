@@ -26,7 +26,8 @@ type Props = {
   articles: ArticleListItem[];
 };
 
-const PAGE_SIZE = 8;
+// Multiple of 3 so each full page is a clean 3x3 grid on desktop.
+const PAGE_SIZE = 9;
 const AUTHOR_AVATAR = "/images/avatar.jpg";
 const FALLBACK_IMG = "/images/demo_1.png";
 
@@ -73,12 +74,12 @@ function FeaturedHero({ article }: { article: ArticleListItem }) {
       aria-label={`Read latest article: ${article.title}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-colors hover:border-accent/50 hover:bg-white/[0.07] sm:flex-row"
     >
-      <div className="relative aspect-[16/10] w-full flex-none overflow-hidden bg-white/5 sm:aspect-auto sm:w-1/2 sm:self-stretch">
+      <div className="relative aspect-video w-full flex-none overflow-hidden bg-white/5 sm:aspect-auto sm:w-1/2 sm:self-stretch">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={article.imageSrc || FALLBACK_IMG}
           alt={article.imageAlt || article.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover"
           loading="eager"
           decoding="async"
           fetchPriority="high"
@@ -93,7 +94,7 @@ function FeaturedHero({ article }: { article: ArticleListItem }) {
             {article.summary}
           </p>
         )}
-        <div className="mt-1 flex items-center gap-2 text-xs sm:text-sm">
+        <div className="mt-1 flex items-center gap-2 text-sm">
           <span className="relative h-9 w-9 flex-none overflow-hidden rounded-full ring-1 ring-white/10">
             <Image
               src={AUTHOR_AVATAR}
@@ -104,7 +105,7 @@ function FeaturedHero({ article }: { article: ArticleListItem }) {
             />
           </span>
           <span className="text-foreground">{author}</span>
-          <span aria-hidden className="text-muted-foreground/60">
+          <span aria-hidden className="text-slate-500">
             |
           </span>
           <span className="text-foreground">{formatDate(article.date)}</span>

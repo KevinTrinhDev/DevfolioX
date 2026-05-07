@@ -28,10 +28,15 @@
       ],
       "start": "Aug 2024",
       "end": "Present",
-      "technologies": ["Python", "Flask", "Pandas", "scikit-learn"],
+      "technologies": [
+        "Python",
+        "Flask",
+        "Pandas",
+        "scikit-learn"
+      ],
       "priority": 6,
       "featured": true,
-      "imageUrl": "/images/demo_6.png",
+      "imageUrl": "/images/banners/prize-picks-predictions.svg",
       "links": [
         {
           "label": "Source",
@@ -56,10 +61,14 @@
       ],
       "start": "Feb 2024",
       "end": "Present",
-      "technologies": ["React", "TypeScript", "Chart.js"],
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Chart.js"
+      ],
       "priority": 7,
       "featured": true,
-      "imageUrl": "/images/projects/leetcode-tracker.png",
+      "imageUrl": "/images/banners/leetcode-tracker.svg",
       "links": [
         {
           "label": "Source",
@@ -78,10 +87,13 @@
       ],
       "start": "Jan 2023",
       "end": "Nov 2023",
-      "technologies": ["Next.js", "Tailwind CSS"],
+      "technologies": [
+        "Next.js",
+        "Tailwind CSS"
+      ],
       "priority": 8,
       "featured": false,
-      "imageUrl": "/images/demo_6.png",
+      "imageUrl": "/images/banners/study-planner.svg",
       "links": [
         {
           "label": "Source",
@@ -100,10 +112,14 @@
       ],
       "start": "Aug 2022",
       "end": "Mar 2023",
-      "technologies": ["Node.js", "Express", "PostgreSQL"],
+      "technologies": [
+        "Node.js",
+        "Express",
+        "PostgreSQL"
+      ],
       "priority": 9,
       "featured": false,
-      "imageUrl": "/images/demo_6.png",
+      "imageUrl": "/images/banners/notes-api.svg",
       "links": [
         {
           "label": "Source",

@@ -142,7 +142,7 @@ export default async function ArticlePage({
           </h1>
 
           {/* Author + date — same typography as the cards, "|" separator */}
-          <div className="mt-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <div className="mt-6 flex flex-wrap items-center gap-2 text-sm">
             <span className="relative h-9 w-9 flex-none overflow-hidden rounded-full ring-1 ring-white/10">
               <Image
                 src={AUTHOR_AVATAR}
@@ -152,11 +152,11 @@ export default async function ArticlePage({
                 className="object-cover"
               />
             </span>
-            <span>{author}</span>
-            <span aria-hidden className="text-muted-foreground/60">
+            <span className="text-foreground">{author}</span>
+            <span aria-hidden className="text-slate-500">
               |
             </span>
-            <span>{formatDate(article.date)}</span>
+            <span className="text-foreground">{formatDate(article.date)}</span>
           </div>
 
           {article.summary && (

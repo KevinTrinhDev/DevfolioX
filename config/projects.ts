@@ -466,7 +466,10 @@ export async function loadProjects(): Promise<ProjectItem[]> {
           technologies: meta?.technologies,
           links: meta?.links,
           featured: meta?.featured,
-          imageUrl: meta?.image_url, // NEW
+          // Prefer the README's image_url; otherwise fall back to a locally
+          // generated branded banner so the carousel never shows a broken
+          // dark fallback.
+          imageUrl: meta?.image_url ?? `/images/banners/${id}.svg`,
 
           badges: meta?.badges,
           autoInactiveThresholdDays: meta?.auto_inactive_threshold_days,

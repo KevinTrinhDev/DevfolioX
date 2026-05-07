@@ -46,7 +46,7 @@
   },
 
   "cta": {
-    "contact": { "label": "Email me", "href": "mailto:hi@kevintrinh.dev", "external": true, "show": false },
+    "contact": { "label": "Email me", "href": "mailto:contact@kevintrinh.dev", "external": true, "show": false },
     "primary": {
       "label": "Connect with me",
       "href": "/links",

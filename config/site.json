@@ -88,9 +88,9 @@
     {
       "key": "email",
       "label": "Email",
-      "href": "mailto:hi@kevintrinh.dev",
+      "href": "mailto:contact@kevintrinh.dev",
       "icon": "Mail",
-      "detail": "hi@kevintrinh.dev",
+      "detail": "contact@kevintrinh.dev",
       "showIn": { "footer": true, "about": true, "contact": true }
     },
     {

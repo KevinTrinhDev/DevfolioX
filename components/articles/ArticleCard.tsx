@@ -44,12 +44,12 @@ export function ArticleCard({ article }: Props) {
       href={`/articles/${article.slug}`}
       className="group flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.07]"
     >
-      <div className="relative aspect-[16/10] w-full flex-none overflow-hidden bg-white/5">
+      <div className="relative aspect-video w-full flex-none overflow-hidden bg-white/5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={articleImage(article)}
           alt={article.imageAlt || article.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover"
           loading="lazy"
           decoding="async"
         />
@@ -66,7 +66,7 @@ export function ArticleCard({ article }: Props) {
           </p>
         )}
 
-        <div className="mt-auto flex items-center gap-2 text-xs">
+        <div className="mt-auto flex items-center gap-2 text-sm">
           <span className="relative h-8 w-8 flex-none overflow-hidden rounded-full ring-1 ring-white/10">
             <Image
               src={AUTHOR_AVATAR}
@@ -77,7 +77,7 @@ export function ArticleCard({ article }: Props) {
             />
           </span>
           <span className="text-foreground">{author}</span>
-          <span aria-hidden className="text-muted-foreground/60">
+          <span aria-hidden className="text-slate-500">
             |
           </span>
           <span className="text-foreground">{formatDate(article.date)}</span>

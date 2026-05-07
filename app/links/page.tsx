@@ -111,7 +111,7 @@ export default function LinksPage() {
   const emailHref =
     typeof emailEntry?.href === "string" && emailEntry.href.startsWith("mailto:")
       ? emailEntry.href
-      : "mailto:hi@kevintrinh.dev";
+      : "mailto:contact@kevintrinh.dev";
 
   const socials: SocialGlyph[] = SOCIAL_ORDER.flatMap((key) => {
     const s = socialMap.get(key);

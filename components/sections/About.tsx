@@ -2,8 +2,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
-import { Mail } from "lucide-react";
+import { Link2 } from "lucide-react";
 
 import { siteConfig } from "../../config/siteConfig";
 import { aboutConfig } from "../../config/aboutConfig";
@@ -18,22 +19,6 @@ export function AboutSection() {
   const mdDotIndex = fileLabel.toLowerCase().lastIndexOf(".md");
   const fileBase = mdDotIndex > 0 ? fileLabel.slice(0, mdDotIndex) : fileLabel;
   const fileExt = mdDotIndex > 0 ? fileLabel.slice(mdDotIndex) : "";
-
-  const emailHref = useMemo(() => {
-    const fromProfile = (a.profileLinks || []).find(
-      (i: any) => i?.type === "email"
-    );
-    if (fromProfile?.href) return String(fromProfile.href);
-    const socials: any = (siteConfig as any)?.socials ?? {};
-    const email = socials.email || socials.mail;
-    if (!email) return "";
-    return email.startsWith("mailto:") ? email : `mailto:${email}`;
-  }, [a.profileLinks]);
-
-  const emailLabel = useMemo(
-    () => emailHref.replace(/^mailto:/, ""),
-    [emailHref]
-  );
 
   // ✅ exact list/order requested (ignores config)
   const techList = useMemo(
@@ -78,17 +63,14 @@ export function AboutSection() {
               </div>
             ) : null}
 
-            {/* Action button — email only */}
-            {emailHref ? (
-              <a
-                href={emailHref}
-                title={emailLabel}
-                className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
-              >
-                <Mail className="h-4 w-4 flex-none" />
-                <span className="truncate">{emailLabel}</span>
-              </a>
-            ) : null}
+            {/* Action button — opens the /links hub */}
+            <Link
+              href="/links"
+              className="group inline-flex w-full min-w-0 items-center justify-center gap-2 rounded-md border border-indigo-400/40 bg-indigo-500/10 px-3.5 py-2.5 text-sm font-semibold text-slate-50 transition-colors duration-150 hover:border-indigo-400 hover:bg-indigo-500/20"
+            >
+              <Link2 className="h-4 w-4 flex-none" />
+              <span className="truncate">View all my socials</span>
+            </Link>
           </aside>
 
           {/* RIGHT */}
