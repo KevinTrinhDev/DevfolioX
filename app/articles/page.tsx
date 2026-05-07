@@ -1,7 +1,7 @@
 // app/articles/page.tsx
 import { Metadata } from "next";
 import { siteConfig } from "@/config/siteConfig";
-import { getArticles, getCategories, getTags } from "@/lib/mdx/mdx";
+import { getArticles } from "@/lib/mdx/mdx";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
   ArticlesBrowser,
@@ -39,8 +39,6 @@ export const revalidate = 3600; // 1 hour
 
 export default async function ArticlesPage() {
   const articles = await getArticles();
-  const categories = await getCategories();
-  const tags = await getTags();
 
   // Plain serializable items for the client component (drop unused fields)
   const items: ArticleListItem[] = articles.map((a) => ({
@@ -54,11 +52,12 @@ export default async function ArticlesPage() {
     imageSrc: a.imageSrc,
     imageAlt: a.imageAlt,
     readingTime: a.readingTime,
+    author: a.author,
   }));
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mb-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+      <div className="mb-10">
         <Breadcrumbs
           items={[
             { name: "Home", url: "/" },
@@ -75,7 +74,7 @@ export default async function ArticlesPage() {
         </p>
       </div>
 
-      <ArticlesBrowser articles={items} categories={categories} tags={tags} />
+      <ArticlesBrowser articles={items} />
     </div>
   );
 }

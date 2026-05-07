@@ -1,7 +1,10 @@
 // app/articles/[slug]/page.tsx
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+
 import { siteConfig } from "@/config/siteConfig";
 import {
   getArticleBySlug,
@@ -12,10 +15,10 @@ import { JsonLd } from "@/components/JsonLd";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { generateArticleSchema } from "@/lib/structured-data";
 import { MdxRenderer } from "@/components/mdx/MdxRenderer";
-import { extractToc } from "@/lib/mdx/toc";
-import { TableOfContents } from "@/components/articles/TableOfContents";
-import { ArticleViews } from "@/components/articles/ArticleViews";
-import { Calendar, ArrowLeft } from "lucide-react";
+import { ArticleCard } from "@/components/articles/ArticleCard";
+import type { ArticleListItem } from "@/components/articles/ArticlesBrowser";
+
+const AUTHOR_AVATAR = "/images/avatar.jpg";
 
 // Fully static — MDX is bundled at build time; fs access at runtime is not
 // available on Cloudflare Workers so we skip revalidation entirely.
@@ -76,7 +79,7 @@ function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
     });
   } catch {
@@ -97,7 +100,6 @@ export default async function ArticlePage({
   }
 
   const relatedArticles = await getRelatedArticles(slug, 3);
-  const toc = extractToc(article.content);
 
   const breadcrumbs = [
     { name: "Home", url: "/" },
@@ -106,6 +108,22 @@ export default async function ArticlePage({
   ];
 
   const author = article.author || siteConfig.name;
+
+  // Map related articles to the shared ArticleListItem shape so the
+  // ArticleCard renders them identically to /articles.
+  const related: ArticleListItem[] = relatedArticles.map((a) => ({
+    slug: a.slug,
+    title: a.title,
+    summary: a.summary,
+    date: a.date,
+    category: a.category,
+    tags: a.tags,
+    featured: a.featured,
+    imageSrc: a.imageSrc,
+    imageAlt: a.imageAlt,
+    readingTime: a.readingTime,
+    author: a.author,
+  }));
 
   return (
     <>
@@ -123,162 +141,91 @@ export default async function ArticlePage({
         })}
       />
 
-      <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+      <div className="mx-auto w-full max-w-3xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <Breadcrumbs
           items={breadcrumbs}
           truncateLastAt={32}
-          className="mb-10"
+          className="mb-8"
         />
 
-        {/* Centered article header */}
-        <header className="mx-auto mb-12 max-w-3xl text-center">
-          {/* Meta line — no inline bullets so it wraps cleanly on narrow widths.
-              The flex gap takes care of separation visually. */}
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" aria-hidden />
-              {formatDate(article.date)}
-            </span>
-            <span>
-              By{" "}
-              <a
-                href="/links"
-                className="group inline-block font-medium text-foreground"
-              >
-                <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-                  {author}
-                </span>
-              </a>
-            </span>
-            <span>{article.readingTime} min read</span>
-            <ArticleViews slug={article.slug} />
-          </div>
-
-          {/* Title */}
-          <h1 className="mt-7 text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.5rem] lg:leading-[1.05]">
+        {/* Left-aligned header — no TOC sidebar */}
+        <header className="mb-10">
+          <h1 className="text-balance text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
             {article.title}
           </h1>
 
-          {/* Description */}
+          {/* Author + date — single row directly under the title */}
+          <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span className="relative h-7 w-7 flex-none overflow-hidden rounded-full ring-1 ring-white/10">
+              <Image
+                src={AUTHOR_AVATAR}
+                alt=""
+                fill
+                sizes="28px"
+                className="object-cover"
+              />
+            </span>
+            <span className="font-medium text-foreground">{author}</span>
+            <span aria-hidden className="text-muted-foreground/60">
+              ·
+            </span>
+            <span>{formatDate(article.date)}</span>
+          </div>
+
           {article.summary && (
-            <p className="mt-6 text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-5 text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
               {article.summary}
             </p>
           )}
 
-          {/* Tag badges */}
-          {(article.category ||
-            (article.tags && article.tags.length > 0)) && (
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-1.5">
-              {article.category && (
-                <span className="inline-flex items-center rounded-md bg-accent px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
-                  {article.category}
-                </span>
-              )}
-              {article.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs text-muted-foreground"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Updated notice */}
           {article.updated && article.updated !== article.date && (
-            <p className="mt-4 text-xs text-muted-foreground/80">
+            <p className="mt-3 text-xs text-muted-foreground/80">
               Last updated on {formatDate(article.updated)}
             </p>
           )}
         </header>
 
-        {/* Cover image (centered) */}
+        {/* Cover image */}
         {article.imageSrc && (
-          <figure className="mx-auto mb-14 max-w-4xl">
+          <figure className="mb-10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={article.imageSrc}
               alt={article.imageAlt || article.title}
               className="w-full rounded-xl border border-white/10"
             />
-            {article.imageAlt && (
-              <figcaption className="mt-2 text-center text-sm text-muted-foreground">
-                {article.imageAlt}
-              </figcaption>
-            )}
           </figure>
         )}
 
-        {/* Article body + sticky sidebar (TOC + Share). Prose is constrained
-            to ~70ch for readability; grid is centered in the container so the
-            negative space sits evenly on both sides on wide screens. */}
-        <div className="lg:grid lg:grid-cols-[minmax(0,70ch)_260px] lg:justify-center lg:gap-x-14">
-          <article className="mx-auto min-w-0 max-w-[70ch] lg:mx-0">
-            <MdxRenderer source={article.content} />
+        {/* Body — single column, no TOC sidebar */}
+        <article className="min-w-0">
+          <MdxRenderer source={article.content} />
+        </article>
 
-            {/* Related articles — image on top, then date and title. Internal
-                links so the page transition fade kicks in instead of a full
-                tab reload. */}
-            {relatedArticles.length > 0 && (
-              <section className="mt-16">
-                <h2 className="mb-6 text-xl font-semibold">Related Articles</h2>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {relatedArticles.map((related) => (
-                    <Link
-                      key={related.slug}
-                      href={`/articles/${related.slug}`}
-                      className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-colors hover:border-accent/50 hover:bg-white/[0.07]"
-                    >
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-white/5">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={related.imageSrc || "/images/demo_1.png"}
-                          alt={related.imageAlt || related.title}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="flex flex-1 flex-col p-4">
-                        <p className="mb-1 text-xs text-muted-foreground">
-                          {formatDate(related.date)}
-                        </p>
-                        <h3 className="line-clamp-2 font-medium">
-                          <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">
-                            {related.title}
-                          </span>
-                        </h3>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Navigation */}
-            <nav className="mt-12 flex items-center justify-between border-t border-white/10 pt-8">
-              <Link
-                href="/articles"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-accent"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Articles
-              </Link>
-            </nav>
-          </article>
-
-          {/* Sidebar — desktop only, sticky. TOC only; share is reachable
-              via the breadcrumb / page chrome elsewhere. */}
-          {toc.length > 0 && (
-            <aside className="hidden lg:block">
-              <div className="sticky top-24">
-                <TableOfContents entries={toc} />
-              </div>
-            </aside>
-          )}
-        </div>
+        {/* Back to all */}
+        <nav className="mt-12 flex items-center justify-between border-t border-white/10 pt-8">
+          <Link
+            href="/articles"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-accent"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Articles
+          </Link>
+        </nav>
       </div>
+
+      {/* Related posts — 3 cards in a row on desktop, same card style as
+          /articles. Uses the wider container so the grid breathes. */}
+      {related.length > 0 && (
+        <div className="mx-auto w-full max-w-6xl px-4 pb-20 sm:px-6 lg:px-8">
+          <h2 className="mb-6 text-xl font-semibold">Related Posts</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((r) => (
+              <ArticleCard key={r.slug} article={r} />
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }
