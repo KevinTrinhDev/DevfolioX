@@ -284,6 +284,7 @@ export const siteConfig = {
   // Featured content (landing-page Content section)
   featuredContent: (data as any).featuredContent || {
     youtubeVideoId: "",
+    youtubeChannelId: "",
   },
 } as const;
 

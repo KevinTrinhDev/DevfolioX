@@ -31,29 +31,14 @@
           {
             "id": "more-content",
             "label": "Content",
-            "href": "/#content"
+            "href": "/#content",
+            "icon": "Clapperboard"
           },
           {
             "id": "more-articles",
             "label": "Articles",
-            "href": "/articles"
-          },
-          {
-            "id": "more-links",
-            "label": "All my links",
-            "href": "/links"
-          },
-          {
-            "id": "more-discord",
-            "label": "Discord",
-            "href": "/discord",
-            "external": true
-          },
-          {
-            "id": "more-github",
-            "label": "GitHub",
-            "href": "https://github.com/KevinTrinhDev",
-            "external": true
+            "href": "/articles",
+            "icon": "BookOpen"
           }
         ]
       }

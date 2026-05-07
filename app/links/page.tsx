@@ -444,44 +444,57 @@ export default function LinksPage() {
         </section>
       )}
 
-      {/* Media kit — image card, opens beacons.ai mediakit in a new tab */}
+      {/* Media kit — minimal white card, Beacons wordmark, image-led */}
       <a
         href="https://beacons.ai/kevintrinh/mediakit"
         target="_blank"
         rel="noreferrer noopener"
         aria-label="Open my media kit on Beacons"
-        className="group mt-4 block w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-150 hover:border-slate-300 hover:shadow-md"
+        className="group mt-4 flex w-full items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50"
       >
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500">
-          {/* Decorative grid */}
-          <div
-            aria-hidden
-            className="absolute inset-0 opacity-30"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.35) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.25) 0%, transparent 45%)",
-            }}
+        {/* Avatar — image-led so the card feels personal, not generic */}
+        <div className="relative h-14 w-14 flex-none overflow-hidden rounded-lg ring-1 ring-slate-200">
+          <Image
+            src="/images/avatar.jpg"
+            alt=""
+            fill
+            sizes="56px"
+            className="object-cover"
           />
-          <div className="relative z-10 flex h-full w-full flex-col items-start justify-between p-5 text-white">
-            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] backdrop-blur-sm">
-              Media Kit
-            </span>
-            <div className="flex w-full items-end justify-between gap-3">
-              <div>
-                <div className="text-xl font-semibold leading-tight">
-                  {siteConfig.name}
-                </div>
-                <div className="text-[12px] opacity-85">
-                  Brands &amp; partnerships
-                </div>
-              </div>
-              <span className="inline-flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 text-[11px] font-semibold backdrop-blur-sm">
-                Open
-                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
-              </span>
-            </div>
-          </div>
         </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <span className="text-sm font-semibold leading-tight text-slate-900">
+            Media Kit
+          </span>
+          <span className="mt-0.5 inline-flex items-center gap-1.5 text-[12px] font-medium text-slate-500">
+            <span>View on</span>
+            {/* Inline Beacons.ai wordmark — pure SVG, no fetch */}
+            <svg
+              viewBox="0 0 96 16"
+              aria-hidden
+              className="h-3 w-auto text-slate-700"
+              fill="currentColor"
+            >
+              <text
+                x="0"
+                y="13"
+                fontFamily="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto"
+                fontSize="13"
+                fontWeight="700"
+                letterSpacing="-0.4"
+              >
+                beacons
+              </text>
+              <circle cx="76" cy="9.5" r="2.4" />
+            </svg>
+          </span>
+        </div>
+
+        <ArrowUpRight
+          className="h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
+          aria-hidden
+        />
       </a>
 
       {/* Footer — single line, slightly more visible */}

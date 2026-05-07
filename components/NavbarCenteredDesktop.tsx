@@ -6,6 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
 import { ChevronDown, Handshake } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 
 import { navbarConfig, isExternalHref } from "@/config/navbarConfig";
 import type { NavDropdownItemCfg } from "@/config/navbarConfig";
@@ -546,8 +547,29 @@ function DesktopDropdownItem({
   const external = !!item.external || isExternalHref(item.href);
   const hashId = extractHashId(item.href);
 
+  const IconComponent =
+    item.icon && (LucideIcons as any)[item.icon]
+      ? ((LucideIcons as any)[item.icon] as React.ComponentType<{
+          className?: string;
+        }>)
+      : null;
+
   const baseClass =
-    "block w-full px-3 py-2 text-left text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 hover:text-white";
+    "flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 hover:text-white";
+
+  const inner = (
+    <>
+      {IconComponent ? (
+        <IconComponent
+          className="h-4 w-4 flex-none text-slate-400 transition-colors group-hover:text-slate-200"
+          aria-hidden
+        />
+      ) : null}
+      <span>{item.label}</span>
+    </>
+  );
+
+  const className = `group ${baseClass}`;
 
   // In-page anchor (e.g. /#content) — go home top then jump
   if (!external && hashId) {
@@ -559,9 +581,9 @@ function DesktopDropdownItem({
           navigateToSectionOnHome(hashId);
           onNavigate?.();
         }}
-        className={baseClass}
+        className={className}
       >
-        {item.label}
+        {inner}
       </button>
     );
   }
@@ -574,9 +596,9 @@ function DesktopDropdownItem({
         rel="noreferrer noopener"
         role="menuitem"
         onClick={onNavigate}
-        className={baseClass}
+        className={className}
       >
-        {item.label}
+        {inner}
       </a>
     );
   }
@@ -587,9 +609,9 @@ function DesktopDropdownItem({
       scroll={true}
       role="menuitem"
       onClick={onNavigate}
-      className={baseClass}
+      className={className}
     >
-      {item.label}
+      {inner}
     </Link>
   );
 }
