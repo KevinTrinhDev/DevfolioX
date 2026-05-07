@@ -1,7 +1,6 @@
 // components/sections/ProjectsClient.tsx
 "use client";
 
-import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import {
@@ -12,12 +11,9 @@ import {
   FilledPlay,
   FilledArrowUpRight,
 } from "@/components/FilledIcons";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ProjectItem } from "../../config/projects";
-import { Modal } from "../ui/Modal";
 import { ProjectCard } from "../projects/ProjectCard";
 import { FeaturedProjectsCarousel } from "../projects/FeaturedProjectsTicker";
-import { ProjectDetails } from "../projects/ProjectDetails";
 
 interface ProjectsSectionClientProps {
   projects: ProjectItem[];
@@ -26,25 +22,11 @@ interface ProjectsSectionClientProps {
 export function ProjectsSectionClient({
   projects,
 }: ProjectsSectionClientProps) {
-  // Hooks must run unconditionally — keep them above any early return.
   // Desktop compact grid below the carousel: 3 cards (smaller set since the
   // carousel already showcases the heavy hitters).
   const defaultVisibleCount = 3;
   // Mobile (no carousel) shows full ProjectCards — 6 of them.
   const mobileVisibleCount = 6;
-
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const selectedProjectId = searchParams.get("project");
-  const selected = useMemo(
-    () =>
-      selectedProjectId
-        ? projects.find((p) => p.id === selectedProjectId) ?? null
-        : null,
-    [selectedProjectId, projects]
-  );
 
   const visibleProjects = useMemo(
     () => projects.slice(0, Math.min(defaultVisibleCount, projects.length)),
@@ -57,20 +39,6 @@ export function ProjectsSectionClient({
     const featured = projects.filter((p) => p.featured);
     return (featured.length ? featured : projects).slice(0, 8);
   }, [projects]);
-
-  const openProject = (project: ProjectItem) => {
-    const sp = new URLSearchParams(searchParams.toString());
-    sp.set("project", project.id);
-    const nextUrl = `${pathname}?${sp.toString()}`;
-    router.replace(nextUrl, { scroll: false });
-  };
-
-  const closeProject = () => {
-    const sp = new URLSearchParams(searchParams.toString());
-    sp.delete("project");
-    const nextUrl = sp.toString() ? `${pathname}?${sp.toString()}` : pathname;
-    router.replace(nextUrl, { scroll: false });
-  };
 
   const iconFor = (type?: string): ReactNode => {
     switch (type) {
@@ -88,8 +56,6 @@ export function ProjectsSectionClient({
         return <FilledArrowUpRight className="h-4 w-4" />;
     }
   };
-
-  const modalTitle: string | undefined = selected?.name ?? "Project";
 
   // Empty list guard — kept *after* hooks so the rules of hooks aren't broken.
   if (!projects.length) return null;
@@ -127,16 +93,13 @@ export function ProjectsSectionClient({
         </div>
       )}
 
-      {/* Mobile: 6 stacked ProjectCards (no carousel). The image renders inside
-          each card, between title and description, with rounded corners +
-          padding (handled inside ProjectCard for the <md breakpoint). */}
+      {/* Mobile: 6 stacked ProjectCards (no carousel). */}
       <div className="mx-auto mt-8 w-full max-w-6xl px-4 md:hidden">
         <div className="grid grid-cols-1 gap-4">
           {projects.slice(0, mobileVisibleCount).map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
-              onOpenDetails={openProject}
               iconFor={iconFor}
             />
           ))}
@@ -151,7 +114,6 @@ export function ProjectsSectionClient({
             <div key={project.id} className="opacity-100 translate-y-0">
               <ProjectCard
                 project={project}
-                onOpenDetails={openProject}
                 iconFor={iconFor}
                 hideImage
               />
@@ -159,11 +121,6 @@ export function ProjectsSectionClient({
           ))}
         </div>
       </div>
-
-      {/* Info Modal – cached data only */}
-      <Modal open={Boolean(selected)} onClose={closeProject} title={modalTitle}>
-        {selected && <ProjectDetails project={selected} iconFor={iconFor} />}
-      </Modal>
     </section>
   );
 }

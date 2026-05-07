@@ -66,7 +66,7 @@ export function ArticleCard({ article }: Props) {
           </p>
         )}
 
-        <div className="mt-auto flex items-center gap-2 text-sm">
+        <div className="mt-auto flex items-center gap-2 text-sm font-semibold">
           <span className="relative h-8 w-8 flex-none overflow-hidden rounded-full ring-1 ring-white/10">
             <Image
               src={AUTHOR_AVATAR}
@@ -77,7 +77,7 @@ export function ArticleCard({ article }: Props) {
             />
           </span>
           <span className="text-foreground">{author}</span>
-          <span aria-hidden className="text-slate-500">
+          <span aria-hidden className="font-normal text-slate-500">
             |
           </span>
           <span className="text-foreground">{formatDate(article.date)}</span>

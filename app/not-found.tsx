@@ -17,7 +17,7 @@ export default function NotFound() {
     external?: boolean;
   }[] = [
     { label: "About me", href: "/#about", Icon: User },
-    { label: "Projects", href: "/projects", Icon: FolderGit2 },
+    { label: "Projects", href: "/#projects", Icon: FolderGit2 },
     { label: "Articles", href: "/articles", Icon: Newspaper },
     {
       label: "Email me",

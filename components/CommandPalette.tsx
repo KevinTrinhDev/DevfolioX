@@ -32,12 +32,19 @@ interface SearchItem {
   description?: string;
   category: "page" | "project" | "article" | "action";
   href?: string;
+  external?: boolean;
   icon?: ReactNode;
   action?: () => void;
 }
 
 interface CommandPaletteProps {
-  projects?: Array<{ id: string; name: string; summary?: string }>;
+  projects?: Array<{
+    id: string;
+    name: string;
+    summary?: string;
+    githubRepoUrl?: string;
+    links?: Array<{ type?: string; href: string }>;
+  }>;
   articles?: Array<{ slug: string; title: string; summary?: string }>;
 }
 
@@ -61,9 +68,9 @@ const STATIC_ITEMS: SearchItem[] = [
   {
     id: "projects",
     title: "Projects",
-    description: "View all projects",
+    description: "Jump to the projects section",
     category: "page",
-    href: "/projects",
+    href: "/#projects",
     icon: <FolderOpen className="h-4 w-4" />,
   },
   {
@@ -107,15 +114,24 @@ export function CommandPalette({ projects = [], articles = [] }: CommandPaletteP
         setIsOpen(false);
       },
     },
-    // Projects
-    ...projects.map((p) => ({
-      id: `project-${p.id}`,
-      title: p.name,
-      description: p.summary,
-      category: "project" as const,
-      href: `/projects/${p.id}`,
-      icon: <FolderOpen className="h-4 w-4" />,
-    })),
+    // Projects: link the searchable entry to the project's external URL
+    // (live → repo → first available) since /projects/[slug] no longer exists.
+    ...projects.map((p) => {
+      const live = p.links?.find((l) => l.type === "live")?.href;
+      const repo =
+        p.githubRepoUrl ||
+        p.links?.find((l) => l.type === "github")?.href;
+      const href = live || repo || "/#projects";
+      return {
+        id: `project-${p.id}`,
+        title: p.name,
+        description: p.summary,
+        category: "project" as const,
+        href,
+        external: href.startsWith("http"),
+        icon: <FolderOpen className="h-4 w-4" />,
+      };
+    }),
     // Articles
     ...articles.map((a) => ({
       id: `article-${a.slug}`,
@@ -184,7 +200,11 @@ export function CommandPalette({ projects = [], articles = [] }: CommandPaletteP
         if (item.action) {
           item.action();
         } else if (item.href) {
-          router.push(item.href);
+          if (item.external) {
+            window.open(item.href, "_blank", "noopener,noreferrer");
+          } else {
+            router.push(item.href);
+          }
           setIsOpen(false);
         }
       }
@@ -197,7 +217,11 @@ export function CommandPalette({ projects = [], articles = [] }: CommandPaletteP
     if (item.action) {
       item.action();
     } else if (item.href) {
-      router.push(item.href);
+      if (item.external) {
+        window.open(item.href, "_blank", "noopener,noreferrer");
+      } else {
+        router.push(item.href);
+      }
       setIsOpen(false);
     }
   };

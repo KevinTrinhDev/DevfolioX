@@ -1,7 +1,6 @@
 // app/sitemap.ts
 import { MetadataRoute } from "next";
 import { siteConfig } from "@/config/siteConfig";
-import { loadProjects } from "@/config/projects";
 import { getArticles } from "@/lib/mdx/mdx";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://kevintrinh.dev";
@@ -30,15 +29,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  if (siteConfig.sections?.projects) {
-    staticPages.push({
-      url: `${BASE_URL}/projects`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    });
-  }
-
   if (siteConfig.sections?.articles) {
     staticPages.push({
       url: `${BASE_URL}/articles`,
@@ -46,19 +36,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.8,
     });
-  }
-
-  let projectPages: MetadataRoute.Sitemap = [];
-  try {
-    const projects = await loadProjects();
-    projectPages = projects.map((project) => ({
-      url: `${BASE_URL}/projects/${project.id}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-  } catch (error) {
-    console.warn("[sitemap] Failed to load projects:", error);
   }
 
   // Articles are sourced from the MDX loader so the sitemap stays in lockstep
@@ -82,5 +59,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  return [...staticPages, ...projectPages, ...articlePages];
+  return [...staticPages, ...articlePages];
 }

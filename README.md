@@ -100,9 +100,10 @@ A minimal, config-driven developer portfolio template built with **Next.js 16**,
 - **PWA ready** - Installable as a Progressive Web App
 
 ### Pages & Sections
-- **Homepage** - Hero, about, skills, experience, projects, articles, contact
-- **Projects page** - `/projects` listing with individual `/projects/[slug]` pages
+- **Homepage** - Hero, about, experience, projects, content, articles
+- **Projects** - rendered only as a section on the homepage. Cards open the project's live URL (or GitHub repo) in a new tab; there are no per-project detail pages.
 - **Articles page** - `/articles` listing with individual `/articles/[slug]` pages
+- **Links page** - `/links` link-in-bio hub (vCard download, socials, YouTube, media kit)
 - **404 page** - Custom not found page
 
 ### Integrations

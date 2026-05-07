@@ -94,7 +94,7 @@ function FeaturedHero({ article }: { article: ArticleListItem }) {
             {article.summary}
           </p>
         )}
-        <div className="mt-1 flex items-center gap-2 text-sm">
+        <div className="mt-1 flex items-center gap-2 text-sm font-semibold">
           <span className="relative h-9 w-9 flex-none overflow-hidden rounded-full ring-1 ring-white/10">
             <Image
               src={AUTHOR_AVATAR}
@@ -105,7 +105,7 @@ function FeaturedHero({ article }: { article: ArticleListItem }) {
             />
           </span>
           <span className="text-foreground">{author}</span>
-          <span aria-hidden className="text-slate-500">
+          <span aria-hidden className="font-normal text-slate-500">
             |
           </span>
           <span className="text-foreground">{formatDate(article.date)}</span>

@@ -113,7 +113,7 @@
 
       "primaryCta": {
         "label": "View Projects",
-        "href": "/projects",
+        "href": "/#projects",
         "external": false,
         "icon": "ArrowRight"
       },

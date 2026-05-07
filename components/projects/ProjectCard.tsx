@@ -2,48 +2,44 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import { Folder, Star, GitFork, Download } from "lucide-react";
 import type { ProjectItem, ProjectLink } from "../../config/projects";
 
 interface ProjectCardProps {
   project: ProjectItem;
-  onOpenDetails: (project: ProjectItem) => void;
   iconFor: (type?: string) => ReactNode;
   hideImage?: boolean;
 }
 
 function fallbackImage(_project: ProjectItem): string {
-  // Static fallback (next/og isn't reliable on Cloudflare Workers).
+  // Static fallback used when a project has no imageUrl in config.
   return "/images/demo_1.png";
 }
 
-export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
-  const router = useRouter();
+/**
+ * Pick the most appropriate external destination for a project click:
+ *   1. Live demo / hosted URL  → highest priority
+ *   2. GitHub repo URL
+ *   3. First non-empty link in the project's `links[]`
+ *   4. null  → card stays click-no-op
+ */
+function externalHref(project: ProjectItem): string | null {
+  const live = project.links?.find((l) => l.type === "live")?.href;
+  if (live) return live;
+  if (project.githubRepoUrl) return project.githubRepoUrl;
+  const repoFromLinks = project.links?.find((l) => l.type === "github")?.href;
+  if (repoFromLinks) return repoFromLinks;
+  const anyLink = project.links?.find((l) => !!l.href)?.href;
+  return anyLink || null;
+}
 
+export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
   const hasStats =
     project.githubStars !== undefined ||
     project.githubForks !== undefined ||
     project.downloads !== undefined;
 
-  const liveLink = project.links?.find((l) => l.type === "live");
-  const isLive = Boolean(liveLink);
-
-  const projectHref =
-    (project as any).href ||
-    ((project as any).slug
-      ? `/projects/${String((project as any).slug)}`
-      : "") ||
-    `/projects/${project.id}`;
-
-  const goToProject = () => router.push(projectHref);
-
-  const onCardKeyDown: React.KeyboardEventHandler<HTMLElement> = (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      goToProject();
-    }
-  };
+  const href = externalHref(project);
 
   const firstDesc = project.description?.length
     ? project.description[0]
@@ -54,20 +50,16 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
 
   const image = project.imageUrl || fallbackImage(project);
 
-  return (
-    <article
-      role="link"
-      tabIndex={0}
-      onClick={goToProject}
-      onKeyDown={onCardKeyDown}
-      className={[
-        "group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5",
-        "cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-white/30",
-        "transition-colors transition-shadow transition-transform duration-200 ease-out",
-        "hover:bg-white/[0.07] hover:border-white/15 hover:shadow-sm hover:-translate-y-[1px]",
-      ].join(" ")}
-      aria-label={`Open ${project.name} project page`}
-    >
+  const cardClass = [
+    "group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-white/5",
+    "outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+    "transition-colors transition-shadow transition-transform duration-200 ease-out",
+    "hover:bg-white/[0.07] hover:border-white/15 hover:shadow-sm hover:-translate-y-[1px]",
+    href ? "cursor-pointer" : "",
+  ].join(" ");
+
+  const inner = (
+    <>
       {/* Cover image — desktop: at top, mobile: rendered below the title (see inner div) */}
       {!hideImage && (
         <div className="relative hidden aspect-[16/9] w-full overflow-hidden bg-white/5 md:block">
@@ -112,16 +104,13 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
           ) : null}
         </div>
 
-        {/* Title */}
         <div className="mt-3">
           <h4 className="text-lg font-semibold text-foreground">
             {project.name}
           </h4>
         </div>
 
-        {/* Cover image — mobile only, between title and description.
-            Inset with rounded corners so it looks integrated inside the card
-            (not edge-bleeding). */}
+        {/* Cover image — mobile only, between title and description. */}
         {!hideImage && (
           <div className="relative mt-3 aspect-[16/9] w-full overflow-hidden rounded-lg border border-white/10 bg-white/5 md:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -134,7 +123,6 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
           </div>
         )}
 
-        {/* Body */}
         <div className="mt-3 flex-1">
           {firstDesc ? (
             <p className="line-clamp-3 text-[14px] leading-6 text-muted-foreground">
@@ -142,7 +130,6 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
             </p>
           ) : null}
 
-          {/* Tech list — comma-separated, single line */}
           {project.technologies?.length ? (
             <p className="mt-4 truncate text-[12px] font-medium text-indigo-200/80">
               {project.technologies.join(", ")}
@@ -150,7 +137,6 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
           ) : null}
         </div>
 
-        {/* FOOTER: stats line */}
         {hasStats ? (
           <div className="mt-4 flex items-center gap-3 border-t border-white/5 pt-3 text-[12px] text-muted-foreground">
             {project.githubStars !== undefined && (
@@ -174,6 +160,29 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
           </div>
         ) : null}
       </div>
-    </article>
+    </>
+  );
+
+  // Whole card is a click-target → external link in a new tab. If the
+  // project has no usable external URL we fall back to a non-interactive
+  // article element so we never render a dead link.
+  if (!href) {
+    return (
+      <article className={cardClass} aria-label={project.name}>
+        {inner}
+      </article>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      aria-label={`Open ${project.name} (opens in a new tab)`}
+      className={cardClass}
+    >
+      {inner}
+    </a>
   );
 }
