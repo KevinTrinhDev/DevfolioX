@@ -325,12 +325,10 @@ export function HeroShowcaseSection() {
                 );
               })}
 
-              {/* Mobile-only "more" affordance — opens the /links hub in a
-                  new tab so users discover the rest of the socials. */}
+              {/* Mobile-only "more" affordance — same-tab so flipping back to
+                  the portfolio is instant. */}
               <a
                 href="/links"
-                target="_blank"
-                rel="noopener noreferrer"
                 aria-label="See all my links"
                 title="See all my links"
                 className="inline-flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-slate-50/90 transition-colors duration-150 hover:bg-white/5 hover:text-slate-50 sm:hidden"

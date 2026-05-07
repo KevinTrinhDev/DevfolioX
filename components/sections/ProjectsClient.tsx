@@ -27,7 +27,11 @@ export function ProjectsSectionClient({
   projects,
 }: ProjectsSectionClientProps) {
   // Hooks must run unconditionally — keep them above any early return.
-  const defaultVisibleCount = 6;
+  // Desktop compact grid below the carousel: 3 cards (smaller set since the
+  // carousel already showcases the heavy hitters).
+  const defaultVisibleCount = 3;
+  // Mobile (no carousel) shows full ProjectCards — 6 of them.
+  const mobileVisibleCount = 6;
 
   const router = useRouter();
   const pathname = usePathname();
@@ -115,25 +119,29 @@ export function ProjectsSectionClient({
         </div>
       </div>
 
-      {/* Featured projects: carousel on md+, full project cards (with images)
-          stacked on mobile so users get a more typical card flow */}
+      {/* Featured projects carousel — desktop only.
+          Mobile gets full ProjectCards instead (rendered below). */}
       {featuredCarouselProjects.length > 0 && (
-        <div className="mx-auto mt-8 w-full max-w-6xl px-4">
-          <div className="hidden md:block">
-            <FeaturedProjectsCarousel projects={featuredCarouselProjects} />
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:hidden">
-            {featuredCarouselProjects.slice(0, 6).map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onOpenDetails={openProject}
-                iconFor={iconFor}
-              />
-            ))}
-          </div>
+        <div className="mx-auto mt-8 hidden w-full max-w-6xl px-4 md:block">
+          <FeaturedProjectsCarousel projects={featuredCarouselProjects} />
         </div>
       )}
+
+      {/* Mobile: 6 stacked ProjectCards (no carousel). The image renders inside
+          each card, between title and description, with rounded corners +
+          padding (handled inside ProjectCard for the <md breakpoint). */}
+      <div className="mx-auto mt-8 w-full max-w-6xl px-4 md:hidden">
+        <div className="grid grid-cols-1 gap-4">
+          {projects.slice(0, mobileVisibleCount).map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onOpenDetails={openProject}
+              iconFor={iconFor}
+            />
+          ))}
+        </div>
+      </div>
 
       {/* Compact 3-column grid (no images) — desktop/tablet only; mobile is
           covered by the featured cards above so we don't show duplicates */}

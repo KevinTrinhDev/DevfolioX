@@ -143,8 +143,6 @@ export default async function ArticlePage({
               By{" "}
               <a
                 href="/links"
-                target="_blank"
-                rel="noreferrer noopener"
                 className="group inline-block font-medium text-foreground"
               >
                 <span className="relative inline-block after:absolute after:left-0 after:-bottom-0.5 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 group-hover:after:scale-x-100">

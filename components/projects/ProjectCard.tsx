@@ -119,9 +119,11 @@ export function ProjectCard({ project, iconFor, hideImage }: ProjectCardProps) {
           </h4>
         </div>
 
-        {/* Cover image — mobile only, between title and description */}
+        {/* Cover image — mobile only, between title and description.
+            Inset with rounded corners so it looks integrated inside the card
+            (not edge-bleeding). */}
         {!hideImage && (
-          <div className="relative mt-3 -mx-4 aspect-[16/9] w-[calc(100%+2rem)] overflow-hidden bg-white/5 md:hidden">
+          <div className="relative mt-3 aspect-[16/9] w-full overflow-hidden rounded-lg border border-white/10 bg-white/5 md:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={image}

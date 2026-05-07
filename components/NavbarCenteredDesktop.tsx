@@ -5,16 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 
-import { ChevronDown } from "lucide-react";
-import * as LucideIcons from "lucide-react";
-
-import { Handshake } from "lucide-react";
+import { ChevronDown, Handshake } from "lucide-react";
 
 import { navbarConfig, isExternalHref } from "@/config/navbarConfig";
-import type {
-  NavDropdownItemCfg,
-  NavDropdownFooterCfg,
-} from "@/config/navbarConfig";
+import type { NavDropdownItemCfg } from "@/config/navbarConfig";
 
 function PrimaryCtaContent({ label }: { label: string }) {
   return (
@@ -416,7 +410,7 @@ export function NavbarCentered() {
                     );
                   }
 
-                  // Dropdown trigger
+                  // Dropdown trigger — minimal stacked menu
                   return (
                     <div
                       key={itemKey}
@@ -445,29 +439,33 @@ export function NavbarCentered() {
                         />
                       </button>
 
-                      {/* Desktop dropdown */}
+                      {/* Minimal stacked dropdown — no icons, no descriptions,
+                          just labels in a clean vertical list under the trigger */}
                       <div
+                        role="menu"
                         className={[
-                          "fixed left-1/2 z-30 w-[min(850px,95vw)] -translate-x-1/2 origin-top",
-                          "rounded-2xl border border-white/15 bg-slate-950 p-4 text-xs shadow-2xl shadow-slate-950/60",
-                          "transition-all duration-200 ease-out md:text-sm",
+                          "absolute left-1/2 top-full z-30 mt-2 w-44 -translate-x-1/2 origin-top",
+                          "overflow-hidden rounded-xl border border-white/10 bg-slate-950/95 py-1.5 text-sm shadow-xl shadow-slate-950/40",
+                          "supports-[backdrop-filter]:backdrop-blur",
+                          "transition-all duration-150 ease-out",
                           isDropdownOpen
-                            ? "pointer-events-auto translate-y-1 opacity-100"
-                            : "pointer-events-none translate-y-0 opacity-0",
+                            ? "pointer-events-auto translate-y-0 opacity-100"
+                            : "pointer-events-none -translate-y-1 opacity-0",
                         ].join(" ")}
-                        style={{ top: dropdownTop }}
                         onMouseEnter={() => {
                           cancelCloseDesktop();
                           setOpenDropdownKey(itemKey);
                         }}
                         onMouseLeave={() => scheduleCloseDesktop(180)}
                       >
-                        {renderMegaMenuFromChildren(
-                          item.children || [],
-                          item.dropdownFooter,
-                          () => setOpenDropdownKey(null),
-                          navigateToSectionOnHome
-                        )}
+                        {(item.children || []).map((child) => (
+                          <DesktopDropdownItem
+                            key={child.id || child.href}
+                            item={child}
+                            onNavigate={() => setOpenDropdownKey(null)}
+                            navigateToSectionOnHome={navigateToSectionOnHome}
+                          />
+                        ))}
                       </div>
                     </div>
                   );
@@ -545,40 +543,25 @@ function DesktopDropdownItem({
   onNavigate?: () => void;
   navigateToSectionOnHome: (id: string) => void;
 }) {
-  const IconComponent =
-    item.icon && (LucideIcons as any)[item.icon]
-      ? (LucideIcons as any)[item.icon]
-      : null;
-
   const external = !!item.external || isExternalHref(item.href);
   const hashId = extractHashId(item.href);
 
-  // Hash item inside dropdown -> home (top) then jump
+  const baseClass =
+    "block w-full px-3 py-2 text-left text-sm font-medium text-slate-200 transition-colors hover:bg-white/5 hover:text-white";
+
+  // In-page anchor (e.g. /#content) — go home top then jump
   if (!external && hashId) {
     return (
       <button
         type="button"
+        role="menuitem"
         onClick={() => {
           navigateToSectionOnHome(hashId);
           onNavigate?.();
         }}
-        className="group flex w-full min-h-[64px] items-center gap-3 rounded-lg px-2.5 py-2 text-left text-xs transition hover:bg-slate-900 md:text-sm"
+        className={baseClass}
       >
-        {IconComponent && (
-          <div className="flex h-10 w-10 flex-none items-center justify-center rounded-md bg-slate-900 text-slate-100 transition-transform duration-150 group-hover:scale-110">
-            <IconComponent className="h-5 w-5" />
-          </div>
-        )}
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-[0.8rem] font-semibold text-foreground md:text-sm">
-            {item.label}
-          </span>
-          {item.description && (
-            <span className="mt-0.5 line-clamp-2 text-[0.7rem] text-muted-foreground">
-              {item.description}
-            </span>
-          )}
-        </div>
+        {item.label}
       </button>
     );
   }
@@ -589,126 +572,24 @@ function DesktopDropdownItem({
         href={item.href}
         target="_blank"
         rel="noreferrer noopener"
+        role="menuitem"
         onClick={onNavigate}
-        className="group flex min-h-[64px] items-center gap-3 rounded-lg px-2.5 py-2 text-left text-xs transition hover:bg-slate-900 md:text-sm"
+        className={baseClass}
       >
-        {IconComponent && (
-          <div className="flex h-10 w-10 flex-none items-center justify-center rounded-md bg-slate-900 text-slate-100 transition-transform duration-150 group-hover:scale-110">
-            <IconComponent className="h-5 w-5" />
-          </div>
-        )}
-        <div className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate text-[0.8rem] font-semibold text-foreground md:text-sm">
-            {item.label}
-          </span>
-          {item.description && (
-            <span className="mt-0.5 line-clamp-2 text-[0.7rem] text-muted-foreground">
-              {item.description}
-            </span>
-          )}
-        </div>
+        {item.label}
       </a>
     );
   }
 
-  // Normal internal page nav -> starts at top
   return (
     <Link
       href={item.href}
       scroll={true}
+      role="menuitem"
       onClick={onNavigate}
-      className="group flex min-h-[64px] items-center gap-3 rounded-lg px-2.5 py-2 text-left text-xs transition hover:bg-slate-900 md:text-sm"
+      className={baseClass}
     >
-      {IconComponent && (
-        <div className="flex h-10 w-10 flex-none items-center justify-center rounded-md bg-slate-900 text-slate-100 transition-transform duration-150 group-hover:scale-110">
-          <IconComponent className="h-5 w-5" />
-        </div>
-      )}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[0.8rem] font-semibold text-foreground md:text-sm">
-          {item.label}
-        </span>
-        {item.description && (
-          <span className="mt-0.5 line-clamp-2 text-[0.7rem] text-muted-foreground">
-            {item.description}
-          </span>
-        )}
-      </div>
+      {item.label}
     </Link>
-  );
-}
-
-function renderMegaMenuFromChildren(
-  children: NavDropdownItemCfg[],
-  footer: NavDropdownFooterCfg | undefined,
-  onNavigate: () => void,
-  navigateToSectionOnHome: (id: string) => void
-) {
-  if (!children || children.length === 0) return null;
-
-  const leftItems = children.filter((c) => c.column === "left");
-  const rightItems = children.filter((c) => c.column !== "left");
-
-  const footerExternal = footer
-    ? !!footer.external || isExternalHref(footer.href)
-    : false;
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-3 md:flex-row">
-        <div className="w-full md:w-1/3 md:border-r md:border-white/10 md:pr-4">
-          <div className="flex flex-col gap-2">
-            {leftItems.map((item) => (
-              <DesktopDropdownItem
-                key={item.id || item.href}
-                item={item}
-                onNavigate={onNavigate}
-                navigateToSectionOnHome={navigateToSectionOnHome}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="w-full md:w-2/3 md:pl-4">
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-2.5">
-            {rightItems.map((item) => (
-              <DesktopDropdownItem
-                key={item.id || item.href}
-                item={item}
-                onNavigate={onNavigate}
-                navigateToSectionOnHome={navigateToSectionOnHome}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {footer && (
-        <div className="mt-1 flex items-center justify-between gap-3 border-t border-white/10 pt-3 text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">{footer.text}</span>
-
-          {footerExternal ? (
-            <a
-              href={footer.href}
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={onNavigate}
-              className="font-semibold text-indigo-400 transition hover:text-indigo-300"
-            >
-              {footer.linkLabel}
-            </a>
-          ) : (
-            <Link
-              href={footer.href}
-              scroll={true}
-              onClick={onNavigate}
-              className="font-semibold text-indigo-400 transition hover:text-indigo-300"
-            >
-              {footer.linkLabel}
-            </Link>
-          )}
-        </div>
-      )}
-    </div>
   );
 }

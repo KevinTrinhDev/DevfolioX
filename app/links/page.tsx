@@ -2,15 +2,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  UserPlus,
-  Play,
-  GraduationCap,
-  Wrench,
-  Newspaper,
-  Image as ImageIcon,
-} from "lucide-react";
+import { ArrowUpRight, Mail, UserPlus, Play, Newspaper } from "lucide-react";
 
 import { siteConfig } from "@/config/siteConfig";
 import { ShareButton } from "@/components/ShareButton";
@@ -22,15 +14,17 @@ import {
   YoutubeGlyph,
   InstagramGlyph,
   TikTokGlyph,
-  MediumGlyph,
 } from "@/components/BrandGlyphs";
-import { loadProjects, type ProjectItem } from "@/config/projects";
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_BASE_URL || "https://kevintrinh.dev"
 ).replace(/\/$/, "");
 
 const LINKS_DESCRIPTION = `Where ${siteConfig.name} hangs out online — socials, portfolio, and content in one link.`;
+
+// Feature flags — flip to true to surface a section.
+const SHOW_ARTICLES_SECTION = false;
+const SHOW_COOGCASA_SECTION = false;
 
 export const metadata: Metadata = {
   title: `Links | ${siteConfig.name}`,
@@ -92,7 +86,23 @@ function glyphForKey(key: string) {
   }
 }
 
-export default async function LinksPage() {
+// Distinguish internal vs external hrefs so we can route same-tab for
+// internal links (faster, in-app-browser-friendly) and only open new tabs
+// for genuinely external destinations.
+function isExternal(href: string): boolean {
+  if (!href) return false;
+  if (href.startsWith("/") && !href.startsWith("//")) return false;
+  if (href.startsWith("#")) return false;
+  if (href.startsWith("mailto:") || href.startsWith("tel:")) return false;
+  try {
+    const u = new URL(href, BASE_URL);
+    return u.host !== new URL(BASE_URL).host;
+  } catch {
+    return false;
+  }
+}
+
+export default function LinksPage() {
   const socialMap = new Map(
     (siteConfig.socialsList ?? []).map((s) => [s.key, s])
   );
@@ -112,6 +122,8 @@ export default async function LinksPage() {
     return [{ key, label: s.label || key, href, Glyph }];
   });
 
+  // Big buttons — Articles row removed per latest revision; Portfolio is now
+  // an internal Link (same tab) for fast switching.
   const bigButtons: Array<{
     key: string;
     label: string;
@@ -123,7 +135,7 @@ export default async function LinksPage() {
       key: "portfolio",
       label: "Portfolio Website",
       description: "My main personal site",
-      href: `${BASE_URL}/`,
+      href: "/",
       icon: (
         <Image
           src="/images/favicon.png"
@@ -141,26 +153,9 @@ export default async function LinksPage() {
       href: "https://github.com/KevinTrinhDev",
       icon: <GithubGlyph className="h-7 w-7" />,
     },
-    {
-      key: "articles",
-      label: "Articles",
-      description: "Writing, deep dives, and dev notes",
-      href: `${BASE_URL}/articles`,
-      icon: <MediumGlyph className="h-7 w-7" />,
-    },
   ];
 
-  // Featured projects (carousel) — fall back to first projects if none flagged
-  let featuredProjects: ProjectItem[] = [];
-  try {
-    const all = await loadProjects();
-    const featured = all.filter((p) => p.featured);
-    featuredProjects = (featured.length ? featured : all).slice(0, 5);
-  } catch {
-    featuredProjects = [];
-  }
-
-  // YouTube tile (replaces previous TikTok tile)
+  // YouTube tile (channel link / featured video).
   const youtubeChannel =
     socialMap.get("youtube")?.href ||
     "https://www.youtube.com/@KevinTrinhDev";
@@ -170,40 +165,10 @@ export default async function LinksPage() {
   const youtubeHref = ytId
     ? `https://www.youtube.com/watch?v=${ytId}`
     : youtubeChannel;
+  // Use mqdefault.jpg — small (~10 KB), loads instantly on weak wifi.
   const youtubeThumb = ytId
-    ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`
+    ? `https://i.ytimg.com/vi/${ytId}/mqdefault.jpg`
     : null;
-
-  // CoogCasa cards
-  const coogCasaCards: Array<{
-    key: string;
-    label: string;
-    description: string;
-    href: string;
-    icon: React.ReactNode;
-  }> = [
-    {
-      key: "coogcasa-scholarships",
-      label: "UH Scholarships",
-      description: "Curated scholarships for UH students",
-      href: "https://coogcasa.com/scholarships",
-      icon: <GraduationCap className="h-5 w-5 text-emerald-600" />,
-    },
-    {
-      key: "coogcasa-tools",
-      label: "Student Tools",
-      description: "Free tools made for UH students",
-      href: "https://coogcasa.com/tools",
-      icon: <Wrench className="h-5 w-5 text-sky-600" />,
-    },
-    {
-      key: "coogcasa-home",
-      label: "CoogCasa.com",
-      description: "Home for everything UH",
-      href: "https://coogcasa.com",
-      icon: <Newspaper className="h-5 w-5 text-indigo-600" />,
-    },
-  ];
 
   const year = new Date().getFullYear();
 
@@ -234,24 +199,80 @@ export default async function LinksPage() {
     },
   };
 
+  // Reusable big-button render that picks <a> vs <Link> based on hostname.
+  const renderBigButton = (
+    btn: (typeof bigButtons)[number],
+    extraClassName?: string
+  ) => {
+    const inner = (
+      <>
+        <span className="inline-flex min-w-0 items-center gap-3">
+          <span className="flex h-10 w-10 flex-none items-center justify-center">
+            {btn.icon}
+          </span>
+          <span className="flex min-w-0 flex-col text-left">
+            <span className="text-sm font-semibold leading-tight text-slate-900">
+              {btn.label}
+            </span>
+            <span className="text-[12px] font-normal leading-snug text-slate-500">
+              {btn.description}
+            </span>
+          </span>
+        </span>
+        <ArrowUpRight
+          className="h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
+          aria-hidden
+        />
+      </>
+    );
+    const className =
+      "group inline-flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-900 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50" +
+      (extraClassName ? ` ${extraClassName}` : "");
+    if (isExternal(btn.href)) {
+      return (
+        <a
+          key={btn.key}
+          href={btn.href}
+          target="_blank"
+          rel="noreferrer noopener"
+          className={className}
+        >
+          {inner}
+        </a>
+      );
+    }
+    return (
+      <Link key={btn.key} href={btn.href} className={className}>
+        {inner}
+      </Link>
+    );
+  };
+
   return (
     <main className="relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col items-center px-5 pb-10 pt-16 text-slate-900 sm:pt-20">
       <JsonLd data={profileJsonLd} />
 
-      {/* Top-left: Save contact (vCard) */}
+      {/* Top-left: Email (mailto) — icon button */}
       <a
-        href="/contact.vcf"
-        download="KevinTrinh.vcf"
-        aria-label={`Save ${siteConfig.name} to your contacts`}
-        title="Save my contact"
-        className="absolute left-4 top-4 inline-flex h-10 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 sm:left-5 sm:top-5"
+        href={emailHref}
+        aria-label={`Email ${siteConfig.name}`}
+        title={`Email ${siteConfig.name}`}
+        className="absolute left-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 sm:left-5 sm:top-5"
       >
-        <UserPlus className="h-4 w-4" aria-hidden />
-        <span>Save contact</span>
+        <Mail className="h-4 w-4" aria-hidden />
       </a>
 
-      {/* Top-right: Share */}
+      {/* Top-right: Save contact (vCard) + Share — icons only */}
       <div className="absolute right-4 top-4 flex items-center gap-2 sm:right-5 sm:top-5">
+        <a
+          href="/contact.vcf"
+          download="KevinTrinh.vcf"
+          aria-label={`Save ${siteConfig.name} to your contacts`}
+          title="Save my contact"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100"
+        >
+          <UserPlus className="h-4 w-4" aria-hidden />
+        </a>
         <ShareButton
           label="Share"
           showLabel={false}
@@ -282,13 +303,15 @@ export default async function LinksPage() {
         <span>{siteConfig.location || "Houston, TX"}</span>
       </div>
 
-      {/* Tagline */}
+      {/* Tagline — Software | Tech | Creator | Builder */}
       <p className="mt-3 max-w-xs text-center text-[13px] font-medium tracking-wide text-slate-700 sm:text-sm">
         <span>Software</span>
         <span className="mx-2 text-slate-300">|</span>
         <span>Tech</span>
         <span className="mx-2 text-slate-300">|</span>
         <span>Creator</span>
+        <span className="mx-2 text-slate-300">|</span>
+        <span>Builder</span>
       </p>
 
       {/* Social glyphs */}
@@ -312,97 +335,18 @@ export default async function LinksPage() {
 
       {/* Big buttons */}
       <div className="mt-7 flex w-full flex-col gap-3">
-        {bigButtons.map(({ key, label, description, href, icon }) => (
-          <a
-            key={key}
-            href={href}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="group inline-flex w-full items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-semibold text-slate-900 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50"
-          >
-            <span className="inline-flex min-w-0 items-center gap-3">
-              <span className="flex h-10 w-10 flex-none items-center justify-center">
-                {icon}
-              </span>
-              <span className="flex min-w-0 flex-col text-left">
-                <span className="text-sm font-semibold leading-tight text-slate-900">
-                  {label}
-                </span>
-                <span className="text-[12px] font-normal leading-snug text-slate-500">
-                  {description}
-                </span>
-              </span>
-            </span>
-            <ArrowUpRight
-              className="h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
-              aria-hidden
-            />
-          </a>
-        ))}
+        {bigButtons.map((btn) => renderBigButton(btn))}
       </div>
 
-      {/* Popular projects — horizontal scroll */}
-      {featuredProjects.length > 0 && (
-        <section className="mt-7 w-full" aria-label="Popular projects">
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Popular projects
-            </h2>
-            <Link
-              href="/projects"
-              className="text-xs font-semibold text-slate-500 hover:text-slate-700"
-            >
-              View all
-            </Link>
-          </div>
-
-          <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
-            {featuredProjects.map((p) => {
-              const liveLink = p.links?.find((l) => l.type === "live");
-              const repo = p.githubRepoUrl;
-              const slugHref = `/projects/${p.id}`;
-              const href = liveLink?.href || repo || slugHref;
-              const img = p.imageUrl || "/images/demo_1.png";
-              return (
-                <a
-                  key={p.id}
-                  href={href}
-                  target={href.startsWith("http") ? "_blank" : undefined}
-                  rel={href.startsWith("http") ? "noreferrer noopener" : undefined}
-                  className="group flex w-56 flex-none snap-start flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors hover:border-slate-300 hover:bg-slate-50"
-                >
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={img}
-                      alt={p.name}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col gap-1 px-3 py-2">
-                    <span className="line-clamp-1 text-sm font-semibold text-slate-900">
-                      {p.name}
-                    </span>
-                    <span className="line-clamp-2 text-[12px] leading-snug text-slate-500">
-                      {p.summary}
-                    </span>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Featured YouTube — replaces the previous TikTok tile */}
+      {/* Featured YouTube — styled like an embedded player */}
       <a
         href={youtubeHref}
         target="_blank"
         rel="noreferrer noopener"
-        className="group mt-4 block w-full overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50"
+        aria-label="Watch the latest video on YouTube"
+        className="group mt-4 block w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-150 hover:border-slate-300 hover:shadow-md"
       >
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-100">
+        <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
           {youtubeThumb ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -410,103 +354,139 @@ export default async function LinksPage() {
                 src={youtubeThumb}
                 alt="Featured YouTube video"
                 loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                decoding="async"
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
               />
+              {/* Soft gradient for play-button contrast */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/25" />
+              {/* Play button — YouTube-red rounded shape */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white shadow-lg">
-                  <Play className="h-5 w-5 translate-x-[1px] fill-current" />
+                <span className="inline-flex h-14 w-20 items-center justify-center rounded-xl bg-red-600 text-white shadow-lg shadow-black/30 ring-4 ring-white/15 transition-transform duration-200 group-hover:scale-105">
+                  <Play className="h-6 w-6 translate-x-[1px] fill-current" />
                 </span>
+              </div>
+              {/* Channel chip top-left */}
+              <div className="absolute left-2 top-2 inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
+                <YoutubeGlyph className="h-3.5 w-3.5" />
+                <span>@KevinTrinhDev</span>
               </div>
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <YoutubeGlyph className="h-14 w-14 transition-transform duration-200 group-hover:scale-110" />
+              <YoutubeGlyph className="h-14 w-14" />
             </div>
           )}
         </div>
         <div className="flex items-center gap-3 px-4 py-3">
-          <span className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-700">
-            YouTube
-          </span>
-          <span className="line-clamp-1 text-sm font-medium text-slate-700">
+          <span className="line-clamp-1 flex-1 text-sm font-semibold text-slate-900">
             Latest from my channel
+          </span>
+          <span className="inline-flex items-center gap-1 text-[12px] font-medium text-red-700">
+            Watch on YouTube
+            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
           </span>
         </div>
       </a>
 
-      {/* CoogCasa — UH student stuff */}
-      <section className="mt-7 w-full" aria-label="CoogCasa">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            CoogCasa · UH student hub
-          </h2>
-          <a
-            href="https://coogcasa.com"
-            target="_blank"
-            rel="noreferrer noopener"
-            className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+      {/* Articles section — currently hidden, structure ready for later */}
+      {SHOW_ARTICLES_SECTION && (
+        <section className="mt-7 w-full" aria-label="Articles">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Articles
+            </h2>
+            <Link
+              href="/articles"
+              className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+            >
+              View all
+            </Link>
+          </div>
+          <Link
+            href="/articles"
+            className="group inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:border-slate-300 hover:bg-slate-50"
           >
-            Visit
-          </a>
-        </div>
+            <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-slate-100">
+              <Newspaper className="h-5 w-5 text-slate-700" />
+            </span>
+            <span className="flex min-w-0 flex-col text-left">
+              <span className="text-sm font-semibold leading-tight text-slate-900">
+                Latest articles
+              </span>
+              <span className="text-[12px] font-normal leading-snug text-slate-500">
+                Writing, deep dives, and dev notes
+              </span>
+            </span>
+            <ArrowUpRight
+              className="ml-auto h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
+              aria-hidden
+            />
+          </Link>
+        </section>
+      )}
 
-        <div className="flex flex-col gap-2">
-          {coogCasaCards.map(({ key, label, description, href, icon }) => (
+      {/* CoogCasa block — currently disabled. Keep wired for easy re-enable. */}
+      {SHOW_COOGCASA_SECTION && (
+        <section className="mt-7 w-full" aria-label="CoogCasa">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              CoogCasa · UH student hub
+            </h2>
             <a
-              key={key}
-              href={href}
+              href="https://coogcasa.com"
               target="_blank"
               rel="noreferrer noopener"
-              className="group inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:border-slate-300 hover:bg-slate-50"
+              className="text-xs font-semibold text-slate-500 hover:text-slate-700"
             >
-              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-slate-100">
-                {icon}
-              </span>
-              <span className="flex min-w-0 flex-col text-left">
-                <span className="text-sm font-semibold leading-tight text-slate-900">
-                  {label}
-                </span>
-                <span className="text-[12px] font-normal leading-snug text-slate-500">
-                  {description}
-                </span>
-              </span>
-              <ArrowUpRight
-                className="ml-auto h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
-                aria-hidden
-              />
+              Visit
             </a>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
-      {/* Media kit — bottom block */}
-      <section className="mt-7 w-full" aria-label="Media kit">
-        <a
-          href={`mailto:${emailHref.replace(/^mailto:/i, "")}?subject=Media%20kit%20request`}
-          className="group inline-flex w-full items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 transition-colors hover:border-slate-300 hover:bg-slate-50"
-        >
-          <span className="flex h-9 w-9 flex-none items-center justify-center rounded-md bg-slate-100">
-            <ImageIcon className="h-5 w-5 text-slate-700" />
-          </span>
-          <span className="flex min-w-0 flex-col text-left">
-            <span className="text-sm font-semibold leading-tight text-slate-900">
-              Media kit
-            </span>
-            <span className="text-[12px] font-normal leading-snug text-slate-500">
-              For brands &amp; partnerships — email me
-            </span>
-          </span>
-          <ArrowUpRight
-            className="ml-auto h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
+      {/* Media kit — image card, opens beacons.ai mediakit in a new tab */}
+      <a
+        href="https://beacons.ai/kevintrinh/mediakit"
+        target="_blank"
+        rel="noreferrer noopener"
+        aria-label="Open my media kit on Beacons"
+        className="group mt-4 block w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-150 hover:border-slate-300 hover:shadow-md"
+      >
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-indigo-500 via-violet-500 to-fuchsia-500">
+          {/* Decorative grid */}
+          <div
             aria-hidden
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.35) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.25) 0%, transparent 45%)",
+            }}
           />
-        </a>
-      </section>
+          <div className="relative z-10 flex h-full w-full flex-col items-start justify-between p-5 text-white">
+            <span className="rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] backdrop-blur-sm">
+              Media Kit
+            </span>
+            <div className="flex w-full items-end justify-between gap-3">
+              <div>
+                <div className="text-xl font-semibold leading-tight">
+                  {siteConfig.name}
+                </div>
+                <div className="text-[12px] opacity-85">
+                  Brands &amp; partnerships
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1 rounded-md bg-white/15 px-2 py-1 text-[11px] font-semibold backdrop-blur-sm">
+                Open
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+              </span>
+            </div>
+          </div>
+        </div>
+      </a>
 
-      {/* Copyright */}
-      <div className="mt-auto pt-10 text-center text-xs leading-relaxed text-slate-400">
-        <div>Built by Kevin Trinh</div>
-        <div>© {year} All rights reserved</div>
+      {/* Footer — single line, slightly more visible */}
+      <div className="mt-auto pt-10 text-center text-xs text-slate-500">
+        Built by Kevin Trinh · © {year} All rights reserved
       </div>
     </main>
   );

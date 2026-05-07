@@ -55,9 +55,11 @@ function normalizeLinks(input: any): ExperienceLink[] | undefined {
   return out.length ? out : undefined;
 }
 
-// Light runtime guard (keeps shape predictable)
+// Light runtime guard (keeps shape predictable). Items with `hidden: true`
+// in experience.json are filtered out — used to temporarily remove a role
+// without losing its data.
 function normalize(items: any[]): ExperienceItem[] {
-  return (items || []).map((it) => ({
+  return (items || []).filter((it) => it && it.hidden !== true).map((it) => ({
     id: String(it.id),
     role: String(it.role),
     company: String(it.company),

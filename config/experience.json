@@ -1,6 +1,7 @@
 [
   {
     "id": "founder-visibleseed",
+    "hidden": true,
     "role": "Founder & Software Engineer",
     "company": "VisibleSeed LLC",
     "logoUrl": "/images/companies/visibleseed-favicon.png",
