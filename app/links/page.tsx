@@ -386,7 +386,7 @@ export default async function LinksPage() {
                   alt={ytTitle}
                   loading="lazy"
                   decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  className="h-full w-full object-cover"
                 />
                 {/* Gradient for legibility of overlays */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-transparent to-black/20" />
@@ -397,18 +397,18 @@ export default async function LinksPage() {
                   </span>
                 </div>
                 {/* Top-left: avatar + video title overlay (fades right) */}
-                <div className="absolute left-2 right-2 top-2 flex items-center gap-2">
-                  <span className="relative inline-flex h-7 w-7 flex-none overflow-hidden rounded-full ring-1 ring-white/40">
+                <div className="absolute left-2.5 right-2.5 top-2.5 flex items-center gap-2.5">
+                  <span className="relative inline-flex h-9 w-9 flex-none overflow-hidden rounded-full ring-1 ring-white/40">
                     <Image
                       src="/images/avatar.jpg"
                       alt=""
                       fill
-                      sizes="28px"
+                      sizes="36px"
                       className="object-cover"
                     />
                   </span>
                   <span
-                    className="block min-w-0 flex-1 overflow-hidden whitespace-nowrap text-[14px] font-bold leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]"
+                    className="block min-w-0 flex-1 overflow-hidden whitespace-nowrap text-[17px] font-bold leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]"
                     style={{
                       WebkitMaskImage:
                         "linear-gradient(to right, #000 78%, transparent)",
