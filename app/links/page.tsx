@@ -169,12 +169,17 @@ export default async function LinksPage() {
     ((siteConfig as any).featuredContent?.youtubeVideoId as
       | string
       | undefined) || "";
+  const featuredVideoTitle =
+    ((siteConfig as any).featuredContent?.youtubeVideoTitle as
+      | string
+      | undefined) || "";
   const latestVideos = channelId
     ? await loadLatestYouTubeVideos(channelId, 1)
     : [];
   const latestVideo = latestVideos[0];
   const ytId = latestVideo?.id || featuredVideoId;
-  const ytTitle = latestVideo?.title || "Latest from my channel";
+  const ytTitle =
+    latestVideo?.title || featuredVideoTitle || "Latest from my channel";
   const youtubeHref = latestVideo?.url
     ? latestVideo.url
     : ytId
