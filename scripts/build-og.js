@@ -108,10 +108,10 @@ function renderSubtitle(text, font, chars = 56) {
 const CARDS = [
   {
     file: "home.png",
-    eyebrow: "Portfolio",
+    eyebrow: "Website",
     title: "Kevin Trinh",
     subtitle:
-      "Full-stack developer & CS student at the University of Houston.",
+      "Software Engineer, Developer, Creator, Business Owner & CS Student at the University of Houston.",
   },
   {
     file: "links.png",

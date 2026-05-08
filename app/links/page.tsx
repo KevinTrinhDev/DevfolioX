@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     url: "/links",
     title: `${siteConfig.name} · Links`,
     description: LINKS_DESCRIPTION,
-    siteName: `${siteConfig.name} Portfolio`,
+    siteName: `${siteConfig.name} Website`,
     images: [
       {
         url: "/images/og/links.png",

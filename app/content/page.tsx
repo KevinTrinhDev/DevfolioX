@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     url: "/content",
     title: `${siteConfig.name} · Content & Socials`,
     description: PAGE_DESCRIPTION,
-    siteName: `${siteConfig.name} Portfolio`,
+    siteName: `${siteConfig.name} Website`,
     images: [
       {
         url: "/images/og/links.png",

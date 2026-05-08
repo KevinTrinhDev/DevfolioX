@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
                 textTransform: "uppercase",
               }}
             >
-              Portfolio
+              Website
             </span>
           </div>
         </div>
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
             fontWeight: 700,
           }}
         >
-          Portfolio
+          Website
         </div>
       ),
       {

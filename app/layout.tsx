@@ -95,7 +95,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: BASE_URL,
-    siteName: `${siteConfig.name} Portfolio`,
+    siteName: `${siteConfig.name} Website`,
     title: `${siteConfig.name} – ${siteConfig.title}`,
     description: siteConfig.tagline,
     images: [

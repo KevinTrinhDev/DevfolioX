@@ -45,7 +45,7 @@ export function generateWebSiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: `${siteConfig.name} Portfolio`,
+    name: `${siteConfig.name} Website`,
     alternateName: siteConfig.name,
     url: BASE_URL,
     description: siteConfig.tagline,
