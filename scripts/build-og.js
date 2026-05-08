@@ -70,10 +70,12 @@ function youtubeGlyph() {
     <polygon points="17,12 17,32 33,22" fill="#ffffff"/>`;
 }
 
-function githubGlyph() {
+function instagramGlyph() {
   return `
-    <rect width="44" height="44" rx="8" fill="#181717"/>
-    <path d="M22 9.5c-6.6 0-12 5.4-12 12 0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2.1.1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.4 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C30.6 31.3 34 26.8 34 21.5c0-6.6-5.4-12-12-12z" fill="#ffffff"/>`;
+    <rect width="44" height="44" rx="10" fill="url(#ig-grad)"/>
+    <rect x="11" y="11" width="22" height="22" rx="6" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="22" cy="22" r="5" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="29.5" cy="14.5" r="1.6" fill="#ffffff"/>`;
 }
 
 function tiktokGlyph() {
@@ -91,7 +93,7 @@ function socialsRow(y) {
   const items = [
     { glyph: linkedInGlyph(), handle: "in/KevinTrinhDev" },
     { glyph: youtubeGlyph(), handle: "@KevinTrinhDev" },
-    { glyph: githubGlyph(), handle: "@KevinTrinhDev" },
+    { glyph: instagramGlyph(), handle: "@KevinTrinhDev" },
     { glyph: tiktokGlyph(), handle: "@KevinTrinhDev" },
   ];
   // Even cells across the content width; single-line handle next to glyph.
@@ -153,6 +155,16 @@ function svg({ eyebrow = "", title, subtitle = "" }) {
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+  <defs>
+    <linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#FEDA75"/>
+      <stop offset="25%"  stop-color="#FA7E1E"/>
+      <stop offset="50%"  stop-color="#D62976"/>
+      <stop offset="75%"  stop-color="#962FBF"/>
+      <stop offset="100%" stop-color="#4F5BD5"/>
+    </linearGradient>
+  </defs>
+
   <!-- Base -->
   <rect width="${W}" height="${H}" fill="${BG}"/>
 
