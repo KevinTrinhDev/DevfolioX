@@ -14,13 +14,15 @@ const W = 1200;
 const H = 630;
 const PAD = 80;
 
-// Palette — restrained: one accent, otherwise greyscale.
 const BG = "#0a0e1a";
 const TEXT = "#fafafa";
 const MUTED = "#94a3b8";
+const HANDLE = "#cbd5e1"; // slate-300 — slightly brighter than MUTED so handles read clearly
 const ACCENT = "#6366f1";
 const RING = "#1f2937";
 const FONT = "DejaVu Sans"; // librsvg-friendly system font
+
+const HANDLE_TEXT = "@KevinTrinhDev";
 
 // Avatar — embedded inline so the SVG is self-contained.
 const AVATAR_PATH = path.join(
@@ -43,11 +45,14 @@ function escapeXml(s) {
     .replace(/'/g, "&apos;");
 }
 
-// Naive two-line wrap for the subtitle. OG subtitles are deliberately short
-// so this rarely needs to split — but when it does, break at the nearest
-// space before maxChars rather than mid-word.
-function wrapTwoLines(text, maxChars) {
+// Subtitle becomes up to 2 lines. Honors explicit "\n" splits when set;
+// otherwise wraps at the nearest space before maxChars.
+function splitSubtitle(text, maxChars) {
   if (!text) return ["", ""];
+  if (text.includes("\n")) {
+    const lines = text.split("\n");
+    return [lines[0] || "", lines[1] || ""];
+  }
   if (text.length <= maxChars) return [text, ""];
   let split = text.lastIndexOf(" ", maxChars);
   if (split < 0) split = maxChars;
@@ -74,13 +79,26 @@ function githubGlyph() {
     <path d="M22 9.5c-6.6 0-12 5.4-12 12 0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2 1-.3 2-.4 3-.4s2.1.1 3 .4c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.8 1.2 3.1 0 4.5-2.7 5.5-5.4 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C30.6 31.3 34 26.8 34 21.5c0-6.6-5.4-12-12-12z" fill="#ffffff"/>`;
 }
 
+function tiktokGlyph() {
+  // Simplified TikTok mark: black square + offset cyan/magenta accents
+  // behind a white musical-note silhouette. Works at this size without
+  // looking muddy.
+  return `
+    <rect width="44" height="44" rx="8" fill="#000000"/>
+    <path d="M27.5 12c.5 2.6 2.3 4.2 4.8 4.5v3a8.7 8.7 0 0 1-4.6-1.2v6.9a7.4 7.4 0 1 1-7.4-7.4c.4 0 .9 0 1.3.1v3.1c-.4-.1-.8-.2-1.3-.2a4.4 4.4 0 1 0 4.4 4.4V12h2.8z" fill="#25F4EE" transform="translate(1.2 0)"/>
+    <path d="M27.5 12c.5 2.6 2.3 4.2 4.8 4.5v3a8.7 8.7 0 0 1-4.6-1.2v6.9a7.4 7.4 0 1 1-7.4-7.4c.4 0 .9 0 1.3.1v3.1c-.4-.1-.8-.2-1.3-.2a4.4 4.4 0 1 0 4.4 4.4V12h2.8z" fill="#FE2C55" transform="translate(-1.2 0)"/>
+    <path d="M27.5 12c.5 2.6 2.3 4.2 4.8 4.5v3a8.7 8.7 0 0 1-4.6-1.2v6.9a7.4 7.4 0 1 1-7.4-7.4c.4 0 .9 0 1.3.1v3.1c-.4-.1-.8-.2-1.3-.2a4.4 4.4 0 1 0 4.4 4.4V12h2.8z" fill="#ffffff"/>`;
+}
+
 function socialsRow(y) {
   const items = [
     { glyph: linkedInGlyph(), label: "LinkedIn" },
     { glyph: youtubeGlyph(), label: "YouTube" },
     { glyph: githubGlyph(), label: "GitHub" },
+    { glyph: tiktokGlyph(), label: "TikTok" },
   ];
-  // Distribute evenly across the content width, left-aligned within each cell.
+  // Even cells across the content width; each label sits to the right of
+  // its glyph with a two-line "Platform / @handle" stack.
   const cellWidth = (W - PAD * 2) / items.length;
   return items
     .map((item, i) => {
@@ -88,18 +106,20 @@ function socialsRow(y) {
       return `
       <g transform="translate(${x}, ${y})">
         ${item.glyph}
-        <text x="60" y="32" font-family="${FONT}" font-size="26" font-weight="600"
+        <text x="58" y="20" font-family="${FONT}" font-size="22" font-weight="700"
               fill="${TEXT}">${escapeXml(item.label)}</text>
+        <text x="58" y="42" font-family="${FONT}" font-size="18" font-weight="500"
+              fill="${HANDLE}">${escapeXml(HANDLE_TEXT)}</text>
       </g>`;
     })
     .join("\n");
 }
 
-function avatarBlock() {
+function avatarBlock(centerY) {
   if (!avatarDataUri) return "";
   const size = 200;
   const x = W - PAD - size;
-  const y = PAD + 10;
+  const y = Math.round(centerY - size / 2);
   const cx = x + size / 2;
   const cy = y + size / 2;
   const r = size / 2;
@@ -118,7 +138,7 @@ function avatarBlock() {
 }
 
 function svg({ eyebrow = "", title, subtitle = "" }) {
-  const [sub1, sub2] = wrapTwoLines(subtitle, 44);
+  const [sub1, sub2] = splitSubtitle(subtitle, 50);
 
   const eyebrowBlock = eyebrow
     ? `<text x="${PAD}" y="160" font-family="${FONT}" font-size="22" font-weight="700"
@@ -127,11 +147,14 @@ function svg({ eyebrow = "", title, subtitle = "" }) {
       )}</text>`
     : "";
 
-  // Push title down a bit more when the eyebrow is absent so the layout stays
-  // optically balanced against the avatar on the right.
-  const titleY = eyebrow ? 270 : 260;
+  // Title baseline. We bump it slightly when an eyebrow exists so the gap
+  // between the two reads as deliberate.
+  const titleY = eyebrow ? 290 : 270;
+  // Title visual centre — for a 92pt font the cap-height middle sits ~31pt
+  // above the baseline. Aligning the avatar to this looks balanced.
+  const titleVisualCenter = titleY - 31;
   const sub1Y = titleY + 70;
-  const sub2Y = sub1Y + 46;
+  const sub2Y = sub1Y + 52;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
@@ -141,8 +164,8 @@ function svg({ eyebrow = "", title, subtitle = "" }) {
   <!-- Thin left accent stripe -->
   <rect x="0" y="0" width="6" height="${H}" fill="${ACCENT}"/>
 
-  <!-- Avatar (top-right) -->
-  ${avatarBlock()}
+  <!-- Avatar (top-right, vertically centred on the title) -->
+  ${avatarBlock(titleVisualCenter)}
 
   <!-- Eyebrow -->
   ${eyebrowBlock}
@@ -154,14 +177,14 @@ function svg({ eyebrow = "", title, subtitle = "" }) {
   <!-- Subtitle -->
   ${
     sub1
-      ? `<text x="${PAD}" y="${sub1Y}" font-family="${FONT}" font-size="30" font-weight="400" fill="${MUTED}">${escapeXml(
+      ? `<text x="${PAD}" y="${sub1Y}" font-family="${FONT}" font-size="34" font-weight="400" fill="${MUTED}">${escapeXml(
           sub1
         )}</text>`
       : ""
   }
   ${
     sub2
-      ? `<text x="${PAD}" y="${sub2Y}" font-family="${FONT}" font-size="30" font-weight="400" fill="${MUTED}">${escapeXml(
+      ? `<text x="${PAD}" y="${sub2Y}" font-family="${FONT}" font-size="34" font-weight="400" fill="${MUTED}">${escapeXml(
           sub2
         )}</text>`
       : ""
@@ -182,7 +205,7 @@ const CARDS = [
     eyebrow: "",
     title: "Kevin Trinh",
     subtitle:
-      "Software Engineer · Developer · Creator · Business Owner",
+      "Software Engineer & Creator from Houston, TX.\nBuilding thoughtful software at the University of Houston.",
   },
   {
     file: "links.png",
