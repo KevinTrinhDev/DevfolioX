@@ -102,7 +102,7 @@ function socialsRow(y) {
       return `
       <g transform="translate(${x}, ${y})">
         ${item.glyph}
-        <text x="58" y="30" font-family="${FONT}" font-size="22" font-weight="600"
+        <text x="56" y="29" font-family="${FONT}" font-size="19" font-weight="600"
               fill="${TEXT}">${escapeXml(item.handle)}</text>
       </g>`;
     })
