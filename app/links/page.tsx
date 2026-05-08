@@ -444,57 +444,33 @@ export default function LinksPage() {
         </section>
       )}
 
-      {/* Media kit — minimal white card, Beacons wordmark, image-led */}
+      {/* Media kit — image-led card: banner on top, CTA below */}
       <a
         href="https://beacons.ai/kevintrinh/mediakit"
         target="_blank"
         rel="noreferrer noopener"
-        aria-label="Open my media kit on Beacons"
-        className="group mt-4 flex w-full items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50"
+        aria-label="View my media kit"
+        className="group mt-4 flex w-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition-colors duration-150 hover:border-slate-300 hover:bg-slate-50"
       >
-        {/* Avatar — image-led so the card feels personal, not generic */}
-        <div className="relative h-14 w-14 flex-none overflow-hidden rounded-lg ring-1 ring-slate-200">
+        <div className="relative aspect-[12/5] w-full overflow-hidden bg-slate-100">
           <Image
-            src="/images/avatar.jpg"
-            alt=""
+            src="/images/mediakitimage.jpg"
+            alt="Media kit"
             fill
-            sizes="56px"
+            sizes="(max-width: 768px) 100vw, 640px"
             className="object-cover"
           />
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
           <span className="text-sm font-semibold leading-tight text-slate-900">
-            Media Kit
+            View My Media Kit
           </span>
-          <span className="mt-0.5 inline-flex items-center gap-1.5 text-[12px] font-medium text-slate-500">
-            <span>View on</span>
-            {/* Inline Beacons.ai wordmark — pure SVG, no fetch */}
-            <svg
-              viewBox="0 0 96 16"
-              aria-hidden
-              className="h-3 w-auto text-slate-700"
-              fill="currentColor"
-            >
-              <text
-                x="0"
-                y="13"
-                fontFamily="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto"
-                fontSize="13"
-                fontWeight="700"
-                letterSpacing="-0.4"
-              >
-                beacons
-              </text>
-              <circle cx="76" cy="9.5" r="2.4" />
-            </svg>
-          </span>
+          <ArrowUpRight
+            className="h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
+            aria-hidden
+          />
         </div>
-
-        <ArrowUpRight
-          className="h-4 w-4 flex-none text-slate-400 transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-slate-700"
-          aria-hidden
-        />
       </a>
 
       {/* Footer — single line, slightly more visible */}
